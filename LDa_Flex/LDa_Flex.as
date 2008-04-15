@@ -2,13 +2,15 @@ package {
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
-
+	
+	//[SWF(width=100%, height=100%, frameRate="30", backgroundColor="#FFFFFF")]
+	
 	public class LDa_Flex extends Sprite
 	{
 		private var tester:Sprite;
 		private var myTester:Tester;
 		private var linkTest:OtherTestButton;
-		
+			
 		public function LDa_Flex()
 		{
 			stage.scaleMode = StageScaleMode.NO_SCALE;

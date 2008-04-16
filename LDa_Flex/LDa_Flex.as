@@ -4,6 +4,7 @@ package {
 	import flash.display.StageScaleMode;
 	
 	//[SWF(width=100%, height=100%, frameRate="30", backgroundColor="#FFFFFF")]
+	[SWF(frameRate="30", backgroundColor="#00000")]
 	
 	public class LDa_Flex extends Sprite
 	{

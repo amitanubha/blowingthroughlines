@@ -6,6 +6,5 @@ package com.ner
 		{
 			trace("NER");
 		}
-
 	}
 }

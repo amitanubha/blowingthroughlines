@@ -4,6 +4,7 @@ package com.ner
 	{
 		public function NER()
 		{
+			trace("NER");
 		}
 
 	}

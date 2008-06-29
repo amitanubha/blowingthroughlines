@@ -1,16 +1,14 @@
 package {
-	import caurina.transitions.Tweener;
-	
 	import com.huntandgather.lda.display.Plane53D;
 	
 	import five3D.display.Scene3D;
 	import five3D.geom.Point3D;
 	
+	import flash.display.BitmapData;
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
-	import flash.events.MouseEvent;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 	import flash.utils.getTimer;
@@ -78,8 +76,21 @@ package {
 				h -= h%2;
 				
 				var planeGraphics:Sprite = new Sprite();
-				plane.graphics3D.beginFill(0xBADA55, 1);
-				plane.graphics3D.drawRoundRect(-w/2, -h/2, w, h, 20, 20);
+				planeGraphics.graphics.beginFill(0xBADA55, 1);
+				planeGraphics.graphics.drawRoundRect(0, 0, w, h, 20, 20);
+				var testFormat:TextFormat = new TextFormat("_sans", 62, 0x123456, "bold");
+				var testText:TextField = new TextField();
+				testText.defaultTextFormat = testFormat;
+				testText.text = "Ner "+i;
+				testText.autoSize = "left";
+				planeGraphics.addChild(testText);
+				
+				var bmpData:BitmapData = new BitmapData(planeGraphics.width, planeGraphics.height, true, 0);
+				bmpData.draw(planeGraphics);
+				plane.bitmapData = bmpData;
+				
+//				plane.graphics3D.beginFill(0xBADA55, 1);
+//				plane.graphics3D.drawRoundRect(-w/2, -h/2, w, h, 20, 20);
 				
 				plane.alpha 		= 0.6;
 				plane.x 			= Math.round((Math.random()*stage.stageWidth)-stage.stageWidth/2);
@@ -87,47 +98,12 @@ package {
 				plane.z 			= Math.round(Math.random()*3000);
 				
 				plane.origin 		= new Point3D(plane.x, plane.y, plane.z);
+
 				
-				plane.buttonMode 	= true;
-				plane.mouseChildren = false;
-				plane.addEventListener(MouseEvent.MOUSE_OVER, handlePlaneOver);
-				plane.addEventListener(MouseEvent.MOUSE_OUT, handlePlaneOver);
-				
-				plane.addEventListener(Event.ENTER_FRAME, handlePlaneFrame);
 
 				_scene.addChild(plane);
 				_planes.push(plane);
 			}
-		}
-		
-		private function handlePlaneOver(evt:MouseEvent):void
-		{
-			var plane:Plane53D = Plane53D(evt.currentTarget);
-			if(evt.type == "mouseOver")
-			{
-				plane.removeEventListener(Event.ENTER_FRAME, handlePlaneFrame);
-				plane.addEventListener(Event.ENTER_FRAME, handlePlaneFrame2);
-				plane.rotationY = 0;
-				
-				Tweener.addTween(plane, {x:_scene.mouseX, 	y:_scene.mouseY, 	z:0, 				alpha:1,  	time:1, 	transition:"easeoutback"});
-			}else
-			{
-				plane.removeEventListener(Event.ENTER_FRAME, handlePlaneFrame2);
-				plane.addEventListener(Event.ENTER_FRAME, handlePlaneFrame);
-
-				Tweener.addTween(plane, {x:plane.origin.x, 	y:plane.origin.y, 	z:plane.origin.z, 	alpha:0.6, 	time:1, 	transition:"easeoutback"});
-			}
-		}
-		
-		private function handlePlaneFrame(evt:Event):void
-		{
-			var plane:Plane53D 	= Plane53D(evt.currentTarget);
-			plane.rotationY 	+= Math.round(Math.random()*30);
-		}
-		
-		private function handlePlaneFrame2(evt:Event):void
-		{
-			trace(evt.target.mouseXY, evt.target.z);
 		}
 		
 		private function setChildIndecies(evt:Event/* scene:Scene3D */):void

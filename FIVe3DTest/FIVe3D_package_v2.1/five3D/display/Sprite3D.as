@@ -219,6 +219,12 @@ package five3D.display {
 		public function set childrenSorted(value:Boolean):void {
 			__childrensorted = value;
 		}
+		
+		// added by collin
+		public function get matrix3D():Matrix3D
+		{
+			return __matrix;
+		}
 
 		internal function askRendering():void {
 			__render = true;

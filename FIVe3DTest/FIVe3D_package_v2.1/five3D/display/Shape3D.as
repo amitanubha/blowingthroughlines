@@ -8,18 +8,17 @@
 
 package five3D.display {
 
+	import five3D.geom.Matrix3D;
+	import five3D.geom.Point3D;
+	
+	import fl.motion.Color;
+	
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Graphics;
 	import flash.display.Shape;
 	import flash.geom.ColorTransform;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
-	import fl.motion.Color;
-	import five3D.display.Graphics3D;
-	import five3D.display.Scene3D;
-	import five3D.display.Sprite3D;
-	import five3D.geom.Matrix3D;
-	import five3D.geom.Point3D;
 
 	public class Shape3D extends Shape {
 
@@ -83,6 +82,12 @@ package five3D.display {
 				if (__concatenatedmatrix == null) throw new Error("Cannot access this property before the class has been rendered once.");
 				else return __concatenatedmatrix.getInverseCoordinates(scene.mouseX, scene.mouseY, scene.viewDistance);
 			}
+		}
+		
+		// added by collin
+		public function get matrix3D():Matrix3D
+		{
+			return __matrix;
 		}
 
 		private function getScene():Scene3D {

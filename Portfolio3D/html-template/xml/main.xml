@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<main>
+	<option>
+		<select>
+			<name>Home</name>
+			<id>0</id>
+		</select>
+	</option>
+	<option>
+		<select>
+			<name>Portfolio</name>
+			<id>1</id>
+			<tag>featured</tag>
+		</select>
+		<select>
+			<name>Residential</name>
+			<parentID>1</parentID>
+			<id>10</id>
+			<tag>residential</tag>
+		</select>
+		<select>
+			<name>Academic</name>
+			<parentID>1</parentID>
+			<id>11</id>
+			<tag>academic</tag>
+		</select>
+		<select>
+			<name>Cultural</name>
+			<parentID>1</parentID>
+			<id>12</id>
+			<tag>cultural</tag>
+		</select>
+		<select>
+			<name>Interiors</name>
+			<parentID>1</parentID>
+			<id>13</id>
+			<tag>interior</tag>
+		</select>
+		<select>
+			<name>FullList</name>
+			<parentID>1</parentID>
+			<view>list</view> <!-- this is optional to force the site into list view -->
+			<id>13</id>
+			<tag>work</tag>
+		</select>
+		<select>
+			<name>Process</name>
+			<id>2</id>
+			<tag>process</tag>
+		</select>
+		<select>
+			<name>Residential Process</name>
+			<parentID>2</parentID>
+			<id>14</id>
+			<tag>process</tag>
+			<tag>residential</tag>
+		</select>
+		<select>
+			<name>Academic Process</name>
+			<parentID>2</parentID>
+			<id>14</id>
+			<tag>process</tag>
+			<tag>academic</tag>
+		</select>
+		<select>
+			<name>Educational Process</name>
+			<parentID>2</parentID>
+			<id>14</id>
+			<tag>process</tag>
+			<tag>educational</tag>
+		</select>
+		<select>
+			<name>Interiors Process</name>
+			<parentID>2</parentID>
+			<id>14</id>
+			<tag>process</tag>
+			<tag>interior</tag>
+		</select>
+	</option>
+</main>

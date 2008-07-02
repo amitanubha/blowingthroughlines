@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<items>
+	<keyword>
+		<id>residential</id>
+		<name>Residential</name>
+		<type>keyword</type>
+		<project_count>5</project_count>
+		<caption>A b c d e f g h i j k l m n o p q r s t u  v w x y z. A b c d e f g h i j k l m n o p q r s t u  v w x y z. A b c d e f g h i j k l m n o p q r s t u  v w x y z. A b c d e f g h i j k l m n o p q r s t u  v w x y z. A b c d e f g h i j k l m n o p q r s t u  v w x y z. A b c d e f g h i j k l m n o p q r s t u  v w x y z. </caption>
+		<!-- would like an indication of item count or total projects for the keyword, but not essential -->
+	</keyword>
+	<item>
+		<id>10</id>
+		<name>Brown</name>
+		<subTitle>House</subTitle>
+		<!-- types: project, article -->
+		<type>project</type>
+		<!-- <sectionID>1</sectionID> (only in word items, which may have a different syntax) -->
+		
+		<!-- would really like to allow them to pick a feature image, and add it to the xml at the top of each project -->
+		<img thumb="img/thumb/brown_2.jpg" src="img/full/brown_2.jpg" height='300' width='228'/> <!-- really only need the thumb, height, width until it comes time to load the full version -->
+	</item>
+	<item>
+		<id>11</id>
+		<name>Cambridge</name>
+		<subTitle>House</subTitle>
+		<!-- types: project, article -->
+		<type>project</type>
+		<!-- <sectionID>1</sectionID> (only in word items, which may have a different syntax) -->
+		<img thumb="img/thumb/cambridge_2.jpg" src="img/full/cambridge_2.jpg" height='300' width='200'/> <!-- really only need the thumb, height, width until it comes time to load the full version -->
+	</item>
+	<item>
+		<id>12</id>
+		<name>Brown</name>
+		<subTitle>House</subTitle>
+		<!-- types: project, article -->
+		<type>project</type>
+		<!-- <sectionID>1</sectionID> (only in word items, which may have a different syntax) -->
+		
+		<!-- would really like to allow them to pick a feature image, and add it to the xml at the top of each project -->
+		<img thumb="img/thumb/clark_barn_1.jpg" src="img/full/clark_barn_1.jpg" height='213' width='300'/> <!-- really only need the thumb, height, width until it comes time to load the full version -->
+	</item>
+	<item>
+		<id>13</id>
+		<name>Cambridge</name>
+		<subTitle>House</subTitle>
+		<!-- types: project, article -->
+		<type>project</type>
+		<!-- <sectionID>1</sectionID> (only in word items, which may have a different syntax) -->
+		<img thumb="img/thumb/commonwealth_1.jpg" src="img/full/commonwealth_1.jpg" height='300' width='240'/> <!-- really only need the thumb, height, width until it comes time to load the full version -->
+	</item>
+	<item>
+		<id>14</id>
+		<name>Brown</name>
+		<subTitle>House</subTitle>
+		<!-- types: project, article -->
+		<type>project</type>
+		<!-- <sectionID>1</sectionID> (only in word items, which may have a different syntax) -->
+		
+		<!-- would really like to allow them to pick a feature image, and add it to the xml at the top of each project -->
+		<img thumb="img/thumb/hayden_1.jpg" src="img/full/hayden_1.jpg" height='154' width='300'/> <!-- really only need the thumb, height, width until it comes time to load the full version -->
+	</item>
+</items>

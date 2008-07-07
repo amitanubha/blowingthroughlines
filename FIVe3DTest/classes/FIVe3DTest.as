@@ -2,6 +2,7 @@ package {
 	import com.huntandgather.lda.display.Plane53D;
 	
 	import five3D.display.Scene3D;
+	import five3D.display.Shape3D;
 	import five3D.geom.Point3D;
 	
 	import flash.display.BitmapData;
@@ -66,7 +67,7 @@ package {
 		
 		private function populateScene():void
 		{
-			for( var i:uint=0; i < 30; i++)
+			for( var i:uint=0; i < 15; i++)
 			{
 				var plane:Plane53D 	= new Plane53D();
 				var w:Number 		= 200; //Math.round(Math.random()*100)+200;
@@ -93,9 +94,13 @@ package {
 //				plane.graphics3D.drawRoundRect(-w/2, -h/2, w, h, 20, 20);
 				
 				plane.alpha 		= 0.6;
-				plane.x 			= Math.round((Math.random()*stage.stageWidth)-stage.stageWidth/2);
-				plane.y 			= Math.round((Math.random()*stage.stageHeight)-stage.stageHeight/2);
+				plane.x 			= Math.round((Math.random()*stage.stageWidth)-stage.stageWidth/2) - 200;
+				plane.y 			= Math.round((Math.random()*stage.stageHeight)-stage.stageHeight/2) - 200;
 				plane.z 			= Math.round(Math.random()*3000);
+				
+//				plane.x 			= 300;
+//				plane.y 			= 600;
+//				plane.z 			= 1500;
 				
 				plane.origin 		= new Point3D(plane.x, plane.y, plane.z);
 
@@ -104,6 +109,17 @@ package {
 				_scene.addChild(plane);
 				_planes.push(plane);
 			}
+			
+//			var line:Shape3D = new Shape3D();
+//			line.graphics3D.lineStyle(3, 0xcc0000, 0.7); 
+//			line.graphics3D.moveToSpace(1000, plane.y * (1/2.5), 0);
+//			line.graphics3D.lineToSpace(plane.x, plane.y, plane.z);
+//			_scene.addChild(line);
+//			
+//			var dot:Shape3D = new Shape3D();
+//			dot.graphics3D.beginFill(0x00CC00, 0.4);
+//			dot.graphics3D.drawCircle(0,0,9);
+//			_scene.addChildAt(dot, 0);
 		}
 		
 		private function setChildIndecies(evt:Event/* scene:Scene3D */):void

@@ -63,10 +63,10 @@ package com.huntandgather.lda.display
 				
 				var toPoint:Point = this.matrix3D.getInverseCoordinates(this.matrix3D.tx, this.matrix3D.ty, this.matrix3D.tz)
 				
-				var toX:int = _scene.mouseX; //Math.round(toPoint.x)
-				var toY:int = _scene.mouseY; //Math.round(toPoint.y)
+				var toX:int = Math.round(_origin.x * (1000 / (1000 + _origin.z))); //_scene.mouseX; //Math.round(toPoint.x)
+				var toY:int = Math.round(_origin.y * (1000 / (1000 + _origin.z))); //_scene.mouseY; //Math.round(toPoint.y)
 				
-				Tweener.addTween(this, {x:toX, 	y:toY, 	z:0, 	alpha:1,  	rotationY:0,	time:0.5, 	transition:"easeoutquad"});
+				Tweener.addTween(this, {x:toX, 	y:toY, 	 z:0, 	alpha:1,  	rotationY:0,	time:0.5, 	transition:"easeoutquad"});
 				
 //				trace(this.matrix3D.tx, this.matrix3D.ty, this.matrix3D.tz);
 				trace(this.matrix3D.tx, this.matrix3D.ty, this.matrix3D.getInverseCoordinates(this.matrix3D.tx, this.matrix3D.ty, this.matrix3D.tz), _scene.mouseX, _scene.mouseY	);
@@ -87,6 +87,7 @@ package com.huntandgather.lda.display
 			this.removeEventListener(MouseEvent.MOUSE_OUT, 		handleOver);
 			this.removeEventListener(MouseEvent.MOUSE_OVER, 	handleOver);
 			Tweener.addTween(this, {x:0, 				y:0, 			z:0, 			alpha:1, 	rotationY:0, 	time:0.5, 	transition:"easeoutquad"});
+//			Tweener.addTween(this, {x:_origin.x, 	y:_origin.y, 	z:_origin.z, 	alpha:0.6, 					time:1, 	transition:"easeoutback"});
 		}
 		
 		private function handleFrame(evt:Event):void

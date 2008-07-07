@@ -8,6 +8,11 @@
 
 package five3D.display {
 
+	import five3D.geom.Matrix3D;
+	import five3D.geom.Point3D;
+	
+	import fl.motion.Color;
+	
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Graphics;
@@ -15,14 +20,6 @@ package five3D.display {
 	import flash.geom.ColorTransform;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
-	import fl.motion.Color;
-	import five3D.display.Bitmap3D;
-	import five3D.display.Graphics3D;
-	import five3D.display.Scene3D;
-	import five3D.display.Shape3D;
-	import five3D.display.Sprite2D;
-	import five3D.geom.Matrix3D;
-	import five3D.geom.Point3D;
 
 	public class Sprite3D extends Sprite {
 
@@ -48,6 +45,9 @@ package five3D.display {
 		private var __culling:Boolean = false;
 		private var __rendershading:Boolean = false;
 		private var __flatshading:Boolean = false;
+		
+		private var __width:Number; // these are hacky ways for storing a height and width value on the object, not permanent...
+		private var __height:Number;
 
 		public function Sprite3D() {
 			__matrix = new Matrix3D();
@@ -331,13 +331,13 @@ package five3D.display {
 		// Errors
 
 		override public function get height():Number {
-			throw new Error("The Sprite3D class does not implement this property or method.");
-			// should return the original height and width of the object and transform matricies
+//			throw new Error("The Sprite3D class does not implement this property or method.");
+			return __height;
 		}
 
 		override public function set height(value:Number):void {
-			throw new Error("The Sprite3D class does not implement this property or method.");
-			// should set the original height and width of the object and transform matricies
+//			throw new Error("The Sprite3D class does not implement this property or method.");
+			__height = value;
 		}
 
 		override public function get rotation():Number {
@@ -365,15 +365,17 @@ package five3D.display {
 
 		override public function set scrollRect(value:Rectangle):void {
 			throw new Error("The Sprite3D class does not implement this property or method.");
+			
 		}
 
 		override public function get width():Number {
-			throw new Error("The Sprite3D class does not implement this property or method.");
-//			return this.graphics3D.;
+//			throw new Error("The Sprite3D class does not implement this property or method.");
+			return __width;
 		}
 
 		override public function set width(value:Number):void {
 //			throw new Error("The Sprite3D class does not implement this property or method.");
+			__width = value;
 		}
 
 		override public function globalToLocal(point:Point):Point {

@@ -1,8 +1,12 @@
 package {
+	import caurina.transitions.Tweener;
+	
 	import com.huntandgather.lda.display.Plane53D;
 	
 	import five3D.display.Scene3D;
 	import five3D.display.Shape3D;
+	import five3D.display.Sprite2D;
+	import five3D.display.Sprite3D;
 	import five3D.geom.Point3D;
 	
 	import flash.display.BitmapData;
@@ -10,6 +14,7 @@ package {
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
+	import flash.events.MouseEvent;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 	import flash.utils.getTimer;
@@ -33,6 +38,7 @@ package {
 			stage.frameRate = 30;
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.align		= StageAlign.TOP_LEFT;
+			stage.addEventListener(Event.RESIZE, handleStageResize);
 			trace("five3D exists");
 			flash.utils.setTimeout(init, 1000);
 		}
@@ -42,8 +48,6 @@ package {
 			trace("running the init function");
 			_scene 	= new Scene3D();
 			_planes = new Array();
-			_scene.x = Math.round(stage.stageWidth/2);
-			_scene.y = Math.round(stage.stageHeight/2);
 			_scene.addEventListener(Event.ENTER_FRAME, setChildIndecies);
 			
 			
@@ -63,6 +67,8 @@ package {
 //			tester.y += tester.y%2;
 //			tester.mouseEnabled = false;
 //			this.addChild(tester);
+
+			handleStageResize();
 		}
 		
 		private function populateScene():void
@@ -120,6 +126,38 @@ package {
 //			dot.graphics3D.beginFill(0x00CC00, 0.4);
 //			dot.graphics3D.drawCircle(0,0,9);
 //			_scene.addChildAt(dot, 0);
+			
+			
+			
+			var tester:Sprite2D = new Sprite2D();
+			tester.graphics.beginFill(0x0000CC, 0.7);
+			tester.graphics.drawRect(-100, -100, 200, 200);
+			
+			var spinner:Shape3D = new Shape3D();
+			spinner.graphics3D.beginFill(0x993300, 0.7);
+			spinner.graphics3D.drawRect(-100, -100, 200, 200);
+			
+			var test:Sprite3D = new Sprite3D();
+			test.z = 10;
+			test.rotationX = 45;
+			test.rotationY = 45;
+			test.rotationZ = 45;
+			test.addChild(tester);
+			test.addChild(spinner);
+			_scene.addChild(test);
+			
+			test.buttonMode = true;
+			test.mouseChildren = false;
+			test.addEventListener(MouseEvent.CLICK, handleTesterClick);
+		}
+		
+		private function handleTesterClick(evt:MouseEvent):void
+		{
+			trace("tester was clicked");
+			evt.target.x += Math.random()*200 - 100;
+			evt.target.y += Math.random()*200 - 100;
+			evt.target.z += Math.random()*500 - 250;
+			Tweener.addTween(evt.target, {x:0, y:0, z:10, time:0.75, transition:"easeoutelastic"});
 		}
 		
 		private function setChildIndecies(evt:Event/* scene:Scene3D */):void
@@ -128,7 +166,7 @@ package {
 			var planes:Array	= new Array();
 			for(var i:uint=0; i < scene.numChildren; i++)
 			{
-				var plane:Plane53D = Plane53D(scene.getChildAt(i));
+				var plane:Sprite3D = Sprite3D(scene.getChildAt(i));
 				planes.push(plane);
 			}
 			
@@ -136,8 +174,28 @@ package {
 			
 			for(var k:uint=0; k < planes.length; k++)
 			{
-				scene.setChildIndex(Plane53D(planes[k]), k);
+				scene.setChildIndex(Sprite3D(planes[k]), k);
 			}
+		}
+		
+		private function organizeCards(evt:MouseEvent=null):void
+		{
+			var spacingX:uint = 300;
+			var spacingY:uint = 300;
+			
+			
+			for(var i:uint=0; i < _planes.length; i++)
+			{
+//				Tweener
+			}
+		}
+		
+		private function handleStageResize(evt:Event=null):void
+		{
+			_scene.x = stage.stageWidth/2;
+			_scene.y = stage.stageHeight/2;
+			_scene.x -= _scene.x % 2;
+			_scene.y -= _scene.y % 2;
 		}
 		
 		private function getFPS(evt:Event=null):void

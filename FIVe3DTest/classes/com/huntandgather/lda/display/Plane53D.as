@@ -48,9 +48,9 @@ package com.huntandgather.lda.display
 		{
 			trace("added to stage");
 			_scene = Scene3D(this.parent);
+			this.addEventListener(MouseEvent.CLICK, 		handleClick);
 			this.addEventListener(MouseEvent.MOUSE_OVER, 	handleOver);
 			this.addEventListener(MouseEvent.MOUSE_OUT, 	handleOver);
-			this.addEventListener(MouseEvent.CLICK, 		handleClick);
 			this.addEventListener(Event.ENTER_FRAME, 		handleFrame);
 		}
 		
@@ -84,10 +84,18 @@ package com.huntandgather.lda.display
 		private function handleClick(evt:MouseEvent):void
 		{
 			// would tell the currently opened thing to go away if we had a SiteData...
-			this.removeEventListener(MouseEvent.MOUSE_OUT, 		handleOver);
-			this.removeEventListener(MouseEvent.MOUSE_OVER, 	handleOver);
-			Tweener.addTween(this, {x:0, 				y:0, 			z:0, 			alpha:1, 	rotationY:0, 	time:0.5, 	transition:"easeoutquad"});
-//			Tweener.addTween(this, {x:_origin.x, 	y:_origin.y, 	z:_origin.z, 	alpha:0.6, 					time:1, 	transition:"easeoutback"});
+			if(this.hasEventListener(MouseEvent.MOUSE_OVER))
+			{
+				this.removeEventListener(MouseEvent.MOUSE_OUT, 		handleOver);
+				this.removeEventListener(MouseEvent.MOUSE_OVER, 	handleOver);
+				Tweener.addTween(this, {x:0, 				y:0, 			z:0, 			alpha:1, 	rotationY:0, 	time:0.5, 	transition:"easeoutquad"});
+			}else
+			{
+				Tweener.addTween(this, {x:_origin.x, 	y:_origin.y, 	z:_origin.z, 	alpha:0.6, 					time:1, 	transition:"easeoutback"});
+				this.addEventListener(MouseEvent.MOUSE_OVER, 	handleOver);
+				this.addEventListener(MouseEvent.MOUSE_OUT, 	handleOver);
+				this.addEventListener(Event.ENTER_FRAME, 		handleFrame);
+			}
 		}
 		
 		private function handleFrame(evt:Event):void

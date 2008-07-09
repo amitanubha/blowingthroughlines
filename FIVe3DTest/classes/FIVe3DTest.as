@@ -3,20 +3,23 @@ package {
 	
 	import com.huntandgather.lda.display.Plane53D;
 	
+	import five3D.display.Bitmap3D;
 	import five3D.display.Scene3D;
-	import five3D.display.Shape3D;
-	import five3D.display.Sprite2D;
 	import five3D.display.Sprite3D;
 	import five3D.geom.Point3D;
 	
+	import flash.display.Bitmap;
 	import flash.display.BitmapData;
+	import flash.display.MovieClip;
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.events.TimerEvent;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
+	import flash.utils.Timer;
 	import flash.utils.getTimer;
 	import flash.utils.setTimeout;
 
@@ -33,9 +36,15 @@ package {
 		private var _fpsArray:Array;
 		private var _fpsTxt:TextField;
 		
+		private var _animatedPlane:Bitmap3D;
+		private var _frames:Array;
+		
+		// temp
+		private var _bmp:Bitmap;
+		
 		public function FIVe3DTest()
 		{
-			stage.frameRate = 30;
+			stage.frameRate = 90;
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.align		= StageAlign.TOP_LEFT;
 			stage.addEventListener(Event.RESIZE, handleStageResize);
@@ -56,18 +65,46 @@ package {
 			
 			addFPSDisplay();
 			this.addEventListener(Event.ENTER_FRAME, getFPS);
-			
-			
-//			var tester:Sprite = new Sprite();
-//			tester.graphics.beginFill(0x123456, 0.4);
-//			tester.graphics.drawRoundRect(-100, -100, 200, 200, 20, 20);
-//			tester.x = Math.round(stage.stageWidth/2);
-//			tester.y = Math.round(stage.stageHeight/2);
-//			tester.x += tester.x%2;
-//			tester.y += tester.y%2;
-//			tester.mouseEnabled = false;
-//			this.addChild(tester);
 
+			var testerPlane:Sprite3D = new Sprite3D();
+			var animatedMaterial:AnimatedPlaneMC = new AnimatedPlaneMC();
+			//testerMaterial.stop();
+			
+			var testerFrames:Array = new Array();
+			for(var i:uint=1; i <= animatedMaterial.totalFrames; i++)
+			{
+				animatedMaterial.gotoAndStop(i);
+				var bmpData:BitmapData = new BitmapData(animatedMaterial.width, animatedMaterial.height, true, 0xBADA55);
+				bmpData.draw(animatedMaterial);
+				testerFrames.push(bmpData);
+			}
+			
+//			var bmp:Bitmap = new Bitmap(testerFrames[testerFrames.length-1]);
+//			bmp.x = 800;
+//			trace(this.numChildren);
+//			this.addChild(testerMaterial);
+//			trace(this.numChildren, bmp.width, bmp.height, bmp.parent);
+			
+			_frames = ripFrames(animatedMaterial);
+			animateBMP(_frames);
+
+			
+			_animatedPlane = new Bitmap3D();
+			_animatedPlane.smoothing = true;
+			_animatedPlane.bitmapData = BitmapData(testerFrames[5]);
+//			testerPlane.addChild(testerBmp);
+			_animatedPlane.rotationX = 30;
+			_animatedPlane.rotationY = 30;
+			_animatedPlane.x = 400;
+			_animatedPlane.y = 200;
+			_animatedPlane.alpha = 0.4;
+//			testerPlane.addChild(testerMaterial);
+			_scene.addChild(_animatedPlane);
+			
+			// temp
+			_bmp = new Bitmap();
+			this.addChildAt(_bmp, 0);
+			
 			handleStageResize();
 		}
 		
@@ -116,12 +153,7 @@ package {
 				_planes.push(plane);
 			}
 			
-//			var line:Shape3D = new Shape3D();
-//			line.graphics3D.lineStyle(3, 0xcc0000, 0.7); 
-//			line.graphics3D.moveToSpace(1000, plane.y * (1/2.5), 0);
-//			line.graphics3D.lineToSpace(plane.x, plane.y, plane.z);
-//			_scene.addChild(line);
-//			
+			
 //			var dot:Shape3D = new Shape3D();
 //			dot.graphics3D.beginFill(0x00CC00, 0.4);
 //			dot.graphics3D.drawCircle(0,0,9);
@@ -129,26 +161,26 @@ package {
 			
 			
 			
-			var tester:Sprite2D = new Sprite2D();
-			tester.graphics.beginFill(0x0000CC, 0.7);
-			tester.graphics.drawRect(-100, -100, 200, 200);
-			
-			var spinner:Shape3D = new Shape3D();
-			spinner.graphics3D.beginFill(0x993300, 0.7);
-			spinner.graphics3D.drawRect(-100, -100, 200, 200);
-			
-			var test:Sprite3D = new Sprite3D();
-			test.z = 10;
-			test.rotationX = 45;
-			test.rotationY = 45;
-			test.rotationZ = 45;
-			test.addChild(tester);
-			test.addChild(spinner);
-			_scene.addChild(test);
-			
-			test.buttonMode = true;
-			test.mouseChildren = false;
-			test.addEventListener(MouseEvent.CLICK, handleTesterClick);
+//			var tester:Sprite2D = new Sprite2D();
+//			tester.graphics.beginFill(0x0000CC, 0.7);
+//			tester.graphics.drawRect(-100, -100, 200, 200);
+//			
+//			var spinner:Shape3D = new Shape3D();
+//			spinner.graphics3D.beginFill(0x993300, 0.7);
+//			spinner.graphics3D.drawRect(-100, -100, 200, 200);
+//			
+//			var test:Sprite3D = new Sprite3D();
+//			test.z = 10;
+//			test.rotationX = 45;
+//			test.rotationY = 45;
+//			test.rotationZ = 45;
+//			test.addChild(tester);
+//			test.addChild(spinner);
+//			_scene.addChild(test);
+//			
+//			test.buttonMode = true;
+//			test.mouseChildren = false;
+//			test.addEventListener(MouseEvent.CLICK, handleTesterClick);
 		}
 		
 		private function handleTesterClick(evt:MouseEvent):void
@@ -166,8 +198,11 @@ package {
 			var planes:Array	= new Array();
 			for(var i:uint=0; i < scene.numChildren; i++)
 			{
-				var plane:Sprite3D = Sprite3D(scene.getChildAt(i));
-				planes.push(plane);
+				if(scene.getChildAt(i) is Sprite3D)
+				{
+					var plane:Sprite3D = Sprite3D(scene.getChildAt(i));
+					planes.push(plane);
+				}
 			}
 			
 			planes.sortOn("z", Array.NUMERIC | Array.DESCENDING);
@@ -176,6 +211,47 @@ package {
 			{
 				scene.setChildIndex(Sprite3D(planes[k]), k);
 			}
+			
+			// temp code
+			var bmpData:BitmapData = new BitmapData(stage.stageWidth, stage.stageHeight,true, 0);
+			bmpData.draw(this);
+			_bmp.bitmapData = bmpData;
+			_bmp.alpha = 0.8;
+		}
+		
+		private function animateBMP(frames:Array):void
+		{
+			var timer:Timer = new Timer(1000/stage.frameRate, 0);
+			timer.addEventListener(TimerEvent.TIMER, playFrame);
+			timer.start();
+		}
+		
+		private function playFrame(evt:TimerEvent):void
+		{
+			var timer:Timer = Timer(evt.currentTarget)
+			if(timer.currentCount > _frames.length-1)
+			{
+				timer.reset();
+				timer.start();
+			}
+			trace(timer.currentCount, _frames[timer.currentCount]);
+			_animatedPlane.bitmapData = _frames[timer.currentCount];
+			
+			// temp
+			_animatedPlane.rotationY += 3; //_animatedPlane.x - (mouseX * 0.5);
+		}
+		
+		private function ripFrames(mc:MovieClip):Array
+		{
+			var frames:Array = new Array();
+			for(var i:uint=0; i < mc.totalFrames; i++)
+			{
+				mc.gotoAndStop(i+1);
+				var bmpData:BitmapData = new BitmapData(mc.width, mc.height, true, 0xBADA55);
+				bmpData.draw(mc);
+				frames.push(bmpData);
+			}
+			return frames;
 		}
 		
 		private function organizeCards(evt:MouseEvent=null):void
@@ -215,9 +291,9 @@ package {
 				average += _fpsArray[i];
 			}
 			
-			_averageFPS = average / _fpsArray.length;
+			_averageFPS = Math.round(average / _fpsArray.length);
 			
-			/* if(_showFPS)   */_fpsTxt.text 	= String(_averageFPS);
+			if(_fpsTxt)  _fpsTxt.text 	= String(_averageFPS);
 		}
 		
 		private function addFPSDisplay():void
@@ -226,7 +302,7 @@ package {
 			_fpsTxt.autoSize 			= "left";
 			_fpsTxt.backgroundColor 	= 0x000000;
 			_fpsTxt.defaultTextFormat 	= new TextFormat("_sans", 50, 0xFFFFFF);
-			_fpsTxt.visible				= false;
+			_fpsTxt.visible				= true;
 			this.addChild(_fpsTxt);
 		}
 	}

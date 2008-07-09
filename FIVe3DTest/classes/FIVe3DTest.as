@@ -213,10 +213,10 @@ package {
 			}
 			
 			// temp code
-			var bmpData:BitmapData = new BitmapData(stage.stageWidth, stage.stageHeight,true, 0);
-			bmpData.draw(this);
-			_bmp.bitmapData = bmpData;
-			_bmp.alpha = 0.8;
+//			var bmpData:BitmapData = new BitmapData(stage.stageWidth, stage.stageHeight,true, 0);
+//			bmpData.draw(this);
+//			_bmp.bitmapData = bmpData;
+//			_bmp.alpha = 0.8;
 		}
 		
 		private function animateBMP(frames:Array):void
@@ -234,7 +234,7 @@ package {
 				timer.reset();
 				timer.start();
 			}
-			trace(timer.currentCount, _frames[timer.currentCount]);
+//			trace(timer.currentCount, _frames[timer.currentCount]);
 			_animatedPlane.bitmapData = _frames[timer.currentCount];
 			
 			// temp

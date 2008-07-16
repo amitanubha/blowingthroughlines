@@ -93,11 +93,11 @@ package {
 			_animatedPlane.smoothing = true;
 			_animatedPlane.bitmapData = BitmapData(testerFrames[5]);
 //			testerPlane.addChild(testerBmp);
-			_animatedPlane.rotationX = 30;
+//			_animatedPlane.rotationX = 30;
 			_animatedPlane.rotationY = 30;
 			_animatedPlane.x = 400;
-			_animatedPlane.y = 200;
-			_animatedPlane.alpha = 0.4;
+			_animatedPlane.y = -100;
+//			_animatedPlane.alpha = 0.4;
 //			testerPlane.addChild(testerMaterial);
 			_scene.addChild(_animatedPlane);
 			

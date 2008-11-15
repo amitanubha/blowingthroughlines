@@ -1,0 +1,59 @@
+<!-- <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> -->
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+	<head>
+		<title></title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<script type="text/javascript" src="js/swfobject.js"></script>
+		<script type="text/javascript" src="js/swfmacmousewheel2.js"></script>
+		<script type="text/javascript" src="js/swfaddress.js"></script>
+		<script type="text/javascript">
+			var flashvars = {};
+			var params = {};
+				params.bgcolor = "#869ca7";
+				params.allowfullscreen = "true";
+				params.swliveconnect = "true";
+				params.allowscriptaccess = "always";
+				params.scale = "noScale";
+				params.salign = "TL";
+				
+			var attrib = {};
+				attrib.id = "flashContent";
+				
+			swfobject.embedSWF("FactoryMethod.swf", "myAlternativeContent", "100%", "100%", " 9.0.124", "swf/expressInstall.swf", flashvars, params, attrib);
+			swfmacmousewheel.registerObject(attrib.id);
+		</script>
+		
+		<style type ="text/css">
+		html, body {
+			height: 100%;
+			margin: 0px;
+			padding: 0px;
+		}
+		*>object {
+			min-width:960px;
+			min-height:640px;
+		 }
+		*>embed {
+			min-width:960px;
+			min-height:640px;
+		 }
+		</style>
+		<!--[if IE]>
+		<style type ="text/css">
+		#site {
+			height:expression(document.body.clientHeight < 640 ? "640px" : "auto" );
+			width:expression(document.body.clientWidth < 960 ? "960px" : "auto" );
+		 }
+		</style>
+		<![endif]-->
+	</head>
+	<body>
+		<div id="myAlternativeContent">
+			<h1 id="">Flashplayer 9.0.124 or greater is required to view the content on this page.</h1>
+			<a href="http://www.adobe.com/go/getflashplayer"> Please download the Flashplayer plugin.</a>
+			<!-- Dev's Stuff Here -->
+		</div>
+	</body>
+</html>
+

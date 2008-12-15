@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<!-- http://blog.flexexamples.com/2007/09/26/styling-the-flex-tabnavigator-control/ -->
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
+		layout="vertical"
+		verticalAlign="middle"
+		backgroundColor="white" viewSourceURL="srcview/index.html">
+
+	<mx:Style>
+		TabNavigator {
+			backgroundColor: black;
+			cornerRadius: 0;
+			tabStyleName: "MyTabs";
+			firstTabStyleName: "MyFirstTab";
+			lastTabStyleName: "MyLastTab";
+			selectedTabTextStyleName: "MySelectedTab";
+		}
+
+		.MyTabs {
+			backgroundColor: black;
+			cornerRadius: 15;
+			color: black;
+		}
+
+		.MyFirstTab,
+		.MyLastTab {
+			backgroundColor: black;
+			cornerRadius: 15;
+			color: black;
+		}
+
+		.MySelectedTab {
+			backgroundColor: haloBlue;
+			color: haloBlue;
+			textRollOverColor: haloBlue;
+		}
+	</mx:Style>
+
+	<mx:TabNavigator id="tabNavigator"
+			width="100%"
+			height="100%"
+			tabHeight="30">
+		<mx:VBox label="Panel 1" backgroundColor="haloOrange">
+			<mx:Label text="TabNavigator container panel 1"/>
+		</mx:VBox>
+		<mx:VBox label="Panel 2" backgroundColor="haloGreen">
+			<mx:Label text="TabNavigator container panel 2"/>
+		</mx:VBox>
+		<mx:VBox label="Panel 3" backgroundColor="haloBlue">
+			<mx:Label text="TabNavigator container panel 3"/>
+		</mx:VBox>
+		<mx:VBox label="Panel 4" backgroundColor="haloSilver">
+			<mx:Label text="TabNavigator container panel 4"/>
+		</mx:VBox>
+	</mx:TabNavigator>
+
+</mx:Application>

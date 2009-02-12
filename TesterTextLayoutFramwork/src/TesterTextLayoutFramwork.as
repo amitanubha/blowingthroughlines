@@ -1,25 +1,32 @@
 package {
 	import flash.display.Sprite;
-	import flash.system.System;
+	import flash.events.Event;
 
 	public class TesterTextLayoutFramwork extends Sprite
-	{
-		[Embed("../assets/MetaBlobs.pbj", mimeType="application/octet-stream")]
-		private var Metablobs:Class;
-		
-		// I wonder if...
-		// [Embed("some.swf", mimeType="whatevermimettype-swfs-are")]
-		// private var mSWF:Class;
-		
+	{	
 		public function TesterTextLayoutFramwork()
 		{
-			init();
+			stage.scaleMode = "noScale";
+			
+			trace("loaded");
+			var ner:Sprite = new Sprite();
+			ner.graphics.beginFill(0x123456, 0.7);
+			ner.graphics.drawRoundRect(0,0,300,300,50);
+			ner.graphics.endFill();
+			
+			ner.x = 100	;
+			ner.y = 100;
+			ner.rotationX = 20;
+			ner.rotationY = 20;
+			ner.rotationZ = 20;
+			ner.addEventListener(Event.ENTER_FRAME, handleFrame);
+			this.addChild(ner);
 		}
 		
-		private function init():void
+		private function handleFrame(evt:Event):void
 		{
-			trace("Ready:", System.vmVersion);
-			var filterTest:
+			
 		}
 	}
 }
+	

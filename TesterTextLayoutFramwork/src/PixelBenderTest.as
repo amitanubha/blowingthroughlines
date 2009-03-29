@@ -30,6 +30,8 @@ package {
 			
 			var txt:TextField = new TextField();
 			txt.getTextFormat();
+			
+			var ner:Sprite = new Sprite();
 		}
 	}
 }

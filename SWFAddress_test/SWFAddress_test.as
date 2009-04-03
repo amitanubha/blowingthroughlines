@@ -12,9 +12,12 @@ package {
 		
 		public function SWFAddress_test()
 		{
-			//stateManager = new SWFAddress();
-			SWFAddress.addEventListener(SWFAddressEvent.CHANGE, printChange);
-			//SWFAddress.addEventListener(SWFAddressEvent.INIT, printInit);
+			SWFAddress.addEventListener(SWFAddressEvent.INIT, init);
+		}
+		
+		private function init(evt:SWFAddressEvent):void
+		{
+			SWFAddress.addEventListener(SWFAddressEvent.CHANGE, handleSWFAddressChange);
 			stage.addEventListener(MouseEvent.CLICK, gotoAddress);
 			
 			_square = new Shape();
@@ -23,12 +26,7 @@ package {
 			this.addChild(_square);
 		}
 		
-		/*private function printInit(evt:SWFAddressEvent):void
-		{
-			trace(SWFAddress.getBaseURL());
-		}*/
-		
-		private function printChange(evt:SWFAddressEvent):void
+		private function handleSWFAddressChange(evt:SWFAddressEvent):void
 		{
 			trace(evt.path);
 			var address:Array = evt.path.split("/", 3);
@@ -39,7 +37,6 @@ package {
 		
 		private function gotoAddress(evt:MouseEvent):void
 		{
-			trace(SWFAddress.getValue());
 			SWFAddress.setValue(this.mouseX.toString());
 		}
 		
@@ -47,6 +44,5 @@ package {
 		{
 			_square.x = loc;
 		}
-		
 	}
 }

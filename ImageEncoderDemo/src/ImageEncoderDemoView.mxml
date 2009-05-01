@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ImageEncoderDemo
+	xmlns="*" 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	layout="vertical" xmlns:local="*"
+	keyDown="application_KeyDownHandler(event)" >
+	<mx:Style source="assets/css/main.css"/>
+	<local:FontLoader/>
+	<mx:ApplicationControlBar 
+		width="100%">
+		<mx:ComboBox 
+			labelField="fontName"
+			dataProvider="{fonts}"
+			change="fontsChangeHandler(event);"/>
+		<mx:Label text="text color"/>
+		<mx:ColorPicker
+			change="textColorChangeHandler(event);"/>
+		<mx:Label text="canvas color"/>
+		<mx:ColorPicker
+			change="canvasColorChangeHandler(event);"/>
+	</mx:ApplicationControlBar>
+	
+	<mx:Panel 
+		title="Image Encoder Demo"
+		width="100%"
+		height="100%"
+		status="time costs: {costTime} milliseconds">
+		<mx:Canvas id="canvas" 
+			width="100%" 
+			height="100%"
+			backgroundColor="#000000">
+			<mx:Image 
+				source="assets/image/web20_Source.png"
+				width="100%" 
+				height="100%"/>
+			
+			<mx:TextArea id="text" 
+				width="100%"
+				height="100%"
+				backgroundAlpha="0"
+				focusIn="event.currentTarget.setStyle('backgroundAlpha',0.5)" 
+				focusOut="event.currentTarget.setStyle('backgroundAlpha',0)"
+				color="#ffffff"
+				>
+				<mx:htmlText>
+					<![CDATA[1.This demo shows the usage of the classes JPEGEncoder and PNGEncoder
+2.Enter the words you want to write on the background image.
+3.Click "save to JPG image" to save the canvas as a JPG file;Click "save to PNG image" to save the canvas as a PNG file;Click "save to BMP image" to save the canvas as a BMP file
+4.The status of panel will show you the exact "time costs" to encode the image in miliiseconds.
+5.At last, you will find that the size of PNG file is smallest, next is JPG file, the BMP file is the lagest one. However, the encoding of BMP is fatest, next is PNG, the slowest is JPG.
+6.Using the check box at the bottom to compare the performances of the encoding methods provided by as3corelib "com.adobe.images" and adobe "mx.graphics.codec". If it is unchecked, the encoding methods are "com.adobe.images.JPGEncoder.encode" and "com.adobe.images.PNGEncoder.encode", else they are "mx.graphics.codec.JPEGEncoder.encode" and "mx.graphics.codec.PNGENcoder.encode".]]>
+				</mx:htmlText>
+			</mx:TextArea>
+		</mx:Canvas>
+							
+		<mx:ControlBar>
+			<mx:CheckBox id="isCorelib" label="use core lib encoders (unchecked) or adobe encoders (checked)?"/>
+			<mx:Button label="save to JPG image" click="save('JPG');"/>
+			<mx:Button label="save to PNG image" click="save('PNG');"/>
+			<mx:Button label="save to BMP image" click="save('BMP');"/>
+		</mx:ControlBar>		
+	</mx:Panel>
+	
+</ImageEncoderDemo>

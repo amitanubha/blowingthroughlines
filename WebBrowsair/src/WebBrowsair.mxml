@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:WindowedApplication xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" verticalAlign="middle" horizontalAlign="center">
-	<mx:HTML id="htmlWindow" fontFamily="Verdana" fontSize="10" borderStyle="none" cornerRadius="0" backgroundAlpha="1.0" right="10" left="10" bottom="10" top="10" location="http://paperclipped.com/"/>
+	<mx:HTML id="htmlWindow" 
+		fontFamily="Verdana" 
+		fontSize="10" 
+		borderStyle="none" 
+		cornerRadius="0" 
+		backgroundAlpha="1.0" 
+		right="0" left="0" bottom="0" top="0"
+ 		location="http://paperclipped.com"/>
 	
 </mx:WindowedApplication>

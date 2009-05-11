@@ -3,6 +3,8 @@
 	<name>WebBrowsair</name>
 	<comment></comment>
 	<projects>
+		<project>TuftsExplore</project>
+		<project>TuftsVideo</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="js/swfobject.2.2.js"></script>
+
+	<script type="text/javascript">
+		var flashvars = {};
+		
+		var params = {};
+			params.bgcolor			= "${bgcolor}";
+			params.wmode			= "transparent";
+			params.swliveconnect	= "true";
+			params.allowscriptaccess= "always";
+			params.scale			= "noScale";
+			params.salign			= "TL";
+		
+		var attrib = {};
+			attrib.id 				= "flashContent";
+		
+		swfobject.embedSWF( "${swf}.swf", "myAlternativeContent", "${width}", "${height}", 
+							"${version_major}.${version_minor}.${version_revision}", 
+							"swf/expressInstall.swf", flashvars, params, attrib);
+		
+	</script>
+	</head>
+	<body bgcolor="#FFFFFF">
+		<div id="myAlternativeContent">
+			<a href="http://www.adobe.com/go/getflashplayer">
+				Please download Flash Player ${version_major}.${version_minor}.${version_revision} or higher.
+			</a>
+		</div>
+		<p>
+			<a href="IETester.html">First Page</a>
+		</p>
+	</body>
+</html>

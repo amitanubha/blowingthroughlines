@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" 
+    xmlns:coverflow="com.dougmccune.coverflow.*"
+    layout="vertical" horizontalAlign="center" verticalAlign="middle"
+    xmlns:containers="com.dougmccune.containers.*">
+    <mx:Script>
+        <![CDATA[
+            import mx.events.FlexEvent;
+        ]]>
+    </mx:Script>
+    <mx:Style>
+        Panel {
+           borderColor: #99CDEE;
+           borderAlpha: 1;
+           borderThickness: 1;
+           borderThicknessLeft: 1;
+           borderThicknessTop: 0;
+           borderThicknessBottom: 1;
+           borderThicknessRight: 1;
+           roundedBottomCorners: false;
+           cornerRadius: 5;
+           headerColors: #b5e6f3, #81b3e6;
+           dropShadowEnabled: false;
+           titleStyleName: "mypanelTitle";
+           vertical-align:middle;
+           horizontal-align:center;
+        }
+        
+        .mypanelTitle {
+           letterSpacing: 1;
+           color: #333333;
+           fontSize: 12;
+           fontWeight: bold;
+        }
+    </mx:Style>
+    
+    
+        <mx:HBox id="box" verticalGap="0" height="100%" width="100%" maxWidth="300" maxHeight="600"  horizontalAlign="left" borderThickness="1" borderColor="#bada55">
+            
+            <containers:VCoverFlowContainer id="coverflow" width="100%" height="100%" 
+                borderStyle="inset" backgroundColor="0x000000" rotationAngle="30"
+                segments="6" reflectionEnabled="false" verticalGap="40">
+                
+                
+                <mx:Panel width="200" height="200" title="2010" >
+                    <mx:Text text="This is a test year" />
+                </mx:Panel>
+                
+                <mx:Panel width="200" height="200" title="2000">
+                    <mx:Text text="This is a test year" />
+                </mx:Panel>
+                
+                <mx:Panel width="200" height="200" title="1990">
+                    <mx:Text text="This is a test year" />
+                </mx:Panel>
+                
+                <mx:Panel width="200" height="200" title="1980">
+                    <mx:Text text="This is a test year" />
+                </mx:Panel>
+                
+                <!-- here we're dispatching an UPDATE_COMPLETE event every frame. This is so our PV3D material will
+                     update itself properly for this component, since we want the animation to show correctly.
+                  -->
+                <mx:Panel width="200" height="200" title="1970" 
+                    enterFrame="event.currentTarget.dispatchEvent(new FlexEvent(FlexEvent.UPDATE_COMPLETE))">
+                    <mx:Text text="This is a test year" />
+                </mx:Panel>
+                
+            </containers:VCoverFlowContainer>
+            <mx:VScrollBar id="scrollbar" height="100%" pageSize="1" maxScrollPosition="{coverflow.numChildren - 1}"
+                scrollPosition="{coverflow.selectedIndex}" 
+                creationComplete="trace('created the scrollbar!');"
+                mouseWheel="trace('SCrolling');"
+                scroll="coverflow.selectedIndex = Math.round(scrollbar.scrollPosition)" right="0"/>
+        </mx:HBox>
+        
+</mx:Application>

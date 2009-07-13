@@ -128,14 +128,14 @@ package
 			setInterval(addStuff, 500, _world);
 
 			// this is to test location getting!
-			_testerSprite = new Sprite();
-			_testerSprite.graphics.beginFill(0xbada55, 0.7);
-			_testerSprite.graphics.drawRect(-25,-6,50,12);
-			_testerSprite.mouseEnabled = false;
-			this.addChild(_testerSprite);
+//			_testerSprite = new Sprite();
+//			_testerSprite.graphics.beginFill(0xbada55, 0.7);
+//			_testerSprite.graphics.drawRect(-25,-6,50,12);
+//			_testerSprite.mouseEnabled = false;
+//			this.addChild(_testerSprite);
 			
-			addHingedArm(_world, 250, 100);
-			addHingedArm(_world, 350, 100);
+			addChain(_world, 250, 100);
+			addChain(_world, 350, 100);
 		}
 		
 		private function addBridge(world:b2World):void
@@ -180,56 +180,58 @@ package
 //			}
 		}
 
-		private function addHingedArm(world:b2World, anchorX:uint, anchorY:uint):void
+		private function addChain(world:b2World, anchorX:uint, anchorY:uint):void
 		{
 			
-			var ground:b2Body = world.GetGroundBody();
-			var i:int;
-			var anchor:b2Vec2 = new b2Vec2();
-			var body:b2Body;
-			
+//			var ground:b2Body = world.GetGroundBody();
+//			var i:int;
+//			var anchor:b2Vec2 = new b2Vec2();
+//			var body:b2Body;
+//			
+//
+//			var sd:b2PolygonDef = new b2PolygonDef();
+//			sd.SetAsBox(24 / _physScale, 5 / _physScale);
+//			sd.density = 100.0;
+//			sd.friction = 0.8;
+//			
+//			var bd:b2BodyDef = new b2BodyDef();
+//			
+//			var jd:b2RevoluteJointDef = new b2RevoluteJointDef();
+////			jd.lowerAngle = -15 / (180/Math.PI);
+////			jd.upperAngle = 15 / (180/Math.PI);
+//			
+//			jd.enableLimit = false;
+//			
+//			var prevBody:b2Body = ground;
+//			for (i = 0; i < 3; ++i)
+//			{
+//				if(i == 0)
+//				{
+//				trace("enabled motor damnit");
+//					jd.enableMotor = true;
+//					jd.motorSpeed = 1;
+//					jd.maxMotorTorque = 100;
+//				}else
+//				{
+//					jd.enableMotor = false;
+//
+//				}
+//			
+//				bd.position.Set((anchorX + 22 + 44 * i) / _physScale, anchorY / _physScale);
+//				body = world.CreateBody(bd);
+//				body.CreateShape(sd);
+//				body.SetMassFromShapes();
+//				
+//				anchor.Set((anchorX + 44 * i) / _physScale, anchorY / _physScale);
+//				jd.Initialize(prevBody, body, anchor);
+//				world.CreateJoint(jd);
+//				
+//				prevBody = body;
+//				_allBodies.push(body);
+//				
+//			}
 
-			var sd:b2PolygonDef = new b2PolygonDef();
-			sd.SetAsBox(24 / _physScale, 5 / _physScale);
-			sd.density = 100.0;
-			sd.friction = 0.8;
 			
-			var bd:b2BodyDef = new b2BodyDef();
-			
-			var jd:b2RevoluteJointDef = new b2RevoluteJointDef();
-//			jd.lowerAngle = -15 / (180/Math.PI);
-//			jd.upperAngle = 15 / (180/Math.PI);
-			
-			jd.enableLimit = false;
-			
-			var prevBody:b2Body = ground;
-			for (i = 0; i < 3; ++i)
-			{
-				if(i == 0)
-				{
-				trace("enabled motor damnit");
-					jd.enableMotor = true;
-					jd.motorSpeed = 1;
-					jd.maxMotorTorque = 100;
-				}else
-				{
-					jd.enableMotor = false;
-
-				}
-			
-				bd.position.Set((anchorX + 22 + 44 * i) / _physScale, anchorY / _physScale);
-				body = world.CreateBody(bd);
-				body.CreateShape(sd);
-				body.SetMassFromShapes();
-				
-				anchor.Set((anchorX + 44 * i) / _physScale, anchorY / _physScale);
-				jd.Initialize(prevBody, body, anchor);
-				world.CreateJoint(jd);
-				
-				prevBody = body;
-				_allBodies.push(body);
-				
-			}
 			
 			// this was for the other end of the bridge, when this was a bridge
 			//anchor.Set((100 + 44 * 3) / _physScale, 250 / _physScale);
@@ -342,11 +344,10 @@ package
 //			}
 			var body:b2Body = b2Body(_allBodies[2]);
 
-			_testerSprite.x = body.GetPosition().x * _physScale;
-			_testerSprite.y = body.GetPosition().y * _physScale;
-			
-			//trace("angle is:", body.GetAngle() * (180 / Math.PI));
-			_testerSprite.rotation = body.GetAngle() * (180/ Math.PI);
+			// this was successful, just needs to be moved someplace better.
+//			_testerSprite.x = body.GetPosition().x * _physScale;
+//			_testerSprite.y = body.GetPosition().y * _physScale;
+//			_testerSprite.rotation = body.GetAngle() * (180/ Math.PI);
 			
 //			Main.m_fpsCounter.updatePhys(physStart);
 			

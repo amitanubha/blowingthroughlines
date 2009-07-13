@@ -62,13 +62,13 @@ package
 			// new world
 			_world = new b2World(worldAABB, gravity, doSleep);
 			
-			var	debugDraw:b2DebugDraw = new b2DebugDraw();
-			debugDraw.SetSprite(_sprite);
-			debugDraw.SetDrawScale(30.0);
-			debugDraw.SetFillAlpha(0.3);
-			debugDraw.SetLineThickness(1.0);
-			debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
-			_world.SetDebugDraw(debugDraw);
+//			var	debugDraw:b2DebugDraw = new b2DebugDraw();
+//			debugDraw.SetSprite(_sprite);
+//			debugDraw.SetDrawScale(_physScale);
+//			debugDraw.SetFillAlpha(0.3);
+//			debugDraw.SetLineThickness(1.0);
+//			debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
+//			_world.SetDebugDraw(debugDraw);
 			
 			// create walls
 			var wallSd:b2PolygonDef = new b2PolygonDef();
@@ -130,7 +130,7 @@ package
 			// this is to test location getting!
 			_testerSprite = new Sprite();
 			_testerSprite.graphics.beginFill(0xbada55, 0.7);
-			_testerSprite.graphics.drawRect(-10,-20,20,40);
+			_testerSprite.graphics.drawRect(-25,-6,50,12);
 			_testerSprite.mouseEnabled = false;
 			this.addChild(_testerSprite);
 			
@@ -342,10 +342,11 @@ package
 //			}
 			var body:b2Body = b2Body(_allBodies[2]);
 
-			_testerSprite.x = body.GetPosition().x * 30;
-			_testerSprite.y = body.GetPosition().y * 30;
+			_testerSprite.x = body.GetPosition().x * _physScale;
+			_testerSprite.y = body.GetPosition().y * _physScale;
 			
-			_testerSprite.rotationX = body.GetAngle() * (Math.PI / 180);
+			//trace("angle is:", body.GetAngle() * (180 / Math.PI));
+			_testerSprite.rotation = body.GetAngle() * (180/ Math.PI);
 			
 //			Main.m_fpsCounter.updatePhys(physStart);
 			

@@ -33,30 +33,6 @@
 			swfobject.embedSWF("swf/shloader.swf", "myAlternativeContent", "${width}", "${height}", " ${version_major}.${version_minor}.${version_revision}", "swf/expressInstall.swf", flashvars, params, attrib);
 			swfmacmousewheel.registerObject(attrib.id);
 		</script>
-		
-		<style type ="text/css">
-		html, body {
-			height: 100%;
-			margin: 0px;
-			padding: 0px;
-		}
-		*>object {
-			min-width:960px;
-			min-height:640px;
-		 }
-		*>embed {
-			min-width:960px;
-			min-height:640px;
-		 }
-		</style>
-		<!--[if IE]>
-		<style type ="text/css">
-		#site {
-			height:expression(document.body.clientHeight < 640 ? "640px" : "auto" );
-			width:expression(document.body.clientWidth < 960 ? "960px" : "auto" );
-		 }
-		</style>
-		<![endif]-->
 	</head>
 	<body>
 		<div id="myAlternativeContent">

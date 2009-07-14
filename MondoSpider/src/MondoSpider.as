@@ -10,16 +10,17 @@ package
 	import Box2D.Dynamics.Joints.b2RevoluteJointDef;
 	import Box2D.Dynamics.b2Body;
 	import Box2D.Dynamics.b2BodyDef;
-	import Box2D.Dynamics.b2DebugDraw;
 	import Box2D.Dynamics.b2World;
+	
+	import com.paperclipped.physics.Chain;
+	import com.paperclipped.physics.World;
 	
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.utils.getTimer;
-	import flash.utils.setInterval;
 
-	[SWF(width='640', height='360', backgroundColor='#414647', frameRate='30')]
+	[SWF(width='600', height='360', backgroundColor='#414647', frameRate='30')]
 	public class MondoSpider extends Sprite
 	{
 		private var _world:b2World;
@@ -35,7 +36,7 @@ package
 		static public var _mouseXWorld:Number;
 		static public var _mouseYWorld:Number;
 		// Sprite to draw in to
-		private var _sprite:Sprite;
+//		private var _sprite:Sprite;
 		
 		private var _mouseDown:Boolean = false;
 		private var _mousePVec:b2Vec2 = new b2Vec2();
@@ -46,46 +47,32 @@ package
 		
 		public function MondoSpider()
 		{
-			_sprite = new Sprite();
-			this.addChild(_sprite);
-			
-			var worldAABB:b2AABB = new b2AABB();
-			worldAABB.lowerBound.Set(-1000.0, -1000.0);
-			worldAABB.upperBound.Set(1000.0, 1000.0);
-			
-			//gravity
-			var gravity:b2Vec2 = new b2Vec2(0, 10.0);
-			
-			// allow sleep
-			var doSleep:Boolean = true;
-			
-			// new world
-			_world = new b2World(worldAABB, gravity, doSleep);
-			
-//			var	debugDraw:b2DebugDraw = new b2DebugDraw();
-//			debugDraw.SetSprite(_sprite);
-//			debugDraw.SetDrawScale(_physScale);
-//			debugDraw.SetFillAlpha(0.3);
-//			debugDraw.SetLineThickness(1.0);
-//			debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
-//			_world.SetDebugDraw(debugDraw);
+ 			this.addEventListener(Event.ADDED_TO_STAGE, init);
+// 			init();
+		}
+		
+		public function init(evt:Event=null):void
+		{
+			var debugSprite:Sprite = new Sprite();
+			this.addChild(debugSprite);
+			_world = new World(600, 360, debugSprite, false, null, _physScale).world;
 			
 			// create walls
-			var wallSd:b2PolygonDef = new b2PolygonDef();
-			var wallBd:b2BodyDef = new b2BodyDef();
-			var wallB:b2Body;
-			
-			// Left
-			wallBd.position.Set(-95 / _physScale, 360/_physScale/2);
-			wallSd.SetAsBox(100/_physScale, 400/_physScale/2);
-			wallB = _world.CreateBody(wallBd);
-			wallB.CreateShape(wallSd);
-			wallB.SetMassFromShapes();
-			// Right
-			wallBd.position.Set((640+95) / _physScale, 360/_physScale/2);
-			wallB = _world.CreateBody(wallBd);
-			wallB.CreateShape(wallSd);
-			wallB.SetMassFromShapes();
+//			var wallSd:b2PolygonDef = new b2PolygonDef();
+//			var wallBd:b2BodyDef = new b2BodyDef();
+//			var wallB:b2Body;
+//			
+//			// Left
+//			wallBd.position.Set(-95 / _physScale, 360/_physScale/2);
+//			wallSd.SetAsBox(100/_physScale, 400/_physScale/2);
+//			wallB = _world.CreateBody(wallBd);
+//			wallB.CreateShape(wallSd);
+//			wallB.SetMassFromShapes();
+//			// Right
+//			wallBd.position.Set((640+95) / _physScale, 360/_physScale/2);
+//			wallB = _world.CreateBody(wallBd);
+//			wallB.CreateShape(wallSd);
+//			wallB.SetMassFromShapes();
 			// Top
 //			wallBd.position.Set(640/_physScale/2, -95/_physScale);
 //			wallSd.SetAsBox(680/_physScale/2, 100/_physScale);
@@ -97,23 +84,11 @@ package
 //			wallB = _world.CreateBody(wallBd);
 //			wallB.CreateShape(wallSd);
 //			wallB.SetMassFromShapes();
-
-			
-			
-			
- 			
- 			init();
-		}
 		
-		public function init():void
-		{
 			trace("world lower bounds:", _world.GetGravity().Length());
 			
 			this.addEventListener(Event.ENTER_FRAME, update);
 
-			this.graphics.beginFill(0xbada55, 0.1);
-			this.graphics.drawCircle(stage.stageWidth/2,stage.stageHeight/2,stage.stageHeight/2);
-			
 			var mouseClicker:Sprite = new Sprite();
 			mouseClicker.mouseEnabled = true;
 //			mouseClicker.buttonMode = true;
@@ -125,7 +100,8 @@ package
 			mouseClicker.addEventListener(MouseEvent.MOUSE_UP, function():void{_mouseDown = false;});
 //			addBridge(_world);
 //			addStuff(_world);
-			setInterval(addStuff, 500, _world);
+			// adds lots of falling things to test speed of app
+//			setInterval(addStuff, 500, _world);
 
 			// this is to test location getting!
 //			_testerSprite = new Sprite();
@@ -134,8 +110,7 @@ package
 //			_testerSprite.mouseEnabled = false;
 //			this.addChild(_testerSprite);
 			
-			addChain(_world, 250, 100);
-			addChain(_world, 350, 100);
+			addChains();
 		}
 		
 		private function addBridge(world:b2World):void
@@ -180,63 +155,18 @@ package
 //			}
 		}
 
-		private function addChain(world:b2World, anchorX:uint, anchorY:uint):void
+		private function addChains():void
 		{
-			
-//			var ground:b2Body = world.GetGroundBody();
-//			var i:int;
-//			var anchor:b2Vec2 = new b2Vec2();
-//			var body:b2Body;
-//			
-//
-//			var sd:b2PolygonDef = new b2PolygonDef();
-//			sd.SetAsBox(24 / _physScale, 5 / _physScale);
-//			sd.density = 100.0;
-//			sd.friction = 0.8;
-//			
-//			var bd:b2BodyDef = new b2BodyDef();
-//			
-//			var jd:b2RevoluteJointDef = new b2RevoluteJointDef();
-////			jd.lowerAngle = -15 / (180/Math.PI);
-////			jd.upperAngle = 15 / (180/Math.PI);
-//			
-//			jd.enableLimit = false;
-//			
-//			var prevBody:b2Body = ground;
-//			for (i = 0; i < 3; ++i)
-//			{
-//				if(i == 0)
-//				{
-//				trace("enabled motor damnit");
-//					jd.enableMotor = true;
-//					jd.motorSpeed = 1;
-//					jd.maxMotorTorque = 100;
-//				}else
-//				{
-//					jd.enableMotor = false;
-//
-//				}
-//			
-//				bd.position.Set((anchorX + 22 + 44 * i) / _physScale, anchorY / _physScale);
-//				body = world.CreateBody(bd);
-//				body.CreateShape(sd);
-//				body.SetMassFromShapes();
-//				
-//				anchor.Set((anchorX + 44 * i) / _physScale, anchorY / _physScale);
-//				jd.Initialize(prevBody, body, anchor);
-//				world.CreateJoint(jd);
-//				
-//				prevBody = body;
-//				_allBodies.push(body);
-//				
-//			}
-
-			
-			
-			// this was for the other end of the bridge, when this was a bridge
-			//anchor.Set((100 + 44 * 3) / _physScale, 250 / _physScale);
-			//jd.Initialize(prevBody, ground, anchor);
-			//world.CreateJoint(jd);
+			var link:b2PolygonDef = new b2PolygonDef();
+				link.SetAsBox(24 / _physScale, 5 / _physScale);
+				link.density = 100.0;
+				link.friction = 0.8;
+		
+			var chain1:Chain = new Chain(_world, 4, 100, 100, link, Chain.LEFT);
+			var chain2:Chain = new Chain(_world, 4, 200, 100, link, Chain.RIGHT);
+			var chain3:Chain = new Chain(_world, 4, 300, 100, link, Chain.UP);
+			var chain4:Chain = new Chain(_world, 4, 400, 100, link, Chain.DOWN);
+			var chain5:Chain = new Chain(_world, 4, 500, 100, link);
 		}
 				
 		private function addStuff(world:b2World):void

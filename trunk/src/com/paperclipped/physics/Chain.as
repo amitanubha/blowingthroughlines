@@ -18,8 +18,12 @@ package com.paperclipped.physics
 	public class Chain
 	{
 //-----------------------------------------Variables-----------------------------------------//
-		public static const HORIZONTAL:String = 'h';
-		public static const VERTICAL:String = 'v'; // not supported yet
+//		public static const HORIZONTAL:String = 'h';
+//		public static const VERTICAL:String = 'v'; // not supported yet
+		public static const UP:String = "up";
+		public static const DOWN:String = "down";
+		public static const LEFT:String = "left";
+		public static const RIGHT:String = "right";
 		
 		private var _bodies:Array;
 		private var _joints:Array;
@@ -38,23 +42,26 @@ package com.paperclipped.physics
 //-------------------------------------------------------------------------------------------//
 
 //----------------------------------------Constructor----------------------------------------//
-		public function Chain(world:b2World, numLinks:uint=3, anchorX:int=0, anchorY:int=0, direction:String="h", swingLimit:uint=0, /*parent=null,*/ scale:uint=30)
+		public function Chain(world:b2World, numLinks:uint=3, anchorX:int=0, anchorY:int=0, link:b2PolygonDef=null, direction:String=null, swingLimit:uint=0, parent:b2Body=null, scale:uint=30)
 		{
 			_world = world;
 			_bodies = new Array();
 			_joints = new Array();
 //			_parent = parent; // not sure what/how to attach this to yet...
 			
-			var ground:b2Body = world.GetGroundBody();
+//			var ground:b2Body = world.GetGroundBody();
 			var i:int;
 			var anchor:b2Vec2 = new b2Vec2();
 			var body:b2Body;
 			var joint:b2Joint;
 			
-			var sd:b2PolygonDef = new b2PolygonDef();
-			sd.SetAsBox(24 / scale, 5 / scale);
-			sd.density = 100.0;
-			sd.friction = 0.8;
+			if(!link)
+			{
+				link = new b2PolygonDef();
+				link.SetAsBox(24 / scale, 5 / scale);
+				link.density = 100.0;
+				link.friction = 0.8;
+			}
 			
 			var bd:b2BodyDef = new b2BodyDef();
 			
@@ -69,27 +76,38 @@ package com.paperclipped.physics
 				jd.enableLimit = false;
 			}
 			
-			var prevBody:b2Body = ground;
+			var prevBody:b2Body = (parent)? parent:world.GetGroundBody();
 			for (i = 0; i < 3; ++i)
 			{
-//				if(i == 0)
-//				{
-//				trace("enabled motor damnit");
-//					jd.enableMotor = true;
-//					jd.motorSpeed = 1;
-//					jd.maxMotorTorque = 100;
-//				}else
-//				{
-//					jd.enableMotor = false;
-//
-//				}
-			
-				bd.position.Set((anchorX + 22 + 44 * i) / scale, anchorY / scale);
+				switch(direction)
+				{
+					case Chain.RIGHT:
+					bd.position.Set((anchorX + 22 + 44 * i) / scale, anchorY / scale);
+					anchor.Set((anchorX + 44 * i) / scale, anchorY / scale);
+					break;
+					
+					case Chain.LEFT:
+					bd.position.Set((anchorX - 22 - 44 * i) / scale, anchorY / scale);
+					anchor.Set((anchorX - 44 * i) / scale, anchorY / scale);
+					break;
+					
+					case Chain.UP:
+					bd.position.Set(anchorX / scale, (anchorY - 22 - 44 * i) / scale);
+					bd.angle = -90 / (180/Math.PI);
+					anchor.Set(anchorX / scale, (anchorY - 44 * i) / scale);
+					break;
+					
+					default: // down
+					bd.position.Set(anchorX / scale, (anchorY + 22 + 44 * i) / scale);
+					bd.angle = 90 / (180/Math.PI);
+					anchor.Set(anchorX / scale, (anchorY + 44 * i) / scale);
+					break;
+				}
+
 				body = world.CreateBody(bd);
-				body.CreateShape(sd);
+				body.CreateShape(link);
 				body.SetMassFromShapes();
 				
-				anchor.Set((anchorX + 44 * i) / scale, anchorY / scale);
 				jd.Initialize(prevBody, body, anchor);
 				joint = world.CreateJoint(jd);
 				

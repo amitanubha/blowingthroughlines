@@ -9,7 +9,6 @@ package com.paperclipped.physics
 	import Box2D.Dynamics.b2World;
 	
 	import flash.display.Sprite;
-	import flash.events.Event;
 
 	/**
 	 * This is a container class to make the creation of a chain simpler
@@ -50,17 +49,11 @@ package com.paperclipped.physics
 		public function Chain(world:b2World, numLinks:uint=3, anchorX:int=0, anchorY:int=0, link:b2PolygonDef=null, linkLength:Number=44, direction:String=null, swingLimit:uint=0, parent:b2Body=null, scale:uint=30)
 		{
 			this.mouseEnabled = false;
-//			this.x = anchorX;
-//			this.y = anchorY;
-//			_anchor = new b2Vec2();
-//			_anchor.x = anchorX / scale;
-//			_anchor.y = anchorY / scale;
+
 			_bodies = new Array();
 			_joints = new Array();
 			_world = world;
-//			_parent = parent; // not sure what/how to attach this to yet...
-			
-//			var ground:b2Body = world.GetGroundBody();
+
 			var i:int;
 			var anchor:b2Vec2 = new b2Vec2();
 			var body:b2Body;
@@ -136,7 +129,6 @@ package com.paperclipped.physics
 //--------------------------------------Public  Methods--------------------------------------//
 		public function destroy():void
 		{
-			trace(this.hasEventListener(Event.ENTER_FRAME));
 			if(this.graphics) this.graphics.clear();
 			for each(var body:b2Body in _bodies)
 			{

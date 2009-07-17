@@ -5,25 +5,44 @@ package
 	import Box2D.Collision.Shapes.b2Shape;
 	import Box2D.Collision.b2AABB;
 	import Box2D.Common.Math.b2Vec2;
+	import Box2D.Dynamics.Joints.b2Joint;
+	import Box2D.Dynamics.Joints.b2JointDef;
+	import Box2D.Dynamics.Joints.b2JointEdge;
 	import Box2D.Dynamics.Joints.b2MouseJoint;
 	import Box2D.Dynamics.Joints.b2MouseJointDef;
+	import Box2D.Dynamics.Joints.b2RevoluteJoint;
 	import Box2D.Dynamics.Joints.b2RevoluteJointDef;
 	import Box2D.Dynamics.b2Body;
 	import Box2D.Dynamics.b2BodyDef;
+	import Box2D.Dynamics.b2DebugDraw;
 	import Box2D.Dynamics.b2World;
 	
 	import com.paperclipped.physics.Chain;
+	import com.paperclipped.physics.Wall;
 	import com.paperclipped.physics.World;
 	
+	import flash.display.CapsStyle;
+	import flash.display.DisplayObject;
+	import flash.display.JointStyle;
+	import flash.display.LineScaleMode;
+	import flash.display.Shape;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.utils.getTimer;
+	import flash.utils.setTimeout;
+	
+	import mx.core.BitmapAsset;
 
-	[SWF(width='600', height='360', backgroundColor='#414647', frameRate='30')]
+	[SWF(width='600', height='360', backgroundColor='#333333', frameRate='30')]
 	public class MondoSpider extends Sprite
 	{
+	
+		[Embed(source="../assets/textures/cable.png")]
+  		private var CableSkin:Class;
+  		
 		private var _world:b2World;
+		private var _myWorld:World;
 		private var _mouseJoint:b2MouseJoint
 		private var _tester:b2Body;
 		private var _velocityIterations:int = 10;
@@ -45,47 +64,44 @@ package
 		private var _testerSprite:Sprite;
 		private var _allBodies:Array = [];
 		
+		private var _testRobot:b2Body;
+		private var _armSpeed:Number = -2;
+		private var _robotReversalAllowed:Boolean = true;
+		
 		public function MondoSpider()
 		{
  			this.addEventListener(Event.ADDED_TO_STAGE, init);
 // 			init();
+//
+//			for( var i:int=1; i < 20; i+=2)
+//			{
+//				trace(i, i%2, i+(i%2), i+(i%3));
+//				
+//			}
+			
+//			var tester:Sprite = new Sprite();
+//				tester.graphics.lineStyle(10, 0xbada55, 1, false, "normal", CapsStyle.ROUND, JointStyle.ROUND);
+//				tester.graphics.moveTo(300,100);
+//				tester.graphics.curveTo(300,200, 400,200);
+//			this.addChild(tester);
+			
 		}
 		
 		public function init(evt:Event=null):void
 		{
 			var debugSprite:Sprite = new Sprite();
 			this.addChild(debugSprite);
-			_world = new World(600, 360, debugSprite, false, null, _physScale).world;
+//			debugSprite = null;
+			var debugFlags:uint = (b2DebugDraw.e_jointBit);
 			
-			// create walls
-//			var wallSd:b2PolygonDef = new b2PolygonDef();
-//			var wallBd:b2BodyDef = new b2BodyDef();
-//			var wallB:b2Body;
-//			
-//			// Left
-//			wallBd.position.Set(-95 / _physScale, 360/_physScale/2);
-//			wallSd.SetAsBox(100/_physScale, 400/_physScale/2);
-//			wallB = _world.CreateBody(wallBd);
-//			wallB.CreateShape(wallSd);
-//			wallB.SetMassFromShapes();
-//			// Right
-//			wallBd.position.Set((640+95) / _physScale, 360/_physScale/2);
-//			wallB = _world.CreateBody(wallBd);
-//			wallB.CreateShape(wallSd);
-//			wallB.SetMassFromShapes();
-			// Top
-//			wallBd.position.Set(640/_physScale/2, -95/_physScale);
-//			wallSd.SetAsBox(680/_physScale/2, 100/_physScale);
-//			wallB = _world.CreateBody(wallBd);
-//			wallB.CreateShape(wallSd);
-//			wallB.SetMassFromShapes();
-			// Bottom
-//			wallBd.position.Set(640/_physScale/2, (360+95)/_physScale);
-//			wallB = _world.CreateBody(wallBd);
-//			wallB.CreateShape(wallSd);
-//			wallB.SetMassFromShapes();
+			_myWorld = new World(600, 360, debugSprite, 0, new b2Vec2(0,20.0), _physScale);
+			_world = _myWorld.world;
+			
+			
+//			Inspector.getInstance().init(stage); //NEAT! but not too useful here.
+			addWalls();
 		
-			trace("world lower bounds:", _world.GetGravity().Length());
+//			trace("world lower bounds:", _world.GetGravity().Length());
 			
 			this.addEventListener(Event.ENTER_FRAME, update);
 
@@ -101,7 +117,7 @@ package
 //			addBridge(_world);
 //			addStuff(_world);
 			// adds lots of falling things to test speed of app
-//			setInterval(addStuff, 500, _world);
+//			flash.utils.setInterval(addStuff, 2000, _world);
 
 			// this is to test location getting!
 //			_testerSprite = new Sprite();
@@ -109,65 +125,201 @@ package
 //			_testerSprite.graphics.drawRect(-25,-6,50,12);
 //			_testerSprite.mouseEnabled = false;
 //			this.addChild(_testerSprite);
+			_testRobot = addBox(50, 50, new b2Vec2(50, 360-50), 0);
+			trace(_testRobot.GetPosition().x * _physScale);
 			
-			addChains();
-		}
-		
-		private function addBridge(world:b2World):void
-		{
-			var ground:b2Body = world.GetGroundBody();
-			var i:int;
-			var anchor:b2Vec2 = new b2Vec2();
-			var body:b2Body;
-		
-//			{ //not really sure what this stray bracket was for...
-				var sd:b2PolygonDef = new b2PolygonDef();
-					sd.SetAsBox(24 / _physScale, 5 / _physScale);
-					sd.density = 20.0;
-					sd.friction = 0.2;
-				
-				var bd:b2BodyDef = new b2BodyDef();
-				
-				var jd:b2RevoluteJointDef = new b2RevoluteJointDef();
-				const numPlanks:int = 10;
-					jd.lowerAngle = -15 / (180/Math.PI);
-					jd.upperAngle = 15 / (180/Math.PI);
-					jd.enableLimit = true;
-				
-				var prevBody:b2Body = ground;
-				for (i = 0; i < numPlanks; ++i)
-				{
-					bd.position.Set((100 + 22 + 44 * i) / _physScale, 250 / _physScale);
-					body = world.CreateBody(bd);
-					body.CreateShape(sd);
-					body.SetMassFromShapes();
-					
-					anchor.Set((100 + 44 * i) / _physScale, 250 / _physScale);
-					jd.Initialize(prevBody, body, anchor);
-					world.CreateJoint(jd);
-					
-					prevBody = body;
-				}
-				
-				anchor.Set((100 + 44 * numPlanks) / _physScale, 250 / _physScale);
-				jd.Initialize(prevBody, ground, anchor);
-				world.CreateJoint(jd);
+			addPrimativeLeg(_testRobot);
+			flash.utils.setTimeout(addPrimativeLeg, 1000, _testRobot);
+//			flash.utils.setTimeout(addPrimativeLeg, 2000, _testRobot);
+//			var testerForeArm2:b2Body = addArmToBox(testerArm2, 40, 10, new b2Vec2(-50, 360-50), new b2Vec2(-30, 0));
+			
+			// need to allow the forearm to move through the robot!!!
+			//testerForeArm.
+			
+			var loc:b2Vec2 = new b2Vec2(300, _myWorld.height - 20);
+//			var ner:b2Body = addBox(50, 30, loc, 0);
+			
+			var jointEdge:b2JointEdge = _testRobot.GetJointList();
+//			while(jointEdge.next)
+//			{
+//				trace("found a joint:", jointEdge.next.joint.GetType());
 //			}
+			
+			
+//			addChains();
+			
+			
 		}
+		
+		private function addBox(w:int, h:int, loc:b2Vec2, angle:int=0):b2Body
+		{
+			var robotGroup:int = -2;
+			
+			var polyD:b2PolygonDef = new b2PolygonDef();
+//				polyD.SetAsOrientedBox((w/2) / _physScale, (h/2) / _physScale, new b2Vec2(x / _physScale, y / _physScale), angle / (180 / Math.PI));
+				polyD.SetAsBox(w / _physScale, h / _physScale);
+				polyD.density = 20.0;
+				polyD.friction = 0.8;
+				
+				polyD.filter.groupIndex = robotGroup;
+			
+			var bodyD:b2BodyDef = new b2BodyDef();
+				bodyD.position.Set(loc.x / _physScale, loc.y / _physScale);
+				bodyD.angle = angle;
+			
+			var body:b2Body = _world.CreateBody(bodyD);
+				body.CreateShape(polyD);
+				body.SetMassFromShapes();
+				
+			return body;
+		}
+		
+		private function addArmToBox(parent:b2Body, w:int, h:int, loc:b2Vec2, anchor:b2Vec2):b2Body
+		{
+			
+			var arm:b2Body = addBox(w,h,loc);
+			
+			var joint:b2Joint;
+			var jointD:b2RevoluteJointDef = new b2RevoluteJointDef();
+//				jointD.enableMotor = true;
+//				jointD.maxMotorTorque = 10000;
+//				jointD.motorSpeed = _armSpeed;
+//				jointD.enableLimit = false;
+			
+//			jointD.Initialize(parent, arm, parent.GetWorldPoint(new b2Vec2(10 / _physScale, 10 / _physScale)));
+			jointD.Initialize(parent, arm, parent.GetWorldPoint(new b2Vec2(anchor.x / _physScale, anchor.y / _physScale)));
+			joint = _world.CreateJoint(jointD);
+			
+			return arm;
+		}
+		
+		private function addFixedArm(parent:b2Body, w:int, h:int, loc:b2Vec2, anchor:b2Vec2):b2Body
+		{
+			var arm:b2Body = addBox(w,h,loc);
+			var joint:b2Joint;
+			var jointD:b2JointDef = new b2JointDef();
+			
+			return arm;
+		}
+		
+		private function addArmMotorToBox(parent:b2Body, w:int, h:int, loc:b2Vec2, anchor:b2Vec2, direction:int=-2):b2Body
+		{
+			trace("adding motor with speed:", direction)
+			var arm:b2Body = addBox(w,h,loc);
+			var joint:b2RevoluteJoint;
+			var jointD:b2RevoluteJointDef = new b2RevoluteJointDef();
+				jointD.enableMotor = true;
+				jointD.maxMotorTorque = 10000;
+				jointD.motorSpeed = direction;
+//				jointD.enableLimit = false;
+			
+//			jointD.Initialize(parent, arm, parent.GetWorldPoint(new b2Vec2(10 / _physScale, 10 / _physScale)));
+			jointD.Initialize(parent, arm, parent.GetWorldPoint(new b2Vec2(anchor.x / _physScale, anchor.y / _physScale)));
+			joint = _world.CreateJoint(jointD) as b2RevoluteJoint;
+			
+			return arm;
+		}
+		
+		private function addJoint(body1:b2Body, body2:b2Body, loc1:b2Vec2, loc2:b2Vec2):b2RevoluteJoint
+		{
+			var jointD:b2RevoluteJointDef = new b2RevoluteJointDef();
+				jointD.body1 = body1;
+				jointD.body2 = body2;
+				jointD.localAnchor1 = body1.GetLocalPoint(body1.GetPosition());
+				jointD.localAnchor1.Subtract(new b2Vec2(loc1.x / _physScale, loc1.y / _physScale));
+				jointD.localAnchor2 = body2.GetLocalPoint(body2.GetPosition());
+				jointD.localAnchor2.Subtract(new b2Vec2(loc2.x / _physScale, loc2.y / _physScale));
+				jointD.referenceAngle = body1.GetAngle() - body2.GetAngle();
+			
+			
+			
 
+			var loc:b2Vec2 = body1.GetPosition();
+			loc.x -= loc1.x / _physScale;
+			loc.y -= loc1.y / _physScale;
+			
+//			jointD.Initialize(body2, body1, loc);
+			
+//			jointD.Initialize(body1, body2,
+			return _world.CreateJoint(jointD) as b2RevoluteJoint;
+		}
+		
+		private function addPrimativeLeg(target:b2Body):void
+		{
+			var armLoc:b2Vec2 = new b2Vec2(70, 360-50-40);
+			var forearmLoc:b2Vec2 = new b2Vec2(50, 360-(50+80));
+			var armHingeLoc:b2Vec2 = new b2Vec2(20,-10);
+			var foreArmHingeLoc:b2Vec2 = new b2Vec2(0,-20);
+			
+			
+//			var testerArm:b2Body = addArmToBox(target, 10, 40, armLoc, armHingeLoc);
+			var testerArm:b2Body = addArmMotorToBox(target, 10, 40, armLoc, armHingeLoc, 2);
+			var testerForeArm:b2Body = addBox(80, 10, forearmLoc);
+			
+			armLoc = new b2Vec2(30, 360-50-40);
+			armHingeLoc = new b2Vec2(-20,-10);		
+			var testerArm2:b2Body = addArmMotorToBox(target, 10, 40, armLoc, armHingeLoc, 2);
+			
+			addJoint(testerArm, testerForeArm, new b2Vec2(0, 40), new b2Vec2(-20, 0));
+			addJoint(testerArm2, testerForeArm, new b2Vec2(0, 40), new b2Vec2(20, 0));
+		}
+		
 		private function addChains():void
 		{
 			var link:b2PolygonDef = new b2PolygonDef();
-				link.SetAsBox(24 / _physScale, 5 / _physScale);
-				link.density = 100.0;
-				link.friction = 0.8;
+				link.SetAsBox(10 / _physScale, 5 / _physScale);
+				link.density = 20.0;
+				link.friction = 0.2;
+				
+			var cablelink:b2PolygonDef = new b2PolygonDef();
+				cablelink.SetAsBox(10 / _physScale, 6 / _physScale);
+				cablelink.density = 100.0;
+				cablelink.friction = 0.2;
 		
-			var chain1:Chain = new Chain(_world, 4, 100, 100, link, Chain.LEFT);
-			var chain2:Chain = new Chain(_world, 4, 200, 100, link, Chain.RIGHT);
-			var chain3:Chain = new Chain(_world, 4, 300, 100, link, Chain.UP);
-			var chain4:Chain = new Chain(_world, 4, 400, 100, link, Chain.DOWN);
-			var chain5:Chain = new Chain(_world, 4, 500, 100, link);
+			var chain1:Chain = new Chain(_world, 16, 100, 100, cablelink, 12, Chain.DOWN, 20);
+			var chain2:Chain = new Chain(_world, 10, 200, 100, link, 16, Chain.DOWN);
+			
+			// now to play with texturing!!!
+//			addChainTexture(chain1);
+			chain2.destroy();
+			
 		}
+		
+		private function addChainTexture(target:Chain):void
+		{
+			for(var i:uint=0; i < target.bodies.length; i++)
+			{
+				var body:b2Body = target.bodies[i] as b2Body;
+				var cableTexture:BitmapAsset = new CableSkin() as BitmapAsset;
+					cableTexture.smoothing = true;
+					cableTexture.rotation = 90;
+//					cableTexture.height = 1;
+//					cableTexture.width = 18;
+					cableTexture.x = 12;
+					cableTexture.y = -6;
+					
+				var mask:Shape = new Shape();
+					mask.graphics.beginFill(0xbada55, .8);
+					mask.graphics.drawRoundRect(-12,-6,24,12,10);
+				var texture:Sprite = new Sprite();
+					texture.addChild(mask);
+					texture.addChild(cableTexture);
+					cableTexture.mask = mask;
+					texture.mouseEnabled = false;
+					texture.mouseChildren = false;
+				this.addChild(texture);
+					body.SetUserData({texture:texture});
+				_allBodies.push(body);
+			}
+		}
+		
+		private function addRopeTexture(target:Chain):void
+		{
+			this.addChild(target);
+			target.addEventListener(Event.ENTER_FRAME, updateRope);
+		}
+		
+
 				
 		private function addStuff(world:b2World):void
 		{
@@ -244,6 +396,15 @@ package
 //			}
 		}
 		
+		private function addWalls():void
+		{
+			var top:Wall = new Wall(_myWorld, Wall.TOP);
+			var bottom:Wall = new Wall(_myWorld, Wall.BOTTOM);
+			var left:Wall = new Wall(_myWorld, Wall.LEFT);
+			var right:Wall = new Wall(_myWorld, Wall.RIGHT);
+			
+		}
+		
 		public function update(evt:Event):void{
 			
 			// Update mouse joint
@@ -251,11 +412,45 @@ package
 			mouseDestroy();
 			mouseDrag();
 			
-			killOffscreens();
+//			killOffscreens();
 			
 			// Update physics
 			var physStart:uint = getTimer();
 			_world.Step(_timeStep, _velocityIterations, _positionIterations);
+			
+			for(var i:int=0; i < _allBodies.length; i++)
+			{
+				var body:b2Body = _allBodies[i] as b2Body;
+				if(body.GetUserData().texture)
+				{
+					var texture:DisplayObject = body.GetUserData().texture as DisplayObject;
+						texture.x = body.GetPosition().x * _physScale;
+						texture.y = body.GetPosition().y * _physScale;
+						texture.rotation = body.GetAngle() * (180/Math.PI);
+				}
+			}
+			
+			
+			// for reversing the robot when it hist the end
+			if((_testRobot.GetPosition().x <= 80 / _physScale || _testRobot.GetPosition().x >= 520 / _physScale) && _robotReversalAllowed)
+			{
+				
+				var joint:b2Joint = _testRobot.GetJointList().joint
+				
+				
+				
+//				while(!joint is b2RevoluteJoint)
+//				{
+//					joint = _testRobot.GetJointList().next.joint;
+//				}
+				// create timer to block the instant triggering of it again for at least 20 seconds...
+				_robotReversalAllowed = false;
+				flash.utils.setTimeout(function():void{_robotReversalAllowed = true;}, 10000);
+				
+				// reverse the motion of the motor
+//				var speed:Number = b2RevoluteJoint(joint).GetMotorSpeed() * -1;
+//				b2RevoluteJoint(joint).SetMotorSpeed(speed);
+			}
 			
 //			var shapes:Array = new Array();
 //			var aabb:b2AABB = new b2AABB();
@@ -272,7 +467,7 @@ package
 //				_testerSprite.x = body.GetPosition().x * 30;
 //				
 //			}
-			var body:b2Body = b2Body(_allBodies[2]);
+//			var body:b2Body = b2Body(_allBodies[2]);
 
 			// this was successful, just needs to be moved someplace better.
 //			_testerSprite.x = body.GetPosition().x * _physScale;
@@ -304,6 +499,33 @@ package
 			
 			_mouseXWorld = (this.mouseX); 
 			_mouseYWorld = (this.mouseY); 
+		}
+		
+		private function updateRope(evt:Event):void //this belongs in a rope class prolly...
+		{
+			
+			var target:Chain = evt.target as Chain;	
+			var start:b2Body = target.bodies[0] as b2Body;
+			var end:b2Body = target.bodies[target.bodies.length-1] as b2Body;
+			target.graphics.clear();
+			target.graphics.lineStyle(10, 0xCCCCCC, 1, false, LineScaleMode.NONE, CapsStyle.ROUND, JointStyle.ROUND);
+			target.graphics.moveTo(start.GetPosition().x * _physScale, start.GetPosition().y * _physScale);
+				
+			var last:b2Vec2 = start.GetPosition();
+			for(var i:int=1; i < target.bodies.length-1; i++); //i+=3)
+			{
+				if(target.bodies[i])// && target.bodies[int(i+(i%2))])
+				{
+					var cont:b2Vec2 = b2Body(target.bodies[i]).GetPosition();
+//					var anch:b2Vec2 = b2Body(target.bodies[i]).GetNext().GetPosition();
+////					var anch:b2Vec2 = b2Body(target.bodies[int(i+(i%2))]).GetPosition();
+					target.graphics.curveTo(last.x * _physScale, cont.y * _physScale, cont.x * _physScale, cont.y * _physScale);
+					last = cont;
+				}
+			}
+			
+//			target.graphics.lineTo(end.GetPosition().x * _physScale, end.GetPosition().y * _physScale);
+			target.graphics.endFill();
 		}
 		
 		public function mouseDrag():void{
@@ -361,8 +583,8 @@ package
 		private function killOffscreens():void
 		{
 			var aabb:b2AABB = new b2AABB();
-				aabb.lowerBound.Set(-100, 9);
-				aabb.upperBound.Set(100, 1000);
+				aabb.lowerBound.Set(-1000, 20);
+				aabb.upperBound.Set(1000, 1000);
 //		
 			var k_maxCount:int = 10;
 			var shapes:Array = new Array();

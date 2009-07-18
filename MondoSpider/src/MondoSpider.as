@@ -5,9 +5,9 @@ package
 	import Box2D.Collision.Shapes.b2Shape;
 	import Box2D.Collision.b2AABB;
 	import Box2D.Common.Math.b2Vec2;
+	import Box2D.Dynamics.Joints.b2DistanceJoint;
+	import Box2D.Dynamics.Joints.b2DistanceJointDef;
 	import Box2D.Dynamics.Joints.b2Joint;
-	import Box2D.Dynamics.Joints.b2JointDef;
-	import Box2D.Dynamics.Joints.b2JointEdge;
 	import Box2D.Dynamics.Joints.b2MouseJoint;
 	import Box2D.Dynamics.Joints.b2MouseJointDef;
 	import Box2D.Dynamics.Joints.b2RevoluteJoint;
@@ -125,21 +125,21 @@ package
 //			_testerSprite.graphics.drawRect(-25,-6,50,12);
 //			_testerSprite.mouseEnabled = false;
 //			this.addChild(_testerSprite);
-			_testRobot = addBox(50, 50, new b2Vec2(50, 360-50), 0);
+			_testRobot = addBox(80, 30, new b2Vec2(50, 360-50), 0);
 			trace(_testRobot.GetPosition().x * _physScale);
 			
-			addPrimativeLeg(_testRobot);
-			flash.utils.setTimeout(addPrimativeLeg, 1000, _testRobot);
-//			flash.utils.setTimeout(addPrimativeLeg, 2000, _testRobot);
+//			addPrimativeLeg(_testRobot);
+			for(var i:int=0; i < 1; i++)
+			{
+				flash.utils.setTimeout(addPrimativeLeg, i*1000, _testRobot);
+			}
 //			var testerForeArm2:b2Body = addArmToBox(testerArm2, 40, 10, new b2Vec2(-50, 360-50), new b2Vec2(-30, 0));
 			
 			// need to allow the forearm to move through the robot!!!
 			//testerForeArm.
 			
-			var loc:b2Vec2 = new b2Vec2(300, _myWorld.height - 20);
-//			var ner:b2Body = addBox(50, 30, loc, 0);
 			
-			var jointEdge:b2JointEdge = _testRobot.GetJointList();
+//			var jointEdge:b2JointEdge = _testRobot.GetJointList();
 //			while(jointEdge.next)
 //			{
 //				trace("found a joint:", jointEdge.next.joint.GetType());
@@ -149,6 +149,15 @@ package
 //			addChains();
 			
 			
+			var loc:b2Vec2 = new b2Vec2(300, _myWorld.height - 100);
+			var ner:b2Body = addBox(50, 10, loc, 0);
+			
+//			loc = new b2Vec2(300, _myWorld.height - 20);
+			var ner2:b2Body = addBox(50, 10, loc, 0);
+			
+			attachFixed(ner, ner2, new b2Vec2(-30,0), new b2Vec2(30,0), 45);
+		
+			
 		}
 		
 		private function addBox(w:int, h:int, loc:b2Vec2, angle:int=0):b2Body
@@ -156,7 +165,6 @@ package
 			var robotGroup:int = -2;
 			
 			var polyD:b2PolygonDef = new b2PolygonDef();
-//				polyD.SetAsOrientedBox((w/2) / _physScale, (h/2) / _physScale, new b2Vec2(x / _physScale, y / _physScale), angle / (180 / Math.PI));
 				polyD.SetAsBox(w / _physScale, h / _physScale);
 				polyD.density = 20.0;
 				polyD.friction = 0.8;
@@ -165,7 +173,7 @@ package
 			
 			var bodyD:b2BodyDef = new b2BodyDef();
 				bodyD.position.Set(loc.x / _physScale, loc.y / _physScale);
-				bodyD.angle = angle;
+				bodyD.angle = angle * (Math.PI / 180);
 			
 			var body:b2Body = _world.CreateBody(bodyD);
 				body.CreateShape(polyD);
@@ -181,23 +189,9 @@ package
 			
 			var joint:b2Joint;
 			var jointD:b2RevoluteJointDef = new b2RevoluteJointDef();
-//				jointD.enableMotor = true;
-//				jointD.maxMotorTorque = 10000;
-//				jointD.motorSpeed = _armSpeed;
-//				jointD.enableLimit = false;
-			
-//			jointD.Initialize(parent, arm, parent.GetWorldPoint(new b2Vec2(10 / _physScale, 10 / _physScale)));
+
 			jointD.Initialize(parent, arm, parent.GetWorldPoint(new b2Vec2(anchor.x / _physScale, anchor.y / _physScale)));
 			joint = _world.CreateJoint(jointD);
-			
-			return arm;
-		}
-		
-		private function addFixedArm(parent:b2Body, w:int, h:int, loc:b2Vec2, anchor:b2Vec2):b2Body
-		{
-			var arm:b2Body = addBox(w,h,loc);
-			var joint:b2Joint;
-			var jointD:b2JointDef = new b2JointDef();
 			
 			return arm;
 		}
@@ -220,7 +214,7 @@ package
 			return arm;
 		}
 		
-		private function addJoint(body1:b2Body, body2:b2Body, loc1:b2Vec2, loc2:b2Vec2):b2RevoluteJoint
+		private function attachHinge(body1:b2Body, body2:b2Body, loc1:b2Vec2, loc2:b2Vec2, motorize:Boolean=false, speed:Number=0, torque:Number=10000):b2RevoluteJoint
 		{
 			var jointD:b2RevoluteJointDef = new b2RevoluteJointDef();
 				jointD.body1 = body1;
@@ -230,38 +224,81 @@ package
 				jointD.localAnchor2 = body2.GetLocalPoint(body2.GetPosition());
 				jointD.localAnchor2.Subtract(new b2Vec2(loc2.x / _physScale, loc2.y / _physScale));
 				jointD.referenceAngle = body1.GetAngle() - body2.GetAngle();
-			
-			
-			
 
-			var loc:b2Vec2 = body1.GetPosition();
-			loc.x -= loc1.x / _physScale;
-			loc.y -= loc1.y / _physScale;
-			
-//			jointD.Initialize(body2, body1, loc);
-			
-//			jointD.Initialize(body1, body2,
+				jointD.enableMotor = motorize;
+				jointD.motorSpeed = speed * (Math.PI / 180);
+				jointD.maxMotorTorque = torque;
+
 			return _world.CreateJoint(jointD) as b2RevoluteJoint;
 		}
 		
-		private function addPrimativeLeg(target:b2Body):void
+		private function attachFixed(body1:b2Body, body2:b2Body, loc1:b2Vec2, loc2:b2Vec2, angle:Number):b2RevoluteJoint
 		{
-			var armLoc:b2Vec2 = new b2Vec2(70, 360-50-40);
-			var forearmLoc:b2Vec2 = new b2Vec2(50, 360-(50+80));
-			var armHingeLoc:b2Vec2 = new b2Vec2(20,-10);
-			var foreArmHingeLoc:b2Vec2 = new b2Vec2(0,-20);
+
+			var jointD:b2RevoluteJointDef = new b2RevoluteJointDef();
+				
+				jointD.body1 = body1;
+				jointD.body2 = body2;
+				jointD.localAnchor1 = body1.GetLocalPoint(body1.GetPosition());
+				jointD.localAnchor1.Subtract(new b2Vec2(loc1.x / _physScale, loc1.y / _physScale));
+				jointD.localAnchor2 = body2.GetLocalPoint(body2.GetPosition());
+				jointD.localAnchor2.Subtract(new b2Vec2(loc2.x / _physScale, loc2.y / _physScale));
+				jointD.referenceAngle = (angle - 180) * (Math.PI/180);
+				
+				
+//				jointD.lowerAngle = jointD.upperAngle = jointD.referenceAngle;
+				
+				jointD.enableLimit = true;
 			
+			return _world.CreateJoint(jointD) as b2RevoluteJoint;	
+		}
+		
+		private function attachFree(body1:b2Body, body2:b2Body, loc1:b2Vec2, loc2:b2Vec2):b2DistanceJoint
+		{
+			var jointD:b2DistanceJointDef = new b2DistanceJointDef();
+				
+				jointD.body1 = body1;
+				jointD.body2 = body2;
+				jointD.localAnchor1 = body1.GetLocalPoint(body1.GetPosition());
+				jointD.localAnchor1.Subtract(new b2Vec2(loc1.x / _physScale, loc1.y / _physScale));
+				jointD.localAnchor2 = body2.GetLocalPoint(body2.GetPosition());
+				jointD.localAnchor2.Subtract(new b2Vec2(loc2.x / _physScale, loc2.y / _physScale));
 			
-//			var testerArm:b2Body = addArmToBox(target, 10, 40, armLoc, armHingeLoc);
-			var testerArm:b2Body = addArmMotorToBox(target, 10, 40, armLoc, armHingeLoc, 2);
-			var testerForeArm:b2Body = addBox(80, 10, forearmLoc);
+			return _world.CreateJoint(jointD) as b2DistanceJoint;	
+		}
+		
+		private function addPrimativeLeg(robot:b2Body):void
+		{
+			var armLoc:b2Vec2 = new b2Vec2(100, 100);
+			var arm1:b2Body = addBox(10, 40, armLoc);
+			var arm2:b2Body = addBox(10, 40, armLoc);
 			
-			armLoc = new b2Vec2(30, 360-50-40);
-			armHingeLoc = new b2Vec2(-20,-10);		
-			var testerArm2:b2Body = addArmMotorToBox(target, 10, 40, armLoc, armHingeLoc, 2);
+			var speed:Number = 90; // degrees per sec
+			var torques:Number = 1000000; // whatever N-m means
 			
-			addJoint(testerArm, testerForeArm, new b2Vec2(0, 40), new b2Vec2(-20, 0));
-			addJoint(testerArm2, testerForeArm, new b2Vec2(0, 40), new b2Vec2(20, 0));
+			attachHinge(robot, arm1, new b2Vec2(40, 0), new b2Vec2(0, 30), true, speed, torques);
+			attachHinge(robot, arm2, new b2Vec2(-40, 0), new b2Vec2(0, 30), true, speed, torques);
+			
+			var ankle:b2Vec2 = new b2Vec2(0, -36);
+			var foot:b2Body = addBox(80, 10, new b2Vec2(robot.GetPosition().x, robot.GetPosition().y - (30 / _physScale)));
+			attachHinge(arm1, foot, ankle, new b2Vec2(40, 0));
+			attachHinge(arm2, foot, ankle, new b2Vec2(-40, 0));
+//			var armLoc:b2Vec2 = new b2Vec2(70, 360-50-40);
+//			var forearmLoc:b2Vec2 = new b2Vec2(50, 360-(50+80));
+//			var armHingeLoc:b2Vec2 = new b2Vec2(20,-10);
+//			var foreArmHingeLoc:b2Vec2 = new b2Vec2(0,-20);
+//			
+//			
+////			var testerArm:b2Body = addArmToBox(target, 10, 40, armLoc, armHingeLoc);
+//			var testerArm:b2Body = addArmMotorToBox(target, 10, 40, armLoc, armHingeLoc, 2);
+//			var testerForeArm:b2Body = addBox(80, 10, forearmLoc);
+//			
+//			armLoc = new b2Vec2(30, 360-50-40);
+//			armHingeLoc = new b2Vec2(-20,-10);		
+//			var testerArm2:b2Body = addArmMotorToBox(target, 10, 40, armLoc, armHingeLoc, 2);
+//			
+//			addJoint(testerArm, testerForeArm, new b2Vec2(0, 40), new b2Vec2(-20, 0));
+//			addJoint(testerArm2, testerForeArm, new b2Vec2(0, 40), new b2Vec2(20, 0));
 		}
 		
 		private function addChains():void
@@ -432,25 +469,25 @@ package
 			
 			
 			// for reversing the robot when it hist the end
-			if((_testRobot.GetPosition().x <= 80 / _physScale || _testRobot.GetPosition().x >= 520 / _physScale) && _robotReversalAllowed)
-			{
-				
-				var joint:b2Joint = _testRobot.GetJointList().joint
-				
-				
-				
+//			if((_testRobot.GetPosition().x <= 80 / _physScale || _testRobot.GetPosition().x >= 520 / _physScale) && _robotReversalAllowed)
+//			{
+//				
+//				var joint:b2Joint = _testRobot.GetJointList().joint;
+//				
+//				
+//				
 //				while(!joint is b2RevoluteJoint)
 //				{
 //					joint = _testRobot.GetJointList().next.joint;
 //				}
-				// create timer to block the instant triggering of it again for at least 20 seconds...
-				_robotReversalAllowed = false;
-				flash.utils.setTimeout(function():void{_robotReversalAllowed = true;}, 10000);
-				
-				// reverse the motion of the motor
+//				// create timer to block the instant triggering of it again for at least 20 seconds...
+//				_robotReversalAllowed = false;
+//				flash.utils.setTimeout(function():void{_robotReversalAllowed = true;}, 10000);
+//				
+//				// reverse the motion of the motor
 //				var speed:Number = b2RevoluteJoint(joint).GetMotorSpeed() * -1;
 //				b2RevoluteJoint(joint).SetMotorSpeed(speed);
-			}
+//			}
 			
 //			var shapes:Array = new Array();
 //			var aabb:b2AABB = new b2AABB();

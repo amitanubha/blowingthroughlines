@@ -25,35 +25,35 @@ package com.paperclipped.physics
 			switch(side)
 			{
 				case Wall.LEFT:// Left
-				wallBd.position.Set(-offset / world.scale, (world.height+100) / world.scale / 2);
-				wallSd.SetAsBox(100 / world.scale, (world.height+100) / world.scale/2);
-				_body = world.world.CreateBody(wallBd);
-				_body.CreateShape(wallSd);
-				_body.SetMassFromShapes();
+					wallBd.position.Set(-offset / world.scale, (world.height+100) / world.scale / 2);
+					wallSd.SetAsBox(100 / world.scale, (world.height+100) / world.scale/2);
+					_body = world.world.CreateBody(wallBd);
+					_body.CreateShape(wallSd);
+					_body.SetMassFromShapes();
 				break;
 				
 				case Wall.RIGHT:// Right
-				wallBd.position.Set((world.width+offset) / world.scale, (world.height+100) / world.scale / 2);
-				wallSd.SetAsBox(100 / world.scale, (world.height+100) / world.scale/2);
-				_body = world.world.CreateBody(wallBd);
-				_body.CreateShape(wallSd);
-				_body.SetMassFromShapes();
+					wallBd.position.Set((world.width+offset) / world.scale, (world.height+100) / world.scale / 2);
+					wallSd.SetAsBox(100 / world.scale, (world.height+100) / world.scale/2);
+					_body = world.world.CreateBody(wallBd);
+					_body.CreateShape(wallSd);
+					_body.SetMassFromShapes();
 				break;
 				
 				case Wall.TOP:// Top
-				wallBd.position.Set(world.width / world.scale / 2, -offset / world.scale);
-				wallSd.SetAsBox((world.width + 100) / world.scale / 2, 100 / world.scale);
-				_body = world.world.CreateBody(wallBd);
-				_body.CreateShape(wallSd);
-				_body.SetMassFromShapes();
+					wallBd.position.Set(world.width / world.scale / 2, -offset / world.scale);
+					wallSd.SetAsBox((world.width + 100) / world.scale / 2, 100 / world.scale);
+					_body = world.world.CreateBody(wallBd);
+					_body.CreateShape(wallSd);
+					_body.SetMassFromShapes();
 				break;
 				
 				case Wall.BOTTOM:// Bottom
-				wallBd.position.Set(world.width / world.scale / 2, (world.height+95) / world.scale);
-				wallSd.SetAsBox((world.width + 100) / world.scale / 2, 100 / world.scale);
-				_body = world.world.CreateBody(wallBd);
-				_body.CreateShape(wallSd);
-				_body.SetMassFromShapes();
+					wallBd.position.Set(world.width / world.scale / 2, (world.height+95) / world.scale);
+					wallSd.SetAsBox((world.width + 100) / world.scale / 2, 100 / world.scale);
+					_body = world.world.CreateBody(wallBd);
+					_body.CreateShape(wallSd);
+					_body.SetMassFromShapes();
 				break;
 			}
 			

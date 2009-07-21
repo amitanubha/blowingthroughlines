@@ -18,14 +18,19 @@ package com.paperclipped.physics.robotics
 //		private var _myWorld:World;
 		private var _scale:Number;
 		private var _world:b2World;
-
+		private var _group:int;
 		
-		public function Robot(world:World, x:int, y:int)
+		public function get group():int 	{ return _group;	}
+		
+		public function Robot(world:World, x:int, y:int, group:int = -1)
 		{
+			_group = (group > -1)? -group:group;
 			_scale = world.scale;
 			_world = world.world;
-			
-			
 		}
+		
+		// leg adder
+		// showThumb(image);
+		// showFull(image);
 	}
 }

@@ -1,8 +1,8 @@
 package
 {
-	import Box2D.Collision.Shapes.b2CircleDef;
 	import Box2D.Collision.Shapes.b2PolygonDef;
 	import Box2D.Collision.Shapes.b2Shape;
+	import Box2D.Collision.Shapes.b2ShapeDef;
 	import Box2D.Collision.b2AABB;
 	import Box2D.Common.Math.b2Vec2;
 	import Box2D.Dynamics.Joints.b2DistanceJoint;
@@ -17,6 +17,7 @@ package
 	import Box2D.Dynamics.b2DebugDraw;
 	import Box2D.Dynamics.b2World;
 	
+	import com.paperclipped.physics.Body;
 	import com.paperclipped.physics.Chain;
 	import com.paperclipped.physics.Wall;
 	import com.paperclipped.physics.World;
@@ -34,7 +35,7 @@ package
 	
 	import mx.core.BitmapAsset;
 
-	[SWF(width='600', height='360', backgroundColor='#333333', frameRate='30')]
+	[SWF(width='960', height='360', backgroundColor='#333333', frameRate='30')]
 	public class MondoSpider extends Sprite
 	{
 	
@@ -92,9 +93,11 @@ package
 			var debugSprite:Sprite = new Sprite();
 			this.addChild(debugSprite);
 //			debugSprite = null;
-			var debugFlags:uint = (b2DebugDraw.e_jointBit);
+//			var debugFlags:uint = (b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit | b2DebugDraw.e_centerOfMassBit);
+//			var debugFlags:uint = (b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
+			var debugFlags:uint = (b2DebugDraw.e_shapeBit);
 			
-			_myWorld = new World(600, 360, debugSprite, 0, new b2Vec2(0,20.0), _physScale);
+			_myWorld = new World(960, 360, debugSprite, debugFlags, new b2Vec2(0,20.0), _physScale);
 			_world = _myWorld.world;
 			
 			
@@ -149,37 +152,43 @@ package
 //			addChains();
 			
 			
-			var loc:b2Vec2 = new b2Vec2(300, _myWorld.height - 100);
-			var ner:b2Body = addBox(50, 10, loc, 0);
+//			var loc:b2Vec2 = new b2Vec2(300, _myWorld.height - 100);
+//			var ner:b2Body = addBox(50, 10, loc, 0);
+//			
+////			loc = new b2Vec2(300, _myWorld.height - 20);
+//			var ner2:b2Body = addBox(50, 10, loc, 0);
+//			
+//			attachFixed(ner, ner2, new b2Vec2(-30,0), new b2Vec2(30,0), 45);
 			
-//			loc = new b2Vec2(300, _myWorld.height - 20);
-			var ner2:b2Body = addBox(50, 10, loc, 0);
+			for(var k:int=0; k < 26; k++)
+			{
+				var nercle:b2Body = new Body(_myWorld, 400, 100, 30, 20, Body.CIRCLE, null, 0, 0, 0.3, 0.8).body;
+			}
 			
-			attachFixed(ner, ner2, new b2Vec2(-30,0), new b2Vec2(30,0), 45);
-		
+			var squaner:b2Body = new Body(_myWorld, 450, 150, 30, 30, Body.RECTANGLE).body;
 			
+			// make triangle
+			var triangleVerts:Array = new Array();
+				triangleVerts.push(new b2Vec2(50,50));
+				triangleVerts.push(new b2Vec2(-50,-50));
+				triangleVerts.push(new b2Vec2(50, -50));
+			
+			var triBody:Body = new Body(_myWorld, 300, 20, 100, 100, Body.TRIANGLE, triangleVerts);
+			triBody.addShape(-20, -10, 100);
+			
+//			var nersticle:Array = new Array();
+//			
+//			attachRod(triner, squaner, new b2Vec2(-50,-50), new b2Vec2(0,0), 150);
+			var statTri:b2Body = Body.staticBody(_myWorld, 300, 300, 100, 100, Body.TRIANGLE, triangleVerts, -2).body;
+			
+
+			addStuff(_world);
 		}
 		
 		private function addBox(w:int, h:int, loc:b2Vec2, angle:int=0):b2Body
 		{
-			var robotGroup:int = -2;
-			
-			var polyD:b2PolygonDef = new b2PolygonDef();
-				polyD.SetAsBox(w / _physScale, h / _physScale);
-				polyD.density = 20.0;
-				polyD.friction = 0.8;
-				
-				polyD.filter.groupIndex = robotGroup;
-			
-			var bodyD:b2BodyDef = new b2BodyDef();
-				bodyD.position.Set(loc.x / _physScale, loc.y / _physScale);
-				bodyD.angle = angle * (Math.PI / 180);
-			
-			var body:b2Body = _world.CreateBody(bodyD);
-				body.CreateShape(polyD);
-				body.SetMassFromShapes();
-				
-			return body;
+			// handy for making stiff objects like the robot parts (isBullets!)
+			return 	new Body(_myWorld, loc.x, loc.y, w, h, Body.RECTANGLE, null, -2, 0, 0.8, 0.1, 1.0, true).body; //80, 10, new b2Vec2(robot.GetPosition().x, robot.GetPosition().y - (30 / _physScale)));
 		}
 		
 		private function addArmToBox(parent:b2Body, w:int, h:int, loc:b2Vec2, anchor:b2Vec2):b2Body
@@ -214,15 +223,15 @@ package
 			return arm;
 		}
 		
-		private function attachHinge(body1:b2Body, body2:b2Body, loc1:b2Vec2, loc2:b2Vec2, motorize:Boolean=false, speed:Number=0, torque:Number=10000):b2RevoluteJoint
+		private function attachHinge(body1:b2Body, body2:b2Body, body1Loc:b2Vec2, body2Loc:b2Vec2, motorize:Boolean=false, speed:Number=0, torque:Number=10000):b2RevoluteJoint
 		{
 			var jointD:b2RevoluteJointDef = new b2RevoluteJointDef();
 				jointD.body1 = body1;
 				jointD.body2 = body2;
 				jointD.localAnchor1 = body1.GetLocalPoint(body1.GetPosition());
-				jointD.localAnchor1.Subtract(new b2Vec2(loc1.x / _physScale, loc1.y / _physScale));
+				jointD.localAnchor1.Subtract(new b2Vec2(body1Loc.x / _physScale, body1Loc.y / _physScale));
 				jointD.localAnchor2 = body2.GetLocalPoint(body2.GetPosition());
-				jointD.localAnchor2.Subtract(new b2Vec2(loc2.x / _physScale, loc2.y / _physScale));
+				jointD.localAnchor2.Subtract(new b2Vec2(body2Loc.x / _physScale, body2Loc.y / _physScale));
 				jointD.referenceAngle = body1.GetAngle() - body2.GetAngle();
 
 				jointD.enableMotor = motorize;
@@ -232,7 +241,7 @@ package
 			return _world.CreateJoint(jointD) as b2RevoluteJoint;
 		}
 		
-		private function attachFixed(body1:b2Body, body2:b2Body, loc1:b2Vec2, loc2:b2Vec2, angle:Number):b2RevoluteJoint
+		private function attachFixed(body1:b2Body, body2:b2Body, body1Loc:b2Vec2, body2Loc:b2Vec2, angle:Number):b2RevoluteJoint
 		{
 
 			var jointD:b2RevoluteJointDef = new b2RevoluteJointDef();
@@ -240,9 +249,9 @@ package
 				jointD.body1 = body1;
 				jointD.body2 = body2;
 				jointD.localAnchor1 = body1.GetLocalPoint(body1.GetPosition());
-				jointD.localAnchor1.Subtract(new b2Vec2(loc1.x / _physScale, loc1.y / _physScale));
+				jointD.localAnchor1.Subtract(new b2Vec2(body1Loc.x / _physScale, body1Loc.y / _physScale));
 				jointD.localAnchor2 = body2.GetLocalPoint(body2.GetPosition());
-				jointD.localAnchor2.Subtract(new b2Vec2(loc2.x / _physScale, loc2.y / _physScale));
+				jointD.localAnchor2.Subtract(new b2Vec2(body2Loc.x / _physScale, body2Loc.y / _physScale));
 				jointD.referenceAngle = (angle - 180) * (Math.PI/180);
 				
 				
@@ -253,36 +262,41 @@ package
 			return _world.CreateJoint(jointD) as b2RevoluteJoint;	
 		}
 		
-		private function attachFree(body1:b2Body, body2:b2Body, loc1:b2Vec2, loc2:b2Vec2):b2DistanceJoint
+		private function attachRod(body1:b2Body, body2:b2Body, body1Loc:b2Vec2, body2Loc:b2Vec2, length:Number=10):b2DistanceJoint
 		{
 			var jointD:b2DistanceJointDef = new b2DistanceJointDef();
 				
 				jointD.body1 = body1;
 				jointD.body2 = body2;
 				jointD.localAnchor1 = body1.GetLocalPoint(body1.GetPosition());
-				jointD.localAnchor1.Subtract(new b2Vec2(loc1.x / _physScale, loc1.y / _physScale));
+				jointD.localAnchor1.Subtract(new b2Vec2(body1Loc.x / _physScale, body1Loc.y / _physScale));
 				jointD.localAnchor2 = body2.GetLocalPoint(body2.GetPosition());
-				jointD.localAnchor2.Subtract(new b2Vec2(loc2.x / _physScale, loc2.y / _physScale));
-			
+				jointD.localAnchor2.Subtract(new b2Vec2(body2Loc.x / _physScale, body2Loc.y / _physScale));
+				
+				jointD.length = length / _physScale;
+				
 			return _world.CreateJoint(jointD) as b2DistanceJoint;	
 		}
 		
 		private function addPrimativeLeg(robot:b2Body):void
 		{
-			var armLoc:b2Vec2 = new b2Vec2(100, 100);
+			var armLoc:b2Vec2 = new b2Vec2(100, 200);
 			var arm1:b2Body = addBox(10, 40, armLoc);
 			var arm2:b2Body = addBox(10, 40, armLoc);
+			var arm3:b2Body = addBox(10, 40, armLoc);
 			
 			var speed:Number = 90; // degrees per sec
 			var torques:Number = 1000000; // whatever N-m means
 			
-			attachHinge(robot, arm1, new b2Vec2(40, 0), new b2Vec2(0, 30), true, speed, torques);
-			attachHinge(robot, arm2, new b2Vec2(-40, 0), new b2Vec2(0, 30), true, speed, torques);
+			attachHinge(robot, arm1, new b2Vec2(60, 0), new b2Vec2(0, 30), true, speed, torques);
+			attachHinge(robot, arm2, new b2Vec2(-60, 0), new b2Vec2(0, 30), true, speed, torques);
+			attachHinge(robot, arm3, new b2Vec2(0, 0), new b2Vec2(0, 30), true, speed, torques);
 			
 			var ankle:b2Vec2 = new b2Vec2(0, -36);
 			var foot:b2Body = addBox(80, 10, new b2Vec2(robot.GetPosition().x, robot.GetPosition().y - (30 / _physScale)));
-			attachHinge(arm1, foot, ankle, new b2Vec2(40, 0));
-			attachHinge(arm2, foot, ankle, new b2Vec2(-40, 0));
+			attachHinge(arm1, foot, ankle, new b2Vec2(60, 0));
+			attachHinge(arm2, foot, ankle, new b2Vec2(-60, 0));
+			attachHinge(arm3, foot, ankle, new b2Vec2(0, 0));
 //			var armLoc:b2Vec2 = new b2Vec2(70, 360-50-40);
 //			var forearmLoc:b2Vec2 = new b2Vec2(50, 360-(50+80));
 //			var armHingeLoc:b2Vec2 = new b2Vec2(20,-10);
@@ -360,77 +374,78 @@ package
 				
 		private function addStuff(world:b2World):void
 		{
-			// Spawn in a bunch of crap
-			
+//			// Spawn in a bunch of crap
+//			
 			var body:b2Body;
 			var i:uint;
-			for (i = 0; i < 5; i++){
-				var bodyDef:b2BodyDef = new b2BodyDef();
-				//bodyDef.isBullet = true;
-				var boxDef:b2PolygonDef = new b2PolygonDef();
-				boxDef.density = 1.0;
-				// Override the default friction.
-				boxDef.friction = 0.3;
-				boxDef.restitution = 0.1;
-				boxDef.SetAsBox((Math.random() * 5 + 10) / _physScale, (Math.random() * 5 + 10) / _physScale);
-				bodyDef.position.Set((Math.random() * 400 + 120) / _physScale, (Math.random() * 150 - 150) / _physScale);
-				bodyDef.angle = Math.random() * Math.PI;
-				body = world.CreateBody(bodyDef);
-				body.CreateShape(boxDef);
-				body.SetMassFromShapes();
-			}
-			for (i = 0; i < 5; i++){
-				var bodyDefC:b2BodyDef = new b2BodyDef();
-				//bodyDefC.isBullet = true;
-				var circDef:b2CircleDef = new b2CircleDef();
-				circDef.density = 1.0;
-				circDef.radius = (Math.random() * 5 + 10) / _physScale;
-				// Override the default friction.
-				circDef.friction = 0.3;
-				circDef.restitution = 0.1;
-				bodyDefC.position.Set((Math.random() * 400 + 120) / _physScale, (Math.random() * 150 - 150) / _physScale);
-				bodyDefC.angle = Math.random() * Math.PI;
-				body = world.CreateBody(bodyDefC);
-				body.CreateShape(circDef);
-				body.SetMassFromShapes();
-				
-			}
 //			for (i = 0; i < 5; i++){
-//				var bodyDefP:b2BodyDef = new b2BodyDef();
-//				//bodyDefP.isBullet = true;
-//				var polyDef:b2PolygonDef = new b2PolygonDef();
-//				if (Math.random() > 0.66){
-//					polyDef.vertexCount = 4;
-//					polyDef.vertices[0].Set((-10 -Math.random()*10) / _physScale, ( 10 +Math.random()*10) / _physScale);
-//					polyDef.vertices[1].Set(( -5 -Math.random()*10) / _physScale, (-10 -Math.random()*10) / _physScale);
-//					polyDef.vertices[2].Set((  5 +Math.random()*10) / _physScale, (-10 -Math.random()*10) / _physScale);
-//					polyDef.vertices[3].Set(( 10 +Math.random()*10) / _physScale, ( 10 +Math.random()*10) / _physScale);
-//				}
-//				else if (Math.random() > 0.5){
-//					polyDef.vertexCount = 5;
-//					polyDef.vertices[0].Set(0, (10 +Math.random()*10) / _physScale);
-//					polyDef.vertices[2].Set((-5 -Math.random()*10) / _physScale, (-10 -Math.random()*10) / _physScale);
-//					polyDef.vertices[3].Set(( 5 +Math.random()*10) / _physScale, (-10 -Math.random()*10) / _physScale);
-//					polyDef.vertices[1].Set((polyDef.vertices[0].x + polyDef.vertices[2].x), (polyDef.vertices[0].y + polyDef.vertices[2].y));
-//					polyDef.vertices[1].Multiply(Math.random()/2+0.8);
-//					polyDef.vertices[4].Set((polyDef.vertices[3].x + polyDef.vertices[0].x), (polyDef.vertices[3].y + polyDef.vertices[0].y));
-//					polyDef.vertices[4].Multiply(Math.random()/2+0.8);
-//				}
-//				else{
-//					polyDef.vertexCount = 3;
-//					polyDef.vertices[0].Set(0, (10 +Math.random()*10) / _physScale);
-//					polyDef.vertices[1].Set((-5 -Math.random()*10) / _physScale, (-10 -Math.random()*10) / _physScale);
-//					polyDef.vertices[2].Set(( 5 +Math.random()*10) / _physScale, (-10 -Math.random()*10) / _physScale);
-//				}
-//				polyDef.density = 1.0;
-//				polyDef.friction = 0.3;
-//				polyDef.restitution = 0.1;
-//				bodyDefP.position.Set((Math.random() * 400 + 120) / _physScale, (Math.random() * 150 + 50) / _physScale);
-//				bodyDefP.angle = Math.random() * Math.PI;
-//				body = world.CreateBody(bodyDefP);
-//				body.CreateShape(polyDef);
+//				var bodyDef:b2BodyDef = new b2BodyDef();
+//				//bodyDef.isBullet = true;
+//				var boxDef:b2PolygonDef = new b2PolygonDef();
+//				boxDef.density = 1.0;
+//				// Override the default friction.
+//				boxDef.friction = 0.3;
+//				boxDef.restitution = 0.1;
+//				boxDef.SetAsBox((Math.random() * 5 + 10) / _physScale, (Math.random() * 5 + 10) / _physScale);
+//				bodyDef.position.Set((Math.random() * 400 + 120) / _physScale, (Math.random() * 150 - 150) / _physScale);
+//				bodyDef.angle = Math.random() * Math.PI;
+//				body = world.CreateBody(bodyDef);
+//				body.CreateShape(boxDef);
 //				body.SetMassFromShapes();
 //			}
+//			for (i = 0; i < 5; i++){
+//				var bodyDefC:b2BodyDef = new b2BodyDef();
+//				//bodyDefC.isBullet = true;
+//				var circDef:b2CircleDef = new b2CircleDef();
+//				circDef.density = 1.0;
+//				circDef.radius = (Math.random() * 5 + 10) / _physScale;
+//				// Override the default friction.
+//				circDef.friction = 0.3;
+//				circDef.restitution = 0.1;
+//				bodyDefC.position.Set((Math.random() * 400 + 120) / _physScale, (Math.random() * 150 - 150) / _physScale);
+//				bodyDefC.angle = Math.random() * Math.PI;
+//				body = world.CreateBody(bodyDefC);
+//				body.CreateShape(circDef);
+//				body.SetMassFromShapes();
+//				
+//			}
+			for (i = 0; i < 5; i++){
+				var bodyDefP:b2BodyDef = new b2BodyDef();
+				//bodyDefP.isBullet = true;
+				var polyDef:b2PolygonDef = new b2PolygonDef();
+				if (Math.random() > 0.66){
+					polyDef.vertexCount = 4;
+					polyDef.vertices[0].Set((-10 -Math.random()*10) / _physScale, ( 10 +Math.random()*10) / _physScale);
+					polyDef.vertices[1].Set(( -5 -Math.random()*10) / _physScale, (-10 -Math.random()*10) / _physScale);
+					polyDef.vertices[2].Set((  5 +Math.random()*10) / _physScale, (-10 -Math.random()*10) / _physScale);
+					polyDef.vertices[3].Set(( 10 +Math.random()*10) / _physScale, ( 10 +Math.random()*10) / _physScale);
+				}
+				else if (Math.random() > 0.5){
+					polyDef.vertexCount = 5;
+					polyDef.vertices[0].Set(0, (10 +Math.random()*10) / _physScale);
+					polyDef.vertices[2].Set((-5 -Math.random()*10) / _physScale, (-10 -Math.random()*10) / _physScale);
+					polyDef.vertices[3].Set(( 5 +Math.random()*10) / _physScale, (-10 -Math.random()*10) / _physScale);
+					polyDef.vertices[1].Set((polyDef.vertices[0].x + polyDef.vertices[2].x), (polyDef.vertices[0].y + polyDef.vertices[2].y));
+					polyDef.vertices[1].Multiply(Math.random()/2+0.8);
+					polyDef.vertices[4].Set((polyDef.vertices[3].x + polyDef.vertices[0].x), (polyDef.vertices[3].y + polyDef.vertices[0].y));
+					polyDef.vertices[4].Multiply(Math.random()/2+0.8);
+				}
+				else{
+					polyDef.vertexCount = 3;
+					polyDef.vertices[0].Set(0, (10 +Math.random()*10) / _physScale);
+					polyDef.vertices[1].Set((-5 -Math.random()*10) / _physScale, (-10 -Math.random()*10) / _physScale);
+					polyDef.vertices[2].Set(( 5 +Math.random()*10) / _physScale, (-10 -Math.random()*10) / _physScale);
+				}
+				polyDef.density = 1.0;
+				polyDef.friction = 0.3;
+				polyDef.restitution = 0.1;
+				bodyDefP.position.Set((Math.random() * 400 + 120) / _physScale, (Math.random() * 150 + 50) / _physScale);
+				bodyDefP.angle = Math.random() * Math.PI;
+				body = world.CreateBody(bodyDefP);
+				body.CreateShape(polyDef as b2ShapeDef);
+				body.SetUserData("ner main");
+				body.SetMassFromShapes();
+			}
 		}
 		
 		private function addWalls():void

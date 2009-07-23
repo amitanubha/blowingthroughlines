@@ -66,21 +66,30 @@ package
 		
 		public function MondoSpider()
 		{
- 			this.addEventListener(Event.ADDED_TO_STAGE, init);
-// 			init();
-//
-//			for( var i:int=1; i < 20; i+=2)
-//			{
-//				trace(i, i%2, i+(i%2), i+(i%3));
-//				
-//			}
-			
-//			var tester:Sprite = new Sprite();
-//				tester.graphics.lineStyle(10, 0xbada55, 1, false, "normal", CapsStyle.ROUND, JointStyle.ROUND);
-//				tester.graphics.moveTo(300,100);
-//				tester.graphics.curveTo(300,200, 400,200);
-//			this.addChild(tester);
-			
+ 			this.addEventListener(Event.ADDED_TO_STAGE, init); // since we're using the schloader
+ 			
+ 			var circleDots:Sprite = new Sprite();
+ 			circleDots.graphics.beginFill(0x123456, 0.8);
+ 			circleDots.graphics.drawCircle(0,0,100);
+ 			
+ 			var segments:int = 6;
+ 			var angle:Number = 360 / segments;
+ 				angle *= (Math.PI/180);
+ 			
+ 			for(var i:int=0; i < segments; i++)
+ 			{
+ 				var dotX:Number = 100*Math.cos(angle*i)+0;
+				var dotY:Number = 100*Math.sin(angle*i)+0;
+				circleDots.graphics.drawCircle(dotX, dotY, 10);
+ 			}
+ 			
+ 			
+ 			circleDots.x = 400;
+ 			circleDots.y = 300;
+ 			
+ 			this.addChild(circleDots);
+ 			
+ 			
 		}
 		
 		public function init(evt:Event=null):void
@@ -155,12 +164,12 @@ package
 //			
 //			attachFixed(ner, ner2, new b2Vec2(-30,0), new b2Vec2(30,0), 45);
 			
-//			for(var k:int=0; k < 26; k++)
-//			{
-//				var nercle:b2Body = new Body(_myWorld, 400, 100, 30, 20, Body.CIRCLE, null, 0, 0, 0.3, 0.8).body;
-//			}
+			for(var k:int=0; k < 5; k++)
+			{
+//				var nercle:b2Body = new Body(_myWorld, 400, 100, 30, 20, Body.CIRCLE, null, 0, 0, false, 0.3, 0.8).body;
+			}
 			
-			var squaner:b2Body = new Body(_myWorld, 450, 150, 30, 30, Body.RECTANGLE).body;
+//			var squaner:b2Body = new Body(_myWorld, 450, 150, 30, 30, Body.RECTANGLE).body;
 			
 			// make triangle
 			var triangleVerts:Array = new Array();
@@ -182,39 +191,85 @@ package
 			
 			// test spinning bar with stuff
 			var highLoc:b2Vec2 = new b2Vec2(200,250);
+			var wheelDiamter:int = 80;
 			
 //			var highBox:b2Body = Body.staticBody(_myWorld, highLoc.x, highLoc.y, 120, 80, Body.RECTANGLE, null, -3).body;
-			var highBox:b2Body = new Body(_myWorld, highLoc.x, highLoc.y, 120, 80, Body.RECTANGLE, null, -3).body;
-			var highWheel:b2Body = new Body(_myWorld, highLoc.x, highLoc.y, 80, 0, Body.CIRCLE, null, -3).body;
+			var highBox:b2Body = new Body(_myWorld, highLoc.x, highLoc.y, 200, 80, Body.RECTANGLE, null, -3, 0, true).body;
+			var highWheel:b2Body = new Body(_myWorld, highLoc.x, highLoc.y, wheelDiamter, 0, Body.CIRCLE, null, -3, 0, true).body;
 			var highAxelLoc:b2Vec2 = new b2Vec2(0,0);
 			
-			var arm1:b2Body = new Body(_myWorld, highLoc.x+60, highLoc.y, 80, 20, Body.RECTANGLE, null, -3).body;
-			var arm2:b2Body = new Body(_myWorld, highLoc.x-60, highLoc.y, 80, 20, Body.RECTANGLE, null, -3).body;
+			joinHinge(highBox, highWheel, new b2Vec2(10,0), highAxelLoc, true, 60);
+
+//			var arm1:b2Body = new Body(_myWorld, highLoc.x-60, highLoc.y, 100, 10, Body.RECTANGLE, null, -3, -90, true).body;
+//			var arm2:b2Body = new Body(_myWorld, highLoc.x-60, highLoc.y, 100, 10, Body.RECTANGLE, null, -3, -90, true).body; // weird the stars weren't aligned for this one...
+//			var arm3:b2Body = new Body(_myWorld, highLoc.x-60, highLoc.y, 100, 10, Body.RECTANGLE, null, -3, -90, true).body;
+//			var arm4:b2Body = new Body(_myWorld, highLoc.x-60, highLoc.y, 100, 10, Body.RECTANGLE, null, -3, -90, true).body;
+//			var arm5:b2Body = new Body(_myWorld, highLoc.x-60, highLoc.y, 100, 10, Body.RECTANGLE, null, -3, -90, true).body;
+//			var arm6:b2Body = new Body(_myWorld, highLoc.x-60, highLoc.y, 100, 10, Body.RECTANGLE, null, -3, -90, true).body;
+//			
+//			var arms:Array = [arm1, arm2, arm3, arm4, arm5, arm6]
 			
-			joinHinge(highWheel, arm1, new b2Vec2(30, 0), new b2Vec2(-30, 0));
-			joinHinge(highWheel, arm2, new b2Vec2(-30, 0), new b2Vec2(30, 0));
-			joinHinge(highBox, highWheel, highAxelLoc, highAxelLoc, true, 90);
 			
-			var shin1:b2Body = new Body(_myWorld, highLoc.x+120, highLoc.y, 80, 20, Body.RECTANGLE, null, -3).body;
-			joinHinge(arm1, shin1, new b2Vec2(30, 0), new b2Vec2(-30, 0));
-			var shin2:b2Body = new Body(_myWorld, highLoc.x-120, highLoc.y, 80, 20, Body.RECTANGLE, null, -3).body;
-			joinHinge(arm2, shin2, new b2Vec2(-30, 0), new b2Vec2(30, 0));
+//			
+//			joinHinge(highWheel, arm1, new b2Vec2(30, 0), new b2Vec2(10, 0));
+//			joinHinge(highWheel, arm2, new b2Vec2(-30, 0), new b2Vec2(10, 0));
+//			joinHinge(highWheel, arm3, new b2Vec2(0,30), new b2Vec2(10, 0));
+//			joinHinge(highWheel, arm4, new b2Vec2(0,-30), new b2Vec2(10, 0));
+
+			var arms:int = 6;
 			
-			var ankle1:b2Body = new Body(_myWorld, highLoc.x+10, highLoc.y-30, 60, 10, Body.RECTANGLE, null, -3).body;
-			var ankle2:b2Body = new Body(_myWorld, highLoc.x-10, highLoc.y-30, 60, 10, Body.RECTANGLE, null, -3).body;
+			var theta:Number = (360 / arms)*(Math.PI/180);
+			var wheelLoc:b2Vec2 = new b2Vec2();
+			var armLoc:b2Vec2 = new b2Vec2(10, 0);
 			
-			joinHinge(highBox, ankle1, new b2Vec2(50, 30), new b2Vec2(-20, 0));
-			joinHinge(highBox, ankle2, new b2Vec2(-50, 30), new b2Vec2(20, 0));
+			for(var m:int=0; m < arms; m++)
+			{
+				var arm:b2Body = new Body(_myWorld, highLoc.x-60, highLoc.y, 100, 10, Body.RECTANGLE, null, -3, -90, true).body;
+					wheelLoc.x = (wheelDiamter/2 - 10) * Math.cos(theta * m) + 0;
+					wheelLoc.y = (wheelDiamter/2 - 10) * Math.sin(theta * m) + 0;
+				joinHinge(highWheel, arm, wheelLoc, armLoc);
+				joinRod(highBox, arm, new b2Vec2(highAxelLoc.x + 50, highAxelLoc.y + 30), new b2Vec2(-40, 0), 50);
+			}
+
+			//var shin1:b2Body = new Body(_myWorld, highLoc.x+120, highLoc.y, 80, 20, Body.RECTANGLE, null, -3).body;
+			//joinHinge(arm1, shin1, new b2Vec2(-30, 0), new b2Vec2(30, 0));
+			//var shin2:b2Body = new Body(_myWorld, highLoc.x-120, highLoc.y, 80, 20, Body.RECTANGLE, null, -3).body;
+			//joinHinge(arm2, shin2, new b2Vec2(-30, 0), new b2Vec2(30, 0));
 			
-			joinHinge(shin1, ankle1, new b2Vec2(20, 0), new b2Vec2(20, 0));
-			joinHinge(shin2, ankle2, new b2Vec2(-20, 0), new b2Vec2(-20, 0));
+//			var ankle1:b2Body = new Body(_myWorld, highLoc.x-10, highLoc.y-30, 60, 10, Body.RECTANGLE, null, -3).body;
+//			var ankle2:b2Body = new Body(_myWorld, highLoc.x-10, highLoc.y-30, 60, 10, Body.RECTANGLE, null, -3).body;
+			
+//			joinRod(highBox, arm1, new b2Vec2(50, 30), new b2Vec2(-40, 0), 50);
+//			joinRod(highBox, arm2, new b2Vec2(50, 30), new b2Vec2(-40, 0), 50);
+//			joinRod(highBox, arm3, new b2Vec2(50, 30), new b2Vec2(-40, 0), 50);
+//			joinRod(highBox, arm4, new b2Vec2(50, 30), new b2Vec2(-40, 0), 50);
+			
+//			joinHinge(highBox, ankle1, new b2Vec2(50, 30), new b2Vec2(20, 0)); // these will make the shin a 
+//			joinHinge(highBox, ankle2, new b2Vec2(50, 30), new b2Vec2(20, 0));
+//			joinHinge(highBox, ankle1, new b2Vec2(-50, 30), new b2Vec2(20, 0));
+//			joinHinge(highBox, ankle2, new b2Vec2(-50, 30), new b2Vec2(20, 0));
+			
+//			joinHinge(arm1, ankle1, new b2Vec2(-40, 0), new b2Vec2(-50, 0));
+//			joinHinge(arm2, ankle2, new b2Vec2(-40, 0), new b2Vec2(-50, 0));
+//			joinHinge(shin1, ankle1, new b2Vec2(-20, 0), new b2Vec2(-20, 0));
+//			joinHinge(shin2, ankle2, new b2Vec2(-20, 0), new b2Vec2(-20, 0));
+
+//			var rearWheel:b2Body = new Body(_myWorld, highLoc.x-100, highLoc.y-80, 40, 0, "circle", null, -3, 0, true, 0.3, 0.1, 1.0).body;
+//			joinHinge(highBox, rearWheel, new b2Vec2(180, -50), highAxelLoc);
+//			var frontWheel:b2Body = new Body(_myWorld, highLoc.x+90, highLoc.y-50, 40, 0, "circle", null, -3, 0, true, 0.3, 0.1, 1.0).body;
+//			joinHinge(highBox, frontWheel, new b2Vec2(-90, -50), highAxelLoc);
+
+			trace(arms[0]);
+			
+			var gear1:b2Body = new Body(_myWorld, 500, 200, 200).body;
+			joinHinge(_world.GetGroundBody(), gear1, new b2Vec2(-500, -200), new b2Vec2(0,0));
 			
 		}
 		
 		private function addBox(w:int, h:int, loc:b2Vec2, angle:int=0):b2Body
 		{
 			// handy for making stiff objects like the robot parts (isBullets!)
-			return 	new Body(_myWorld, loc.x, loc.y, w*2, h*2, Body.RECTANGLE, null, -2, 0, 0.8, 0.1, 1.0, true).body; //80, 10, new b2Vec2(robot.GetPosition().x, robot.GetPosition().y - (30 / _physScale)));
+			return 	new Body(_myWorld, loc.x, loc.y, w*2, h*2, Body.RECTANGLE, null, -2, 0, true, 0.8, 0.1, 1.0).body; //80, 10, new b2Vec2(robot.GetPosition().x, robot.GetPosition().y - (30 / _physScale)));
 		}
 		
 		private function addArmToBox(parent:b2Body, w:int, h:int, loc:b2Vec2, anchor:b2Vec2):b2Body
@@ -363,7 +418,7 @@ package
 			addChainTexture(chain1);
 			chain2.destroy();
 			
-			var desc:b2Body = new Body(_myWorld, 700, 300, 360, 200, Body.RECTANGLE, null, -2, 0, 0.3, 0.9, 0.01).body;
+			var desc:b2Body = new Body(_myWorld, 700, 300, 360, 200, Body.RECTANGLE, null, -2, 0, false, 0.3, 0.9, 0.01).body;
 			joinHinge(chain1.bodies[chain1.bodies.length-1] as b2Body, desc, new b2Vec2(0,0), new b2Vec2(0, 80));
 		}
 		

@@ -37,4 +37,15 @@
   </applications>
   <modules/>
   <buildCSSFiles/>
+  <publishSource>
+    <sourcePathIncludes>
+      <include path="src_box2dflash"/>
+      <include path="src_paperclipped"/>
+    </sourcePathIncludes>
+    <sourceExcludes>
+      <exclude path="assets"/>
+      <exclude path="html-template"/>
+      <exclude path="libs"/>
+    </sourceExcludes>
+  </publishSource>
 </actionScriptProperties>

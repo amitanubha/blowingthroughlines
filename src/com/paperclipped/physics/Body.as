@@ -45,6 +45,9 @@ package com.paperclipped.physics
 		 * @see 	http://www.box2d.org/wiki/index.php?title=Linking_graphics_to_bodies_in_Box2D_AS3#A_different_approach
 		 */		
 		public function get graphic():DisplayObject 	{ return _graphic;	}
+//		public function get radius()
+//		public function get width()
+//		public function get height()
 //-------------------------------------------------------------------------------------------//
 
 //------------------------------------------Setters------------------------------------------//
@@ -78,17 +81,17 @@ package com.paperclipped.physics
 		 * @param vertices		Array of b2Vec2 objects from 3 to 8 points.
 		 * @param group			Collision group to add the body to.
 		 * @param angle			Angle in degrees.
+		 * @param isBullet		Is this a fast moving body that should be prevented from tunneling through other moving bodies? Note that all bodies are prevented from tunneling through static bodies.
 		 * @param friction		The shape's friction coefficient, usually in the range [0,1].
 		 * @param restitution	The shape's restitution (elasticity) usually in the range [0,1].
 		 * @param density		The shape's density, usually in kg/m^2.
-		 * @param isBullet		Is this a fast moving body that should be prevented from tunneling through other moving bodies? Note that all bodies are prevented from tunneling through static bodies.
 		 * @param categoryBits	!!! Still don't undestand this!!!
 		 * @param maskBits		!!! Still don't undestand this!!!
 		 * 
 		 * @see #staticBody()
 		 * @see #complexBody()
 		 */		
-		public function Body(world:World, x:int, y:int, w:Number=20, h:Number=20, shape:String="circle", vertices:Array=null, group:int=0, angle:Number=0, friction:Number=0.3, restitution:Number=0.1, density:Number=1.0, isBullet:Boolean=false, categoryBits:Number=0x0000, maskBits:Number=0x0000, displayGraphic:DisplayObject=null)
+		public function Body(world:World, x:int, y:int, w:Number=20, h:Number=20, shape:String="circle", vertices:Array=null, group:int=0, angle:Number=0, isBullet:Boolean=false, friction:Number=0.3, restitution:Number=0.1, density:Number=1.0, categoryBits:Number=0x0000, maskBits:Number=0x0000, displayGraphic:DisplayObject=null)
 		{
 			_bodyDef 	= new b2BodyDef();
 			_scale 		= world.scale;
@@ -188,14 +191,14 @@ package com.paperclipped.physics
 		 */		
 		public static function staticBody(world:World, x:int, y:int, w:Number=20, h:Number=20, shape:String="circle", vertices:Array=null, group:int=0, angle:Number=0, friction:Number=0.3, categoryBits:Number=0x0000, maskBits:Number=0x0000):Body
 		{
-			return new Body(world, x, y, w, h, shape, vertices, group, angle, friction, 0, 0, false, categoryBits, maskBits);
+			return new Body(world, x, y, w, h, shape, vertices, group, angle, false, friction, 0, 0, categoryBits, maskBits);
 		}
 		
 		
-		public static function complexBody(world:World, x:int, y:int, shapes:Array, group:int=0, angle:Number=0, friction:Number=0.3, restitution:Number=0.1, density:Number=1.0, isBullet:Boolean=false, maskBits:Number=0x0000, categoryBits:Number=0x0000):Body
+		public static function complexBody(world:World, x:int, y:int, shapes:Array, group:int=0, angle:Number=0, isBullet:Boolean=false, friction:Number=0.3, restitution:Number=0.1, density:Number=1.0, maskBits:Number=0x0000, categoryBits:Number=0x0000):Body
 		{
 			var shapeObj:Object = shapes[0];
-			var myBody:Body = new Body(world, x, y, shapeObj.width, shapeObj.height, shapeObj.shape, shapeObj.verticies, group, angle, friction, restitution, density, isBullet, categoryBits, maskBits);
+			var myBody:Body = new Body(world, x, y, shapeObj.width, shapeObj.height, shapeObj.shape, shapeObj.verticies, group, angle, isBullet, friction, restitution, density, categoryBits, maskBits);
 			
 			for(var i:int=1; i < shapes.length; i++)
 			{

@@ -70,7 +70,7 @@ package com.paperclipped.physics
 			{
 				link = new b2PolygonDef();
 				link.SetAsBox(24 / scale, 5 / scale);
-				link.density = 100.0;
+				link.density = 1.0;
 				link.friction = 0.8;
 			}
 			

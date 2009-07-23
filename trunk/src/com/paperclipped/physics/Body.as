@@ -10,7 +10,6 @@ package com.paperclipped.physics
 	import Box2D.Dynamics.b2World;
 	
 	import flash.display.DisplayObject;
-	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.geom.Matrix;
 
@@ -73,7 +72,7 @@ package com.paperclipped.physics
 		 * @param world			The World object to add the body to.
 		 * @param x				X location of the body (in normal dimensions).
 		 * @param y				Y location of the body (in normal dimensions).
-		 * @param w				Width of rectangle or radius of circle.
+		 * @param w				Width of rectangle or diameter of circle.
 		 * @param h				Height of rectangle, ignored for all other shapes.
 		 * @param shape			Type of shape Body.CIRCLE, Body.RECTANGLE, Body.Triangle or Body.POLYGON accepted.
 		 * @param vertices		Array of b2Vec2 objects from 3 to 8 points.
@@ -114,9 +113,9 @@ package com.paperclipped.physics
 		/**
 		 * This allows you to add more shapes to a body. x and y values are offset from the center of the body.
 		 * 
-		 * @param x				Horizontal offset of the new shape relative to the body.
-		 * @param y				Vertical offset of the new shape relative to the body.
-		 * @param w				Width of rectangle or radius of circle.
+		 * @param x				Horizontal offset of the new TRIANGLE or POLYGON relative to the body.
+		 * @param y				Vertical offset of the new TRIANGLE or POLYGON relative to the body.
+		 * @param w				Width of rectangle or diameter of circle.
 		 * @param h				Height of rectangle, ignored for all other shapes.
 		 * @param vertices		Array of b2Vec2 objects from 3 to 8 points.
 		 * @param shape			Type of shape Body.CIRCLE, Body.RECTANGLE, Body.Triangle or Body.POLYGON accepted.
@@ -143,7 +142,7 @@ package com.paperclipped.physics
 				break;
 				
 				default: // POLYGON
-				shapeDef = createPolygon(vertices) as b2PolygonDef;
+				shapeDef = createPolygon(vertices, x, y) as b2PolygonDef;
 				break;
 			}
 			
@@ -187,15 +186,16 @@ package com.paperclipped.physics
 		 * @return 			Body object, use Body.body to retrieve the b2Body that is created.
 		 * @see #Body()
 		 */		
-		public static function staticBody(world:World, x:int, y:int, w:Number=20, h:Number=20, shape:String="circle", vertices:Array=null, group:int=0, angle:Number=0, categoryBits:Number=0x0000, maskBits:Number=0x0000):Body
+		public static function staticBody(world:World, x:int, y:int, w:Number=20, h:Number=20, shape:String="circle", vertices:Array=null, group:int=0, angle:Number=0, friction:Number=0.3, categoryBits:Number=0x0000, maskBits:Number=0x0000):Body
 		{
-			return new Body(world, x, y, w, h, shape, vertices, group, angle, 0, 0, 0, false, categoryBits, maskBits);
+			return new Body(world, x, y, w, h, shape, vertices, group, angle, friction, 0, 0, false, categoryBits, maskBits);
 		}
+		
 		
 		public static function complexBody(world:World, x:int, y:int, shapes:Array, group:int=0, angle:Number=0, friction:Number=0.3, restitution:Number=0.1, density:Number=1.0, isBullet:Boolean=false, maskBits:Number=0x0000, categoryBits:Number=0x0000):Body
 		{
 			var shapeObj:Object = shapes[0];
-			var myBody:Body = new Body(world, x, y, (shapeObj.width)?shapeObj.width:0, (shapeObj.height)?shapeObj.height:0, (shapeObj.shape)?shapeObj.shape:"circle", shapeObj.verticies, group, angle, friction, restitution, density, isBullet, categoryBits, maskBits);
+			var myBody:Body = new Body(world, x, y, shapeObj.width, shapeObj.height, shapeObj.shape, shapeObj.verticies, group, angle, friction, restitution, density, isBullet, categoryBits, maskBits);
 			
 			for(var i:int=1; i < shapes.length; i++)
 			{
@@ -220,17 +220,17 @@ package com.paperclipped.physics
 		private function createSquare(w:Number, h:Number):b2ShapeDef
 		{
 			var polyDef:b2PolygonDef = new b2PolygonDef();
-				polyDef.SetAsBox(w / _scale, h / _scale);
+				polyDef.SetAsBox((w / 2) / _scale, (h / 2) / _scale);
 			return polyDef;
 		}
 		
-		private function createPolygon(vertices:Array):b2ShapeDef
+		private function createPolygon(vertices:Array, offsetX:int=0, offsetY:int=0):b2ShapeDef
 		{
 			var polyDef:b2PolygonDef = new b2PolygonDef();
 				polyDef.vertexCount = vertices.length;
 			for(var i:int=0; i < vertices.length; i++)
 			{
-				polyDef.vertices[i].Set(vertices[i].x / _scale, vertices[i].y / _scale);
+				polyDef.vertices[i].Set((vertices[i].x + offsetX) / _scale, (vertices[i].y + offsetY) / _scale);
 			}
 			return polyDef;
 		}

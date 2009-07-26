@@ -5,8 +5,6 @@ package
 	import Box2D.Collision.Shapes.b2ShapeDef;
 	import Box2D.Collision.b2AABB;
 	import Box2D.Common.Math.b2Vec2;
-	import Box2D.Dynamics.Joints.b2DistanceJoint;
-	import Box2D.Dynamics.Joints.b2DistanceJointDef;
 	import Box2D.Dynamics.Joints.b2Joint;
 	import Box2D.Dynamics.Joints.b2MouseJoint;
 	import Box2D.Dynamics.Joints.b2MouseJointDef;
@@ -19,6 +17,7 @@ package
 	
 	import com.paperclipped.physics.Body;
 	import com.paperclipped.physics.Chain;
+	import com.paperclipped.physics.Joint;
 	import com.paperclipped.physics.Wall;
 	import com.paperclipped.physics.World;
 	
@@ -196,9 +195,9 @@ package
 //			var highBox:b2Body = Body.staticBody(_myWorld, highLoc.x, highLoc.y, 120, 80, Body.RECTANGLE, null, -3).body;
 			var highBox:b2Body = new Body(_myWorld, highLoc.x, highLoc.y, 200, 80, Body.RECTANGLE, null, -3, 0, true).body;
 			var highWheel:b2Body = new Body(_myWorld, highLoc.x, highLoc.y, wheelDiamter, 0, Body.CIRCLE, null, -3, 0, true).body;
-			var highAxelLoc:b2Vec2 = new b2Vec2(0,0);
+			var highAxelLoc:b2Vec2 = new b2Vec2(6,0);
 			
-			joinHinge(highBox, highWheel, new b2Vec2(10,0), highAxelLoc, true, 60);
+			new Joint(_myWorld, highBox, highWheel, highAxelLoc, new b2Vec2(0,0), Joint.HINGE, true, 60);
 
 //			var arm1:b2Body = new Body(_myWorld, highLoc.x-60, highLoc.y, 100, 10, Body.RECTANGLE, null, -3, -90, true).body;
 //			var arm2:b2Body = new Body(_myWorld, highLoc.x-60, highLoc.y, 100, 10, Body.RECTANGLE, null, -3, -90, true).body; // weird the stars weren't aligned for this one...
@@ -227,8 +226,8 @@ package
 				var arm:b2Body = new Body(_myWorld, highLoc.x-60, highLoc.y, 100, 10, Body.RECTANGLE, null, -3, -90, true).body;
 					wheelLoc.x = (wheelDiamter/2 - 10) * Math.cos(theta * m) + 0;
 					wheelLoc.y = (wheelDiamter/2 - 10) * Math.sin(theta * m) + 0;
-				joinHinge(highWheel, arm, wheelLoc, armLoc);
-				joinRod(highBox, arm, new b2Vec2(highAxelLoc.x + 50, highAxelLoc.y + 30), new b2Vec2(-40, 0), 50);
+				new Joint(_myWorld, highWheel, arm, wheelLoc, armLoc, Joint.HINGE);
+				new Joint(_myWorld, highBox, arm, new b2Vec2(highAxelLoc.x + 50, highAxelLoc.y + 30), new b2Vec2(-40, 0), Joint.ARM, false, 0, 0, 50);
 			}
 
 			//var shin1:b2Body = new Body(_myWorld, highLoc.x+120, highLoc.y, 80, 20, Body.RECTANGLE, null, -3).body;
@@ -259,10 +258,10 @@ package
 //			var frontWheel:b2Body = new Body(_myWorld, highLoc.x+90, highLoc.y-50, 40, 0, "circle", null, -3, 0, true, 0.3, 0.1, 1.0).body;
 //			joinHinge(highBox, frontWheel, new b2Vec2(-90, -50), highAxelLoc);
 
-			trace(arms[0]);
+//			trace(arms[0]);
 			
 			var gear1:b2Body = new Body(_myWorld, 500, 200, 200).body;
-			joinHinge(_world.GetGroundBody(), gear1, new b2Vec2(-500, -200), new b2Vec2(0,0));
+			new Joint(_myWorld, _world.GetGroundBody(), gear1, new b2Vec2(-500, -200), new b2Vec2(0,0), Joint.HINGE);
 			
 		}
 		
@@ -304,61 +303,61 @@ package
 			return arm;
 		}
 		
-		// these all go in a Joint class...
-		private function joinHinge(body1:b2Body, body2:b2Body, body1Loc:b2Vec2, body2Loc:b2Vec2, motorize:Boolean=false, speed:Number=0, torque:Number=10000):b2RevoluteJoint
-		{
-			var jointD:b2RevoluteJointDef = new b2RevoluteJointDef();
-				jointD.body1 = body1;
-				jointD.body2 = body2;
-				jointD.localAnchor1 = body1.GetLocalPoint(body1.GetPosition());
-				jointD.localAnchor1.Subtract(new b2Vec2(body1Loc.x / _physScale, body1Loc.y / _physScale));
-				jointD.localAnchor2 = body2.GetLocalPoint(body2.GetPosition());
-				jointD.localAnchor2.Subtract(new b2Vec2(body2Loc.x / _physScale, body2Loc.y / _physScale));
-				jointD.referenceAngle = body1.GetAngle() - body2.GetAngle();
-
-				jointD.enableMotor = motorize;
-				jointD.motorSpeed = speed * (Math.PI / 180);
-				jointD.maxMotorTorque = torque;
-
-			return _world.CreateJoint(jointD) as b2RevoluteJoint;
-		}
-		
-		private function joinFixed(body1:b2Body, body2:b2Body, body1Loc:b2Vec2, body2Loc:b2Vec2, angle:Number):b2RevoluteJoint
-		{
-
-			var jointD:b2RevoluteJointDef = new b2RevoluteJointDef();
-				
-				jointD.body1 = body1;
-				jointD.body2 = body2;
-				jointD.localAnchor1 = body1.GetLocalPoint(body1.GetPosition());
-				jointD.localAnchor1.Subtract(new b2Vec2(body1Loc.x / _physScale, body1Loc.y / _physScale));
-				jointD.localAnchor2 = body2.GetLocalPoint(body2.GetPosition());
-				jointD.localAnchor2.Subtract(new b2Vec2(body2Loc.x / _physScale, body2Loc.y / _physScale));
-				jointD.referenceAngle = (angle - 180) * (Math.PI/180);
-				
-				
-//				jointD.lowerAngle = jointD.upperAngle = jointD.referenceAngle;
-				
-				jointD.enableLimit = true;
-			
-			return _world.CreateJoint(jointD) as b2RevoluteJoint;	
-		}
-		
-		private function joinRod(body1:b2Body, body2:b2Body, body1Loc:b2Vec2, body2Loc:b2Vec2, length:Number=10):b2DistanceJoint
-		{
-			var jointD:b2DistanceJointDef = new b2DistanceJointDef();
-				
-				jointD.body1 = body1;
-				jointD.body2 = body2;
-				jointD.localAnchor1 = body1.GetLocalPoint(body1.GetPosition());
-				jointD.localAnchor1.Subtract(new b2Vec2(body1Loc.x / _physScale, body1Loc.y / _physScale));
-				jointD.localAnchor2 = body2.GetLocalPoint(body2.GetPosition());
-				jointD.localAnchor2.Subtract(new b2Vec2(body2Loc.x / _physScale, body2Loc.y / _physScale));
-				
-				jointD.length = length / _physScale;
-				
-			return _world.CreateJoint(jointD) as b2DistanceJoint;	
-		}
+//		// these all go in a Joint class...
+//		private function joinHinge(body1:b2Body, body2:b2Body, body1Loc:b2Vec2, body2Loc:b2Vec2, motorize:Boolean=false, speed:Number=0, torque:Number=10000):b2RevoluteJoint
+//		{
+//			var jointD:b2RevoluteJointDef = new b2RevoluteJointDef();
+//				jointD.body1 = body1;
+//				jointD.body2 = body2;
+//				jointD.localAnchor1 = body1.GetLocalPoint(body1.GetPosition());
+//				jointD.localAnchor1.Subtract(new b2Vec2(body1Loc.x / _physScale, body1Loc.y / _physScale));
+//				jointD.localAnchor2 = body2.GetLocalPoint(body2.GetPosition());
+//				jointD.localAnchor2.Subtract(new b2Vec2(body2Loc.x / _physScale, body2Loc.y / _physScale));
+//				jointD.referenceAngle = body1.GetAngle() - body2.GetAngle();
+//
+//				jointD.enableMotor = motorize;
+//				jointD.motorSpeed = speed * (Math.PI / 180);
+//				jointD.maxMotorTorque = torque;
+//
+//			return _world.CreateJoint(jointD) as b2RevoluteJoint;
+//		}
+//		
+//		private function joinFixed(body1:b2Body, body2:b2Body, body1Loc:b2Vec2, body2Loc:b2Vec2, angle:Number):b2RevoluteJoint
+//		{
+//
+//			var jointD:b2RevoluteJointDef = new b2RevoluteJointDef();
+//				
+//				jointD.body1 = body1;
+//				jointD.body2 = body2;
+//				jointD.localAnchor1 = body1.GetLocalPoint(body1.GetPosition());
+//				jointD.localAnchor1.Subtract(new b2Vec2(body1Loc.x / _physScale, body1Loc.y / _physScale));
+//				jointD.localAnchor2 = body2.GetLocalPoint(body2.GetPosition());
+//				jointD.localAnchor2.Subtract(new b2Vec2(body2Loc.x / _physScale, body2Loc.y / _physScale));
+//				jointD.referenceAngle = (angle - 180) * (Math.PI/180);
+//				
+//				
+////				jointD.lowerAngle = jointD.upperAngle = jointD.referenceAngle;
+//				
+//				jointD.enableLimit = true;
+//			
+//			return _world.CreateJoint(jointD) as b2RevoluteJoint;	
+//		}
+//		
+//		private function joinRod(body1:b2Body, body2:b2Body, body1Loc:b2Vec2, body2Loc:b2Vec2, length:Number=10):b2DistanceJoint
+//		{
+//			var jointD:b2DistanceJointDef = new b2DistanceJointDef();
+//				
+//				jointD.body1 = body1;
+//				jointD.body2 = body2;
+//				jointD.localAnchor1 = body1.GetLocalPoint(body1.GetPosition());
+//				jointD.localAnchor1.Subtract(new b2Vec2(body1Loc.x / _physScale, body1Loc.y / _physScale));
+//				jointD.localAnchor2 = body2.GetLocalPoint(body2.GetPosition());
+//				jointD.localAnchor2.Subtract(new b2Vec2(body2Loc.x / _physScale, body2Loc.y / _physScale));
+//				
+//				jointD.length = length / _physScale;
+//				
+//			return _world.CreateJoint(jointD) as b2DistanceJoint;	
+//		}
 		
 		private function addPrimativeLeg(robot:b2Body):void
 		{
@@ -370,15 +369,16 @@ package
 			var speed:Number = 90; // degrees per sec
 			var torques:Number = 1000000; // whatever N-m means
 			
-			joinHinge(robot, arm1, new b2Vec2(60, 0), new b2Vec2(0, 30), true, speed, torques);
-			joinHinge(robot, arm2, new b2Vec2(-60, 0), new b2Vec2(0, 30), true, speed, torques);
-			joinHinge(robot, arm3, new b2Vec2(0, 0), new b2Vec2(0, 30), true, speed, torques);
+			new Joint(_myWorld, robot, arm1, new b2Vec2(60, 0), new b2Vec2(0, 30), Joint.HINGE, true, speed, torques);
+			new Joint(_myWorld, robot, arm2, new b2Vec2(-60, 0), new b2Vec2(0, 30), Joint.HINGE, true, speed, torques);
+			new Joint(_myWorld, robot, arm3, new b2Vec2(0, 0), new b2Vec2(0, 30), Joint.HINGE, true, speed, torques);
 			
 			var ankle:b2Vec2 = new b2Vec2(0, -36);
 			var foot:b2Body = addBox(80, 10, new b2Vec2(robot.GetPosition().x, robot.GetPosition().y - (30 / _physScale)));
-			joinHinge(arm1, foot, ankle, new b2Vec2(60, 0));
-			joinHinge(arm2, foot, ankle, new b2Vec2(-60, 0));
-			joinHinge(arm3, foot, ankle, new b2Vec2(0, 0));
+			new Joint(_myWorld, arm1, foot, ankle, new b2Vec2(60, 0), Joint.HINGE);
+			new Joint(_myWorld, arm2, foot, ankle, new b2Vec2(-60, 0), Joint.HINGE);
+			new Joint(_myWorld, arm3, foot, ankle, new b2Vec2(0, 0), Joint.HINGE);
+
 //			var armLoc:b2Vec2 = new b2Vec2(70, 360-50-40);
 //			var forearmLoc:b2Vec2 = new b2Vec2(50, 360-(50+80));
 //			var armHingeLoc:b2Vec2 = new b2Vec2(20,-10);
@@ -419,7 +419,7 @@ package
 			chain2.destroy();
 			
 			var desc:b2Body = new Body(_myWorld, 700, 300, 360, 200, Body.RECTANGLE, null, -2, 0, false, 0.3, 0.9, 0.01).body;
-			joinHinge(chain1.bodies[chain1.bodies.length-1] as b2Body, desc, new b2Vec2(0,0), new b2Vec2(0, 80));
+			new Joint(_myWorld, chain1.bodies[chain1.bodies.length-1] as b2Body, desc, new b2Vec2(0,0), new b2Vec2(0, 80), Joint.HINGE);
 		}
 		
 		private function addChainTexture(target:Chain):void

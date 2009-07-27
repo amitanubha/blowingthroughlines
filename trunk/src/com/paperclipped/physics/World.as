@@ -37,7 +37,7 @@ package com.paperclipped.physics
 //-------------------------------------------------------------------------------------------//
 
 //----------------------------------------Constructor----------------------------------------//		
-		public function World(width:uint, height:uint, debugSprite:Sprite=null, debugFlags:uint=0, gravity:b2Vec2=null, scale:Number=30, padding:uint=1000, doSleep:Boolean=true)
+		public function World(width:uint, height:uint, debugSprite:Sprite=null, debugFlags:uint=0, gravity:b2Vec2=null, scale:Number=30, padding:uint=1000, doSleep:Boolean=true, continuous:Boolean=false)
 		{
 			_width = width;
 			_height = height;
@@ -49,6 +49,7 @@ package com.paperclipped.physics
 			
 			gravity = (gravity)? gravity:new b2Vec2(0, 10.0);
 			_world = new b2World(worldAABB, gravity, doSleep);
+			_world.SetContinuousPhysics(continuous);
 			
 			if(debugSprite)
 			{

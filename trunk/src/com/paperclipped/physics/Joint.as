@@ -5,6 +5,8 @@ package com.paperclipped.physics
 	import Box2D.Dynamics.Joints.b2GearJointDef;
 	import Box2D.Dynamics.Joints.b2Joint;
 	import Box2D.Dynamics.Joints.b2JointDef;
+	import Box2D.Dynamics.Joints.b2LineJointDef;
+	import Box2D.Dynamics.Joints.b2PulleyJointDef;
 	import Box2D.Dynamics.Joints.b2RevoluteJointDef;
 	import Box2D.Dynamics.b2Body;
 	import Box2D.Dynamics.b2World;
@@ -37,7 +39,7 @@ package com.paperclipped.physics
 		private var _scale:Number;
 		private var _world:b2World;
 		
-		public function Joint(myWorld:World, body1:b2Body, body2:b2Body, body1Loc:b2Vec2, body2Loc:b2Vec2, type:String="hinge", motorize:Boolean=false, speed:Number=0, torque:Number=10000, length:Number=10, angle:Number=0)
+		public function Joint(myWorld:World, body1:b2Body, body2:b2Body, body1Loc:b2Vec2, body2Loc:b2Vec2, type:String="hinge", motorize:Boolean=false, speed:Number=0, torque:Number=10000, length:Number=10, angle:Number=0, axis:b2Vec2=null)
  		{
  			_world = myWorld.world;
  			_scale = myWorld.scale;
@@ -60,12 +62,12 @@ package com.paperclipped.physics
 				jointDef = joinRod(length) as b2DistanceJointDef;
 				break;
 				case Joint.PULLY:
-				//
+				jointDef = joinPully(/*some more things*/) as b2PulleyJointDef;
 				break;
 				case Joint.SLIDE:
-				//
+				jointDef = joinLine(axis) as b2LineJointDef;
 				break;
-				default: //Joint.HINGE:
+				default: //Joint.HINGE: (maybe also Fixed too...
 				jointDef = joinHinge(motorize, speed, torque) as b2RevoluteJointDef;
 				break;
 			}
@@ -73,11 +75,12 @@ package com.paperclipped.physics
 			jointDef.body1 = body1;
 			jointDef.body2 = body2;
 			
+			// would be best to add the local anchors here but the stupid b2JointDef base class doesn't define them... 
+			
 			_joint = _world.CreateJoint(jointDef);
 			trace("Created Joint type:", _joint.GetType());
 		}
 		
-		// these all go in a Joint class...
 		private function joinHinge(motorize:Boolean=false, speed:Number=0, torque:Number=10000):b2RevoluteJointDef
 		{
 			var jointD:b2RevoluteJointDef = new b2RevoluteJointDef();
@@ -121,10 +124,30 @@ package com.paperclipped.physics
 				jointD.length = length / _scale;
 			return jointD;
 		}
+
 		private function joinGear():b2GearJointDef
 		{
-			return jointD;
 			var jointD:b2GearJointDef = new b2GearJointDef();
+			return jointD;
+		}
+
+		private function joinPully():b2PulleyJointDef
+		{
+			var jointD:b2PulleyJointDef = new b2PulleyJointDef();
+			return jointD;
+		}
+		
+		private function joinLine(axis:b2Vec2):b2LineJointDef // slides along an axis relative to body1
+		{
+			var jointD:b2LineJointDef = new b2LineJointDef();
+				jointD.localAnchor1 = _body1.GetLocalPoint(_body1.GetPosition());
+				jointD.localAnchor1.Subtract(new b2Vec2(_body1Loc.x / _scale, _body1Loc.y / _scale));
+				jointD.localAnchor2 = _body2.GetLocalPoint(_body2.GetPosition());
+				jointD.localAnchor2.Subtract(new b2Vec2(_body2Loc.x / _scale, _body2Loc.y / _scale));
+				
+				jointD.localAxis1 = axis;
+				
+			return jointD;
 		}
 	}
 }

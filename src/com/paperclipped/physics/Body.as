@@ -26,6 +26,7 @@ package com.paperclipped.physics
 		private var _scale:Number;
 		private var _world:b2World;
 		private var _graphic:DisplayObject;
+		private var _sensors:Array;
 //		private var _angle:Number; // haven't had a reason to store this stuff yet.
 //		private var _friction:Number;
 //		private var _restitution:Number;
@@ -45,6 +46,7 @@ package com.paperclipped.physics
 		 * @see 	http://www.box2d.org/wiki/index.php?title=Linking_graphics_to_bodies_in_Box2D_AS3#A_different_approach
 		 */		
 		public function get graphic():DisplayObject 	{ return _graphic;	}
+		public function get sensors():Array				{ return _sensors;	}
 //		public function get radius()
 //		public function get width()
 //		public function get height()
@@ -81,7 +83,8 @@ package com.paperclipped.physics
 		 * @param vertices		Array of b2Vec2 objects from 3 to 8 points.
 		 * @param group			Collision group to add the body to.
 		 * @param angle			Angle in degrees.
-		 * @param isBullet		Is this a fast moving body that should be prevented from tunneling through other moving bodies? Note that all bodies are prevented from tunneling through static bodies.
+		 * @param isBullet		Is this a fast moving body that should be prevented from tunneling through other moving bodies? 
+		 * 						Note that all bodies are prevented from tunneling through static bodies.
 		 * @param friction		The shape's friction coefficient, usually in the range [0,1].
 		 * @param restitution	The shape's restitution (elasticity) usually in the range [0,1].
 		 * @param density		The shape's density, usually in kg/m^2.
@@ -91,7 +94,7 @@ package com.paperclipped.physics
 		 * @see #staticBody()
 		 * @see #complexBody()
 		 */		
-		public function Body(world:World, x:int, y:int, w:Number=20, h:Number=20, shape:String="circle", vertices:Array=null, group:int=0, angle:Number=0, isBullet:Boolean=false, friction:Number=0.3, restitution:Number=0.1, density:Number=1.0, categoryBits:Number=0x0000, maskBits:Number=0x0000, displayGraphic:DisplayObject=null)
+		public function Body(world:World, x:int, y:int, w:Number=20, h:Number=20, shape:String="circle", vertices:Array=null, group:int=0, angle:Number=0, isBullet:Boolean=false, friction:Number=0.3, restitution:Number=0.1, density:Number=1.0, isSensor:Boolean=false, categoryBits:Number=0x0000, maskBits:Number=0x0000, displayGraphic:DisplayObject=null)
 		{
 			_bodyDef 	= new b2BodyDef();
 			_scale 		= world.scale;
@@ -103,7 +106,7 @@ package com.paperclipped.physics
 			
 			_body = _world.CreateBody(_bodyDef);
 			
-			var newShape:b2Shape = addShape(0, 0, w, h, vertices, shape, group, friction, restitution, density, categoryBits, maskBits);
+			var newShape:b2Shape = addShape(0, 0, w, h, vertices, shape, group, friction, restitution, density, isSensor, categoryBits, maskBits);
 			updateMass();
 			
 			if(displayGraphic) this.graphic = displayGraphic;
@@ -126,12 +129,14 @@ package com.paperclipped.physics
 		 * @param friction		The shape's friction coefficient, usually in the range [0,1].
 		 * @param restitution	The shape's restitution (elasticity) usually in the range [0,1].
 		 * @param density		The shape's density, usually in kg/m^2.
+		 * @param isSensor		Makes the shape a sensor, and allows collision detection without collision reactions.
+		 * 						Shapes set as sensors will be added to the sensors Array. 
 		 * @param categoryBits	!!! Still don't undestand this!!!
 		 * @param maskBits		!!! Still don't undestand this!!!
 		 * 
 		 * @return 				The resulting shape.
 		 */		 
-		public function addShape(x:int=0, y:int=0, w:Number=20, h:Number=20, vertices:Array=null, shape:String="circle", group:int=0, friction:Number=0.3, restitution:Number=0.1, density:Number=1.0, categoryBits:Number=0x0000, maskBits:Number=0x0000):b2Shape
+		public function addShape(x:int=0, y:int=0, w:Number=20, h:Number=20, vertices:Array=null, shape:String="circle", group:int=0, friction:Number=0.3, restitution:Number=0.1, density:Number=1.0, isSensor:Boolean=false, categoryBits:Number=0x0000, maskBits:Number=0x0000):b2Shape
 		{
 			var shapeDef:b2ShapeDef;
 			switch(shape)
@@ -157,6 +162,7 @@ package com.paperclipped.physics
 			shapeDef.density 		= density;
 			shapeDef.friction 		= friction;
 			shapeDef.restitution 	= restitution;
+			shapeDef.isSensor		= isSensor;
 			
 			var b2shape:b2Shape = _body.CreateShape(shapeDef);
 //			_body.SetMassFromShapes();
@@ -189,21 +195,67 @@ package com.paperclipped.physics
 		 * @return 			Body object, use Body.body to retrieve the b2Body that is created.
 		 * @see #Body()
 		 */		
-		public static function staticBody(world:World, x:int, y:int, w:Number=20, h:Number=20, shape:String="circle", vertices:Array=null, group:int=0, angle:Number=0, friction:Number=0.3, categoryBits:Number=0x0000, maskBits:Number=0x0000):Body
+		public static function staticBody(world:World, x:int, y:int, w:Number=20, h:Number=20, shape:String="circle", vertices:Array=null, group:int=0, angle:Number=0, friction:Number=0.3, isSensor:Boolean=false, categoryBits:Number=0x0000, maskBits:Number=0x0000):Body
 		{
-			return new Body(world, x, y, w, h, shape, vertices, group, angle, false, friction, 0, 0, categoryBits, maskBits);
+			var body:Body = new Body(world, x, y, w, h, shape, vertices, group, angle, false, friction, 0, 0, isSensor, categoryBits, maskBits);
+				body.body.SetStatic();
+			return body;
 		}
 		
-		
-		public static function complexBody(world:World, x:int, y:int, shapes:Array, group:int=0, angle:Number=0, isBullet:Boolean=false, friction:Number=0.3, restitution:Number=0.1, density:Number=1.0, maskBits:Number=0x0000, categoryBits:Number=0x0000):Body
+		/**
+		 * 
+		 * @param world			The World object to add the body to.
+		 * @param x				X location of the body (in normal dimensions).
+		 * @param y				Y location of the body (in normal dimensions).
+		 * @param shapes 		An array of shape objects with the properties {x(relative to body center), y(relative to body center), width, height, 
+		 * 						shape(ie. Body.CIRCLE), verticies, group*, friction*, restitution*, density*, isSensor*, categoryBits*, maskBits* }
+		 * 						<p>* If not defined in the shapes object, will inherit from the corresponding complexBody param.</p>
+		 * @param group			Collision group to add the body to. 
+		 * 						<strong>If not defined individually, all shapes added will inherit this value.</strong>
+		 * @param angle			Angle in degrees.
+		 * @param isBullet		Is this a fast moving body that should be prevented from tunneling through other moving bodies?
+		 * 						Note that all bodies are prevented from tunneling through static bodies. 
+		 * 						<strong>If not defined individually, all shapes added will inherit this value.</strong>
+		 * @param friction		The shape's friction coefficient, usually in the range [0,1]. 
+		 * 						<strong>If not defined individually, all shapes added will inherit this value.</strong>
+		 * @param restitution	The shape's restitution (elasticity) usually in the range [0,1]. 
+		 * 						<strong>If not defined individually, all shapes added will inherit this value.</strong>
+		 * @param density		The shape's density, usually in kg/m^2. 
+		 * 						<strong>If not defined individually, all shapes added will inherit this value.</strong>
+		 * @param isSensor		Makes the shape a sensor, and allows collision detection without collision reactions.
+		 * 						Shapes set as sensors will be added to the sensors Array. 
+		 * 						<strong>If not defined individually, all shapes added will inherit this value.</strong>
+		 * @param maskBits		
+		 * @param categoryBits	
+		 * @return 				A new Body object with multiple shapes or sensors.
+		 * 
+		 * @see #addShape()
+		 */		
+		public static function complexBody(world:World, x:int, y:int, shapes:Array, group:int=0, angle:Number=0, isBullet:Boolean=false, friction:Number=0.3, restitution:Number=0.1, density:Number=1.0, isSensor:Boolean=false, maskBits:Number=0x0000, categoryBits:Number=0x0000):Body
 		{
 			var shapeObj:Object = shapes[0];
-			var myBody:Body = new Body(world, x, y, shapeObj.width, shapeObj.height, shapeObj.shape, shapeObj.verticies, group, angle, isBullet, friction, restitution, density, categoryBits, maskBits);
+			var myBody:Body = new Body(	world, x, y, shapeObj.width, shapeObj.height, shapeObj.shape, shapeObj.verticies, 
+										(shapeObj.group)? shapeObj.group : group, 
+										angle, 
+										isBullet, 
+										(shapeObj.friction)? 	shapeObj.friction 		: friction,
+										(shapeObj.restitution)? shapeObj.restitution 	: restitution,
+										(shapeObj.density)? 	shapeObj.density 		: density,
+										(shapeObj.isSensor)?	shapeObj.isSensor		: isSensor,
+										(shapeObj.categoryBits)?shapeObj.categoryBits 	: categoryBits,
+										(shapeObj.maskBits)? 	shapeObj.maskBits 		: maskBits);
 			
 			for(var i:int=1; i < shapes.length; i++)
 			{
 				shapeObj = shapes[i];
-				myBody.addShape(shapeObj.x, shapeObj.y, shapeObj.width, shapeObj.height, shapeObj.vertices, shapeObj.shape, group, friction, restitution, density, categoryBits, maskBits);
+				myBody.addShape(shapeObj.x, shapeObj.y, shapeObj.width, shapeObj.height, shapeObj.vertices, shapeObj.shape, 
+								(shapeObj.group)? shapeObj.group : group,
+								(shapeObj.friction)? 	shapeObj.friction 		: friction,
+								(shapeObj.restitution)? shapeObj.restitution 	: restitution,
+								(shapeObj.density)? 	shapeObj.density 		: density,
+								(shapeObj.isSensor)?	shapeObj.isSensor		: isSensor,
+								(shapeObj.categoryBits)?shapeObj.categoryBits 	: categoryBits,
+								(shapeObj.maskBits)? 	shapeObj.maskBits 		: maskBits);
 			}
 			
 			myBody.updateMass();
@@ -213,21 +265,21 @@ package com.paperclipped.physics
 //-------------------------------------------------------------------------------------------//
 
 //--------------------------------------Private Methods--------------------------------------//
-		private function createCircle(diameter:Number):b2ShapeDef
+		protected function createCircle(diameter:Number):b2CircleDef
 		{
 			var circDef:b2CircleDef = new b2CircleDef();
 				circDef.radius = (diameter / 2) / _scale;
 			return circDef;
 		}
 		
-		private function createSquare(w:Number, h:Number):b2ShapeDef
+		protected function createSquare(w:Number, h:Number):b2PolygonDef
 		{
 			var polyDef:b2PolygonDef = new b2PolygonDef();
 				polyDef.SetAsBox((w / 2) / _scale, (h / 2) / _scale);
 			return polyDef;
 		}
 		
-		private function createPolygon(vertices:Array, offsetX:int=0, offsetY:int=0):b2ShapeDef
+		protected function createPolygon(vertices:Array, offsetX:int=0, offsetY:int=0):b2PolygonDef
 		{
 			var polyDef:b2PolygonDef = new b2PolygonDef();
 				polyDef.vertexCount = vertices.length;

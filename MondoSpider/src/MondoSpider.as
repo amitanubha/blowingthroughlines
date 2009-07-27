@@ -1,8 +1,8 @@
 package
 {
+	import Box2D.Collision.Shapes.b2FilterData;
 	import Box2D.Collision.Shapes.b2PolygonDef;
 	import Box2D.Collision.Shapes.b2Shape;
-	import Box2D.Collision.Shapes.b2ShapeDef;
 	import Box2D.Collision.b2AABB;
 	import Box2D.Common.Math.b2Vec2;
 	import Box2D.Dynamics.Joints.b2Joint;
@@ -11,23 +11,20 @@ package
 	import Box2D.Dynamics.Joints.b2RevoluteJoint;
 	import Box2D.Dynamics.Joints.b2RevoluteJointDef;
 	import Box2D.Dynamics.b2Body;
-	import Box2D.Dynamics.b2BodyDef;
 	import Box2D.Dynamics.b2DebugDraw;
 	import Box2D.Dynamics.b2World;
 	
 	import com.paperclipped.physics.Body;
 	import com.paperclipped.physics.Chain;
 	import com.paperclipped.physics.Joint;
+	import com.paperclipped.physics.Sensor;
 	import com.paperclipped.physics.Wall;
 	import com.paperclipped.physics.World;
 	
 	import flash.display.DisplayObject;
-	import flash.display.Shape;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
-	
-	import mx.core.BitmapAsset;
 
 	[SWF(width='960', height='600', backgroundColor='#333333', frameRate='30')]
 	public class MondoSpider extends Sprite
@@ -98,9 +95,11 @@ package
 //			debugSprite = null;
 //			var debugFlags:uint = (b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit | b2DebugDraw.e_centerOfMassBit);
 			var debugFlags:uint = (b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
+//			var debugFlags:uint = (b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit | b2DebugDraw.e_aabbBit); // AABB is Axis-Aligned Bounding Box
 //			var debugFlags:uint = (b2DebugDraw.e_shapeBit);
 			
-			_myWorld = new World(960, 600, debugSprite, debugFlags, new b2Vec2(0,20.0), _physScale);
+//			_myWorld = new World(960, 600, debugSprite, debugFlags, new b2Vec2(0,20.0), _physScale);
+			_myWorld = new World(960, 600, debugSprite, debugFlags, new b2Vec2(0,20.0), _physScale, 1000, true, true);
 			_world = _myWorld.world;
 			
 			
@@ -125,43 +124,22 @@ package
 			// adds lots of falling things to test speed of app
 //			flash.utils.setInterval(addStuff, 2000, _world);
 
-			// this is to test location getting!
-//			_testerSprite = new Sprite();
-//			_testerSprite.graphics.beginFill(0xbada55, 0.7);
-//			_testerSprite.graphics.drawRect(-25,-6,50,12);
-//			_testerSprite.mouseEnabled = false;
-//			this.addChild(_testerSprite);
-//			_testRobot = addBox(80, 30, new b2Vec2(50, 360-50), 0);
-//			trace(_testRobot.GetPosition().x * _physScale);
-//			
-////			addPrimativeLeg(_testRobot);
-//			for(var i:int=0; i < 20; i++)
+			// Test Simple Walker (rotating parallel bar)
+//			_testRobot = new Body(_myWorld, 100, 100, 180, 60, Body.RECTANGLE).body;
+//			addPrimativeLeg(_testRobot);
+//			for(var i:int=0; i < 4; i++)
 //			{
 //				flash.utils.setTimeout(addPrimativeLeg, i*1000, _testRobot);
 //			}
-//			var testerForeArm2:b2Body = addArmToBox(testerArm2, 40, 10, new b2Vec2(-50, 360-50), new b2Vec2(-30, 0));
 			
-			// need to allow the forearm to move through the robot!!!
-			//testerForeArm.
-			
-			
-//			var jointEdge:b2JointEdge = _testRobot.GetJointList();
-//			while(jointEdge.next)
-//			{
-//				trace("found a joint:", jointEdge.next.joint.GetType());
-//			}
-			
-			
+			//Chains test
 //			addChains();
 			
-			
+			//Fixed Joint Test
 //			var loc:b2Vec2 = new b2Vec2(300, _myWorld.height - 100);
 //			var ner:b2Body = addBox(50, 10, loc, 0);
 //			
 ////			loc = new b2Vec2(300, _myWorld.height - 20);
-//			var ner2:b2Body = addBox(50, 10, loc, 0);
-//			
-//			attachFixed(ner, ner2, new b2Vec2(-30,0), new b2Vec2(30,0), 45);
 			
 			for(var k:int=0; k < 5; k++)
 			{
@@ -199,23 +177,7 @@ package
 			
 			new Joint(_myWorld, highBox, highWheel, highAxelLoc, new b2Vec2(0,0), Joint.HINGE, true, 60);
 
-//			var arm1:b2Body = new Body(_myWorld, highLoc.x-60, highLoc.y, 100, 10, Body.RECTANGLE, null, -3, -90, true).body;
-//			var arm2:b2Body = new Body(_myWorld, highLoc.x-60, highLoc.y, 100, 10, Body.RECTANGLE, null, -3, -90, true).body; // weird the stars weren't aligned for this one...
-//			var arm3:b2Body = new Body(_myWorld, highLoc.x-60, highLoc.y, 100, 10, Body.RECTANGLE, null, -3, -90, true).body;
-//			var arm4:b2Body = new Body(_myWorld, highLoc.x-60, highLoc.y, 100, 10, Body.RECTANGLE, null, -3, -90, true).body;
-//			var arm5:b2Body = new Body(_myWorld, highLoc.x-60, highLoc.y, 100, 10, Body.RECTANGLE, null, -3, -90, true).body;
-//			var arm6:b2Body = new Body(_myWorld, highLoc.x-60, highLoc.y, 100, 10, Body.RECTANGLE, null, -3, -90, true).body;
-//			
-//			var arms:Array = [arm1, arm2, arm3, arm4, arm5, arm6]
-			
-			
-//			
-//			joinHinge(highWheel, arm1, new b2Vec2(30, 0), new b2Vec2(10, 0));
-//			joinHinge(highWheel, arm2, new b2Vec2(-30, 0), new b2Vec2(10, 0));
-//			joinHinge(highWheel, arm3, new b2Vec2(0,30), new b2Vec2(10, 0));
-//			joinHinge(highWheel, arm4, new b2Vec2(0,-30), new b2Vec2(10, 0));
-
-			var arms:int = 6;
+			var arms:int = 20; // number of arms to add
 			
 			var theta:Number = (360 / arms)*(Math.PI/180);
 			var wheelLoc:b2Vec2 = new b2Vec2();
@@ -230,38 +192,22 @@ package
 				new Joint(_myWorld, highBox, arm, new b2Vec2(highAxelLoc.x + 50, highAxelLoc.y + 30), new b2Vec2(-40, 0), Joint.ARM, false, 0, 0, 50);
 			}
 
-			//var shin1:b2Body = new Body(_myWorld, highLoc.x+120, highLoc.y, 80, 20, Body.RECTANGLE, null, -3).body;
-			//joinHinge(arm1, shin1, new b2Vec2(-30, 0), new b2Vec2(30, 0));
-			//var shin2:b2Body = new Body(_myWorld, highLoc.x-120, highLoc.y, 80, 20, Body.RECTANGLE, null, -3).body;
-			//joinHinge(arm2, shin2, new b2Vec2(-30, 0), new b2Vec2(30, 0));
-			
-//			var ankle1:b2Body = new Body(_myWorld, highLoc.x-10, highLoc.y-30, 60, 10, Body.RECTANGLE, null, -3).body;
-//			var ankle2:b2Body = new Body(_myWorld, highLoc.x-10, highLoc.y-30, 60, 10, Body.RECTANGLE, null, -3).body;
-			
-//			joinRod(highBox, arm1, new b2Vec2(50, 30), new b2Vec2(-40, 0), 50);
-//			joinRod(highBox, arm2, new b2Vec2(50, 30), new b2Vec2(-40, 0), 50);
-//			joinRod(highBox, arm3, new b2Vec2(50, 30), new b2Vec2(-40, 0), 50);
-//			joinRod(highBox, arm4, new b2Vec2(50, 30), new b2Vec2(-40, 0), 50);
-			
-//			joinHinge(highBox, ankle1, new b2Vec2(50, 30), new b2Vec2(20, 0)); // these will make the shin a 
-//			joinHinge(highBox, ankle2, new b2Vec2(50, 30), new b2Vec2(20, 0));
-//			joinHinge(highBox, ankle1, new b2Vec2(-50, 30), new b2Vec2(20, 0));
-//			joinHinge(highBox, ankle2, new b2Vec2(-50, 30), new b2Vec2(20, 0));
-			
-//			joinHinge(arm1, ankle1, new b2Vec2(-40, 0), new b2Vec2(-50, 0));
-//			joinHinge(arm2, ankle2, new b2Vec2(-40, 0), new b2Vec2(-50, 0));
-//			joinHinge(shin1, ankle1, new b2Vec2(-20, 0), new b2Vec2(-20, 0));
-//			joinHinge(shin2, ankle2, new b2Vec2(-20, 0), new b2Vec2(-20, 0));
-
-//			var rearWheel:b2Body = new Body(_myWorld, highLoc.x-100, highLoc.y-80, 40, 0, "circle", null, -3, 0, true, 0.3, 0.1, 1.0).body;
-//			joinHinge(highBox, rearWheel, new b2Vec2(180, -50), highAxelLoc);
-//			var frontWheel:b2Body = new Body(_myWorld, highLoc.x+90, highLoc.y-50, 40, 0, "circle", null, -3, 0, true, 0.3, 0.1, 1.0).body;
-//			joinHinge(highBox, frontWheel, new b2Vec2(-90, -50), highAxelLoc);
-
-//			trace(arms[0]);
-			
-			var gear1:b2Body = new Body(_myWorld, 500, 200, 200).body;
+			var gear1:b2Body = new Body(_myWorld, 500, 200, 200, 0, Body.CIRCLE).body;
 			new Joint(_myWorld, _world.GetGroundBody(), gear1, new b2Vec2(-500, -200), new b2Vec2(0,0), Joint.HINGE);
+			
+			var sensoWall:Sensor = Sensor.staticSensor(_myWorld, 910, 550, 100, 100);
+//			var sensoWall:Body = Body.staticBody(_myWorld, 910, 550, 100, 100, Body.CIRCLE, null, 0, 0, 0.3, true);
+//			var sensoShapes:Array = sensoWall.body.GetShapeList();
+
+			for (var sensoShape:b2Shape = sensoWall.body.GetShapeList(); sensoShape; sensoShape = sensoShape.GetNext())
+			{
+			    trace("found sensoShape:", sensoShape, "is sensor?:", sensoShape.IsSensor(), "next sensoShape:", sensoShape.GetNext());
+			    if(sensoShape.IsSensor())
+			    {
+			    	var filterData:b2FilterData = sensoShape.GetFilterData()
+//			    		filterData.
+			    }
+			}
 			
 		}
 		
@@ -296,68 +242,11 @@ package
 				jointD.motorSpeed = direction;
 //				jointD.enableLimit = false;
 			
-//			jointD.Initialize(parent, arm, parent.GetWorldPoint(new b2Vec2(10 / _physScale, 10 / _physScale)));
 			jointD.Initialize(parent, arm, parent.GetWorldPoint(new b2Vec2(anchor.x / _physScale, anchor.y / _physScale)));
 			joint = _world.CreateJoint(jointD) as b2RevoluteJoint;
 			
 			return arm;
 		}
-		
-//		// these all go in a Joint class...
-//		private function joinHinge(body1:b2Body, body2:b2Body, body1Loc:b2Vec2, body2Loc:b2Vec2, motorize:Boolean=false, speed:Number=0, torque:Number=10000):b2RevoluteJoint
-//		{
-//			var jointD:b2RevoluteJointDef = new b2RevoluteJointDef();
-//				jointD.body1 = body1;
-//				jointD.body2 = body2;
-//				jointD.localAnchor1 = body1.GetLocalPoint(body1.GetPosition());
-//				jointD.localAnchor1.Subtract(new b2Vec2(body1Loc.x / _physScale, body1Loc.y / _physScale));
-//				jointD.localAnchor2 = body2.GetLocalPoint(body2.GetPosition());
-//				jointD.localAnchor2.Subtract(new b2Vec2(body2Loc.x / _physScale, body2Loc.y / _physScale));
-//				jointD.referenceAngle = body1.GetAngle() - body2.GetAngle();
-//
-//				jointD.enableMotor = motorize;
-//				jointD.motorSpeed = speed * (Math.PI / 180);
-//				jointD.maxMotorTorque = torque;
-//
-//			return _world.CreateJoint(jointD) as b2RevoluteJoint;
-//		}
-//		
-//		private function joinFixed(body1:b2Body, body2:b2Body, body1Loc:b2Vec2, body2Loc:b2Vec2, angle:Number):b2RevoluteJoint
-//		{
-//
-//			var jointD:b2RevoluteJointDef = new b2RevoluteJointDef();
-//				
-//				jointD.body1 = body1;
-//				jointD.body2 = body2;
-//				jointD.localAnchor1 = body1.GetLocalPoint(body1.GetPosition());
-//				jointD.localAnchor1.Subtract(new b2Vec2(body1Loc.x / _physScale, body1Loc.y / _physScale));
-//				jointD.localAnchor2 = body2.GetLocalPoint(body2.GetPosition());
-//				jointD.localAnchor2.Subtract(new b2Vec2(body2Loc.x / _physScale, body2Loc.y / _physScale));
-//				jointD.referenceAngle = (angle - 180) * (Math.PI/180);
-//				
-//				
-////				jointD.lowerAngle = jointD.upperAngle = jointD.referenceAngle;
-//				
-//				jointD.enableLimit = true;
-//			
-//			return _world.CreateJoint(jointD) as b2RevoluteJoint;	
-//		}
-//		
-//		private function joinRod(body1:b2Body, body2:b2Body, body1Loc:b2Vec2, body2Loc:b2Vec2, length:Number=10):b2DistanceJoint
-//		{
-//			var jointD:b2DistanceJointDef = new b2DistanceJointDef();
-//				
-//				jointD.body1 = body1;
-//				jointD.body2 = body2;
-//				jointD.localAnchor1 = body1.GetLocalPoint(body1.GetPosition());
-//				jointD.localAnchor1.Subtract(new b2Vec2(body1Loc.x / _physScale, body1Loc.y / _physScale));
-//				jointD.localAnchor2 = body2.GetLocalPoint(body2.GetPosition());
-//				jointD.localAnchor2.Subtract(new b2Vec2(body2Loc.x / _physScale, body2Loc.y / _physScale));
-//				
-//				jointD.length = length / _physScale;
-//				
-//			return _world.CreateJoint(jointD) as b2DistanceJoint;	
-//		}
 		
 		private function addPrimativeLeg(robot:b2Body):void
 		{
@@ -379,22 +268,6 @@ package
 			new Joint(_myWorld, arm2, foot, ankle, new b2Vec2(-60, 0), Joint.HINGE);
 			new Joint(_myWorld, arm3, foot, ankle, new b2Vec2(0, 0), Joint.HINGE);
 
-//			var armLoc:b2Vec2 = new b2Vec2(70, 360-50-40);
-//			var forearmLoc:b2Vec2 = new b2Vec2(50, 360-(50+80));
-//			var armHingeLoc:b2Vec2 = new b2Vec2(20,-10);
-//			var foreArmHingeLoc:b2Vec2 = new b2Vec2(0,-20);
-//			
-//			
-////			var testerArm:b2Body = addArmToBox(target, 10, 40, armLoc, armHingeLoc);
-//			var testerArm:b2Body = addArmMotorToBox(target, 10, 40, armLoc, armHingeLoc, 2);
-//			var testerForeArm:b2Body = addBox(80, 10, forearmLoc);
-//			
-//			armLoc = new b2Vec2(30, 360-50-40);
-//			armHingeLoc = new b2Vec2(-20,-10);		
-//			var testerArm2:b2Body = addArmMotorToBox(target, 10, 40, armLoc, armHingeLoc, 2);
-//			
-//			addJoint(testerArm, testerForeArm, new b2Vec2(0, 40), new b2Vec2(-20, 0));
-//			addJoint(testerArm2, testerForeArm, new b2Vec2(0, 40), new b2Vec2(20, 0));
 		}
 		
 		private function addChains():void
@@ -415,123 +288,10 @@ package
 			var chain2:Chain = new Chain(_world, 10, 800, 100, link, 16, Chain.DOWN);
 			
 			// now to play with texturing!!!
-			addChainTexture(chain1);
 			chain2.destroy();
 			
 			var desc:b2Body = new Body(_myWorld, 700, 300, 360, 200, Body.RECTANGLE, null, -2, 0, false, 0.3, 0.9, 0.01).body;
 			new Joint(_myWorld, chain1.bodies[chain1.bodies.length-1] as b2Body, desc, new b2Vec2(0,0), new b2Vec2(0, 80), Joint.HINGE);
-		}
-		
-		private function addChainTexture(target:Chain):void
-		{
-			for(var i:uint=0; i < target.bodies.length; i++)
-			{
-				var body:b2Body = target.bodies[i] as b2Body;
-				var cableTexture:BitmapAsset = new CableSkin() as BitmapAsset;
-					cableTexture.smoothing = true;
-					cableTexture.rotation = 90;
-//					cableTexture.height = 1;
-//					cableTexture.width = 18;
-					cableTexture.x = 12;
-					cableTexture.y = -6;
-					
-				var mask:Shape = new Shape();
-					mask.graphics.beginFill(0xbada55, .8);
-					mask.graphics.drawRoundRect(-12,-6,24,12,10);
-				var texture:Sprite = new Sprite();
-					texture.addChild(mask);
-					texture.addChild(cableTexture);
-					cableTexture.mask = mask;
-					texture.mouseEnabled = false;
-					texture.mouseChildren = false;
-				this.addChild(texture);
-					body.SetUserData({texture:texture});
-				_allBodies.push(body);
-			}
-		}
-		
-//		private function addRopeTexture(target:Chain):void
-//		{
-//			this.addChild(target);
-//			target.addEventListener(Event.ENTER_FRAME, updateRope);
-//		}
-		
-
-				
-		private function addStuff(world:b2World):void
-		{
-//			// Spawn in a bunch of crap
-//			
-			var body:b2Body;
-			var i:uint;
-//			for (i = 0; i < 5; i++){
-//				var bodyDef:b2BodyDef = new b2BodyDef();
-//				//bodyDef.isBullet = true;
-//				var boxDef:b2PolygonDef = new b2PolygonDef();
-//				boxDef.density = 1.0;
-//				// Override the default friction.
-//				boxDef.friction = 0.3;
-//				boxDef.restitution = 0.1;
-//				boxDef.SetAsBox((Math.random() * 5 + 10) / _physScale, (Math.random() * 5 + 10) / _physScale);
-//				bodyDef.position.Set((Math.random() * 400 + 120) / _physScale, (Math.random() * 150 - 150) / _physScale);
-//				bodyDef.angle = Math.random() * Math.PI;
-//				body = world.CreateBody(bodyDef);
-//				body.CreateShape(boxDef);
-//				body.SetMassFromShapes();
-//			}
-//			for (i = 0; i < 5; i++){
-//				var bodyDefC:b2BodyDef = new b2BodyDef();
-//				//bodyDefC.isBullet = true;
-//				var circDef:b2CircleDef = new b2CircleDef();
-//				circDef.density = 1.0;
-//				circDef.radius = (Math.random() * 5 + 10) / _physScale;
-//				// Override the default friction.
-//				circDef.friction = 0.3;
-//				circDef.restitution = 0.1;
-//				bodyDefC.position.Set((Math.random() * 400 + 120) / _physScale, (Math.random() * 150 - 150) / _physScale);
-//				bodyDefC.angle = Math.random() * Math.PI;
-//				body = world.CreateBody(bodyDefC);
-//				body.CreateShape(circDef);
-//				body.SetMassFromShapes();
-//				
-//			}
-			for (i = 0; i < 5; i++){
-				var bodyDefP:b2BodyDef = new b2BodyDef();
-				//bodyDefP.isBullet = true;
-				var polyDef:b2PolygonDef = new b2PolygonDef();
-				if (Math.random() > 0.66){
-					polyDef.vertexCount = 4;
-					polyDef.vertices[0].Set((-10 -Math.random()*10) / _physScale, ( 10 +Math.random()*10) / _physScale);
-					polyDef.vertices[1].Set(( -5 -Math.random()*10) / _physScale, (-10 -Math.random()*10) / _physScale);
-					polyDef.vertices[2].Set((  5 +Math.random()*10) / _physScale, (-10 -Math.random()*10) / _physScale);
-					polyDef.vertices[3].Set(( 10 +Math.random()*10) / _physScale, ( 10 +Math.random()*10) / _physScale);
-				}
-				else if (Math.random() > 0.5){
-					polyDef.vertexCount = 5;
-					polyDef.vertices[0].Set(0, (10 +Math.random()*10) / _physScale);
-					polyDef.vertices[2].Set((-5 -Math.random()*10) / _physScale, (-10 -Math.random()*10) / _physScale);
-					polyDef.vertices[3].Set(( 5 +Math.random()*10) / _physScale, (-10 -Math.random()*10) / _physScale);
-					polyDef.vertices[1].Set((polyDef.vertices[0].x + polyDef.vertices[2].x), (polyDef.vertices[0].y + polyDef.vertices[2].y));
-					polyDef.vertices[1].Multiply(Math.random()/2+0.8);
-					polyDef.vertices[4].Set((polyDef.vertices[3].x + polyDef.vertices[0].x), (polyDef.vertices[3].y + polyDef.vertices[0].y));
-					polyDef.vertices[4].Multiply(Math.random()/2+0.8);
-				}
-				else{
-					polyDef.vertexCount = 3;
-					polyDef.vertices[0].Set(0, (10 +Math.random()*10) / _physScale);
-					polyDef.vertices[1].Set((-5 -Math.random()*10) / _physScale, (-10 -Math.random()*10) / _physScale);
-					polyDef.vertices[2].Set(( 5 +Math.random()*10) / _physScale, (-10 -Math.random()*10) / _physScale);
-				}
-				polyDef.density = 1.0;
-				polyDef.friction = 0.3;
-				polyDef.restitution = 0.1;
-				bodyDefP.position.Set((Math.random() * 400 + 120) / _physScale, (Math.random() * 150 + 50) / _physScale);
-				bodyDefP.angle = Math.random() * Math.PI;
-				body = world.CreateBody(bodyDefP);
-				body.CreateShape(polyDef as b2ShapeDef);
-				body.SetUserData("ner main");
-				body.SetMassFromShapes();
-			}
 		}
 		
 		private function addWalls():void
@@ -638,33 +398,6 @@ package
 			_mouseXWorld = (this.mouseX); 
 			_mouseYWorld = (this.mouseY); 
 		}
-		
-//		private function updateRope(evt:Event):void //this belongs in a rope class prolly...
-//		{
-//			
-//			var target:Chain = evt.target as Chain;	
-//			var start:b2Body = target.bodies[0] as b2Body;
-//			var end:b2Body = target.bodies[target.bodies.length-1] as b2Body;
-//			target.graphics.clear();
-//			target.graphics.lineStyle(10, 0xCCCCCC, 1, false, LineScaleMode.NONE, CapsStyle.ROUND, JointStyle.ROUND);
-//			target.graphics.moveTo(start.GetPosition().x * _physScale, start.GetPosition().y * _physScale);
-//				
-//			var last:b2Vec2 = start.GetPosition();
-//			for(var i:int=1; i < target.bodies.length-1; i++); //i+=3)
-//			{
-//				if(target.bodies[i])// && target.bodies[int(i+(i%2))])
-//				{
-//					var cont:b2Vec2 = b2Body(target.bodies[i]).GetPosition();
-////					var anch:b2Vec2 = b2Body(target.bodies[i]).GetNext().GetPosition();
-//////					var anch:b2Vec2 = b2Body(target.bodies[int(i+(i%2))]).GetPosition();
-//					target.graphics.curveTo(last.x * _physScale, cont.y * _physScale, cont.x * _physScale, cont.y * _physScale);
-//					last = cont;
-//				}
-//			}
-//			
-////			target.graphics.lineTo(end.GetPosition().x * _physScale, end.GetPosition().y * _physScale);
-//			target.graphics.endFill();
-//		}
 		
 		public function mouseDrag():void{
 			// mouse press

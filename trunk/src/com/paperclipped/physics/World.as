@@ -49,7 +49,8 @@ package com.paperclipped.physics
 			
 			gravity = (gravity)? gravity:new b2Vec2(0, 10.0);
 			_world = new b2World(worldAABB, gravity, doSleep);
-			_world.SetContinuousPhysics(continuous);
+//			_world.SetContinuousPhysics(continuous);
+			
 			
 			if(debugSprite)
 			{

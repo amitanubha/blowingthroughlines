@@ -50,6 +50,7 @@ package com.paperclipped.physics
 //		public function get radius()
 //		public function get width()
 //		public function get height()
+//		public function get inertia()
 //-------------------------------------------------------------------------------------------//
 
 //------------------------------------------Setters------------------------------------------//
@@ -68,6 +69,16 @@ package com.paperclipped.physics
 				_graphic = null;
 			}
 		}
+		
+//		public function set force()
+			//body.ApplyForce(force:vec, point:vec)
+//		public function set damping() // not sure what this will do
+			//body.SetAngularDamping(Number)
+//		public function set velocity()
+			//body.SetAngularVelocity(omega:Number)
+		public function set isBullet(val:Boolean):void		{ _body.SetBullet(val);			}
+		public function set torque(val:Number):void			{ _body.ApplyTorque(val);		}
+		public function set fixedRotation(val:Boolean):void	{ _body.SetFixedRotation(val);	}
 //-------------------------------------------------------------------------------------------//
 
 //----------------------------------------Constructor----------------------------------------//

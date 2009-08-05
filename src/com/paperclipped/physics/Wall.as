@@ -15,17 +15,19 @@ package com.paperclipped.physics
 		
 		public function get body():b2Body	{ return _body;	}
 		
-		public function Wall(world:World, side:String, offset:Number=95, friction:Number=0.3)
+		public function Wall(world:World, side:String, offset:Number=5, friction:Number=0.3)
 		{
 			// create walls
 			var wallSd:b2PolygonDef = new b2PolygonDef();
 			wallSd.friction = friction;
 			var wallBd:b2BodyDef = new b2BodyDef();
 
+			
+
 			switch(side)
 			{
 				case Wall.LEFT:// Left
-					wallBd.position.Set(-offset / world.scale, (world.height+100) / world.scale / 2);
+					wallBd.position.Set(-(offset+100 / world.scale), (world.height+100) / world.scale / 2);
 					wallSd.SetAsBox(100 / world.scale, (world.height+100) / world.scale/2);
 					_body = world.world.CreateBody(wallBd);
 					_body.CreateShape(wallSd);
@@ -33,7 +35,7 @@ package com.paperclipped.physics
 				break;
 				
 				case Wall.RIGHT:// Right
-					wallBd.position.Set((world.width+offset) / world.scale, (world.height+100) / world.scale / 2);
+					wallBd.position.Set((world.width+offset+100) / world.scale, (world.height+100) / world.scale / 2);
 					wallSd.SetAsBox(100 / world.scale, (world.height+100) / world.scale/2);
 					_body = world.world.CreateBody(wallBd);
 					_body.CreateShape(wallSd);
@@ -41,7 +43,7 @@ package com.paperclipped.physics
 				break;
 				
 				case Wall.TOP:// Top
-					wallBd.position.Set(world.width / world.scale / 2, -offset / world.scale);
+					wallBd.position.Set(world.width / world.scale / 2, -(offset+100 / world.scale));
 					wallSd.SetAsBox((world.width + 100) / world.scale / 2, 100 / world.scale);
 					_body = world.world.CreateBody(wallBd);
 					_body.CreateShape(wallSd);
@@ -49,7 +51,7 @@ package com.paperclipped.physics
 				break;
 				
 				case Wall.BOTTOM:// Bottom
-					wallBd.position.Set(world.width / world.scale / 2, (world.height+95) / world.scale);
+					wallBd.position.Set(world.width / world.scale / 2, (world.height+offset+100) / world.scale);
 					wallSd.SetAsBox((world.width + 100) / world.scale / 2, 100 / world.scale);
 					_body = world.world.CreateBody(wallBd);
 					_body.CreateShape(wallSd);

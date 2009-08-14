@@ -16,11 +16,11 @@ package
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
-	import flash.display.GradientType;
 	import flash.display.Shape;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.filters.BlurFilter;
 	import flash.geom.ColorTransform;
 	import flash.geom.Rectangle;
 
@@ -94,7 +94,7 @@ package
 			mouseClicker.addEventListener(MouseEvent.MOUSE_UP, function():void{_mouseDown = false;});
 			
 			_design = new Sprite();
-			this.addChild(_design);
+			this.addChildAt(_design, 0);
 			
 			var increment:int = Math.random()*0xffffff;
 			
@@ -107,6 +107,9 @@ package
 				nerDesign.graphics.beginFill(increment, 0.3);
 				nerDesign.graphics.lineStyle(1, increment);
 				nerDesign.graphics.drawCircle(diameter / 2, diameter / 2, diameter / 2);
+				nerDesign.graphics.endFill();
+				nerDesign.graphics.moveTo(0, diameter / 2);
+				nerDesign.graphics.lineTo(diameter, diameter / 2);
 				_design.addChildAt(nerDesign, 0);
 				
 				_nercle = new Body(_myWorld, (k%20)*diameter+20, diameter, diameter, 0, Body.CIRCLE, null, 0, 0, true, 0.3, 1.02, 1); //isBullet // tooooo slow!
@@ -116,8 +119,8 @@ package
 				increment += increment;
 			}
 			
-			var bgData:BitmapData = new BitmapData(this.stage.stageWidth, this.stage.stageHeight, true, 0x0);
-			bgData.draw(_design);
+			var bgData:BitmapData = new BitmapData(this.stage.stageWidth, this.stage.stageHeight, true, 0xFFFFFF);
+//			bgData.draw(_design);
 			_bg = new Bitmap(bgData);
 			_bg.bitmapData = bgData;
 			this.addChildAt(_bg, 0);
@@ -154,9 +157,11 @@ package
 			}
 			var bmpData:BitmapData = _bg.bitmapData;
 			bmpData.colorTransform(new Rectangle(0,0,_bg.width, _bg.height), new ColorTransform(1,1,1,.99));
+//			bmpData.colorTransform(new Rectangle(0,0,_bg.width, _bg.height), new ColorTransform(1,1,1,.8));
 //			bmpData.colorTransform(new Rectangle(0,0,_bg.width, _bg.height), new ColorTransform(Math.random(), Math.random(), Math.random()));
 			bmpData.draw(_design);
 			_bg.bitmapData = bmpData;
+//			_bg.filters = [new BlurFilter()];
 		}
 		
 		public function updateMouseWorld():void{

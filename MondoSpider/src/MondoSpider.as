@@ -1,6 +1,5 @@
 package
 {
-	import Box2D.Collision.Shapes.b2FilterData;
 	import Box2D.Collision.Shapes.b2PolygonDef;
 	import Box2D.Collision.Shapes.b2Shape;
 	import Box2D.Collision.b2AABB;
@@ -17,7 +16,6 @@ package
 	import com.paperclipped.physics.Body;
 	import com.paperclipped.physics.Chain;
 	import com.paperclipped.physics.Joint;
-	import com.paperclipped.physics.Sensor;
 	import com.paperclipped.physics.Wall;
 	import com.paperclipped.physics.World;
 	
@@ -60,30 +58,41 @@ package
 		private var _armSpeed:Number = -2;
 		private var _robotReversalAllowed:Boolean = true;
 		
+		private var _mondoWheelJoint:Joint; 
+		private var _step:uint = 0;
+		
 		public function MondoSpider()
 		{
  			this.addEventListener(Event.ADDED_TO_STAGE, init); // since we're using the schloader
  			
- 			var circleDots:Sprite = new Sprite();
- 			circleDots.graphics.beginFill(0x123456, 0.8);
- 			circleDots.graphics.drawCircle(0,0,100);
- 			
- 			var segments:int = 6;
- 			var angle:Number = 360 / segments;
- 				angle *= (Math.PI/180);
- 			
- 			for(var i:int=0; i < segments; i++)
- 			{
- 				var dotX:Number = 100*Math.cos(angle*i)+0;
-				var dotY:Number = 100*Math.sin(angle*i)+0;
-				circleDots.graphics.drawCircle(dotX, dotY, 10);
- 			}
- 			
- 			
- 			circleDots.x = 400;
- 			circleDots.y = 300;
- 			
- 			this.addChild(circleDots);
+// 			var circleDots:Sprite = new Sprite();
+// 			circleDots.graphics.beginFill(0x123456, 0.8);
+// 			circleDots.graphics.drawCircle(0,0,100);
+// 			
+// 			var segments:int = 6;
+// 			var angle:Number = 360 / segments;
+// 				angle *= (Math.PI/180);
+// 			
+// 			for(var i:int=0; i < segments; i++)
+// 			{
+// 				var dotX:Number = 100*Math.cos(angle*i)+0;
+//				var dotY:Number = 100*Math.sin(angle*i)+0;
+//				circleDots.graphics.drawCircle(dotX, dotY, 10);
+// 			}
+// 			
+// 			circleDots.graphics.endFill();
+// 			circleDots.graphics.beginFill(0xFFFFFF, 1);
+// 			circleDots.graphics.drawCircle(0.5,0.5,0.5);
+// 			circleDots.graphics.endFill();
+// 			
+// 			circleDots.graphics.beginFill(0xFFFFFF);
+// 			circleDots.graphics.drawRect(5, 0, 1, 1);
+// 			circleDots.graphics.endFill();
+// 			
+// 			circleDots.x = 400;
+// 			circleDots.y = 300;
+// 			
+// 			this.addChild(circleDots);
  			
  			
 		}
@@ -167,48 +176,136 @@ package
 			
 			
 			// test spinning bar with stuff
-			var highLoc:b2Vec2 = new b2Vec2(200,250);
-			var wheelDiamter:int = 80;
+//			var highLoc:b2Vec2 = new b2Vec2(200,250);
+//			var wheelDiamter:int = 80;
+//			
+////			var highBox:b2Body = Body.staticBody(_myWorld, highLoc.x, highLoc.y, 120, 80, Body.RECTANGLE, null, -3).body;
+//			var highBox:b2Body = new Body(_myWorld, highLoc.x, highLoc.y, 200, 80, Body.RECTANGLE, null, -3, 0, true).body;
+//			var highWheel:b2Body = new Body(_myWorld, highLoc.x, highLoc.y, wheelDiamter, 0, Body.CIRCLE, null, -3, 0, true).body;
+//			var highAxelLoc:b2Vec2 = new b2Vec2(6,0);
+//			
+//			new Joint(_myWorld, highBox, highWheel, highAxelLoc, new b2Vec2(0,0), Joint.HINGE, true, 60);
+//
+//			var arms:int = 20; // number of arms to add
+//			
+//			var theta:Number = (360 / arms)*(Math.PI/180);
+//			var wheelLoc:b2Vec2 = new b2Vec2();
+//			var armLoc:b2Vec2 = new b2Vec2(10, 0);
+//			
+//			for(var m:int=0; m < arms; m++)
+//			{
+//				var arm:b2Body = new Body(_myWorld, highLoc.x-60, highLoc.y, 100, 10, Body.RECTANGLE, null, -3, -90, true).body;
+//					wheelLoc.x = (wheelDiamter/2 - 10) * Math.cos(theta * m) + 0;
+//					wheelLoc.y = (wheelDiamter/2 - 10) * Math.sin(theta * m) + 0;
+//				new Joint(_myWorld, highWheel, arm, wheelLoc, armLoc, Joint.HINGE);
+//				new Joint(_myWorld, highBox, arm, new b2Vec2(highAxelLoc.x + 50, highAxelLoc.y + 30), new b2Vec2(-40, 0), Joint.ARM, false, 0, 0, 50);
+//			}
+//
+//			var gear1:b2Body = new Body(_myWorld, 500, 200, 200, 0, Body.CIRCLE).body;
+//			new Joint(_myWorld, _world.GetGroundBody(), gear1, new b2Vec2(-500, -200), new b2Vec2(0,0), Joint.HINGE);
+//			
+//			var sensoWall:Sensor = Sensor.staticSensor(_myWorld, 910, 550, 100, 100);
+////			var sensoWall:Body = Body.staticBody(_myWorld, 910, 550, 100, 100, Body.CIRCLE, null, 0, 0, 0.3, true);
+////			var sensoShapes:Array = sensoWall.body.GetShapeList();
+//
+//			for (var sensoShape:b2Shape = sensoWall.body.GetShapeList(); sensoShape; sensoShape = sensoShape.GetNext())
+//			{
+//			    trace("found sensoShape:", sensoShape, "is sensor?:", sensoShape.IsSensor(), "next sensoShape:", sensoShape.GetNext());
+//			    if(sensoShape.IsSensor())
+//			    {
+//			    	var filterData:b2FilterData = sensoShape.GetFilterData()
+////			    		filterData.
+//			    }
+//			}
 			
-//			var highBox:b2Body = Body.staticBody(_myWorld, highLoc.x, highLoc.y, 120, 80, Body.RECTANGLE, null, -3).body;
-			var highBox:b2Body = new Body(_myWorld, highLoc.x, highLoc.y, 200, 80, Body.RECTANGLE, null, -3, 0, true).body;
-			var highWheel:b2Body = new Body(_myWorld, highLoc.x, highLoc.y, wheelDiamter, 0, Body.CIRCLE, null, -3, 0, true).body;
-			var highAxelLoc:b2Vec2 = new b2Vec2(6,0);
+			var mondoBody:Body = Body.staticBody(_myWorld, 300, 200, 200, 100, Body.RECTANGLE, null, -6);
+//			var mondoBody:Body = new Body(_myWorld, 150, 400, 200, 100, Body.RECTANGLE, null, -6, 0, true, 0.3, 0.1, 1);
 			
-			new Joint(_myWorld, highBox, highWheel, highAxelLoc, new b2Vec2(0,0), Joint.HINGE, true, 60);
+			createMondoLeg(mondoBody, 2, -50, 20, "left");
+//			createMondoLeg(mondoBody, 2,  150, 0, "left");
+//			createMondoLeg(mondoBody, 2, -50, 0, "right");
+			
+			//createMondoLeg(mondoBody, 2, -50, 0, "right");
+			
+			//add training wheel!
+//			var mondoWheel:Body = new Body(_myWorld, 250, 500, 40, 0, Body.CIRCLE, null, -6, 0, true);
+//			new Joint(_myWorld, mondoBody.body, mondoWheel.body, new b2Vec2(100, 85), new b2Vec2(0,0));
 
-			var arms:int = 20; // number of arms to add
+			makeTriangle(1);
+		}
+		
+		private function makeTriangle(dir:int):void
+		{
 			
-			var theta:Number = (360 / arms)*(Math.PI/180);
-			var wheelLoc:b2Vec2 = new b2Vec2();
-			var armLoc:b2Vec2 = new b2Vec2(10, 0);
+		}
+		
+		private function createMondoLeg(parent:Body, legCount:int=1, x:int=0, y:int=0, direction:String="left"):void
+		{
+			var dir:int = (direction == "left") ? 1 : -1;
+			trace("creating mondo leg");
 			
-			for(var m:int=0; m < arms; m++)
+			var loc:b2Vec2 = parent.body.GetPosition();
+			loc.Multiply(_myWorld.scale);
+			loc.x += x;
+			loc.y += y;
+			
+			var grp:int = parent.group;
+			
+			var wheelDiameter:int = 52;
+			var wheel:Body = new Body(_myWorld, loc.x, 		loc.y, 		wheelDiameter,0, 	Body.CIRCLE, 	null, grp);
+			var parent2Wheel:Joint = new Joint(_myWorld, parent.body, wheel.body, new b2Vec2(x,y), new b2Vec2(0,0), Joint.HINGE, true, -60);
+//			_mondoWheelJoint = new Joint(_myWorld, parent.body, wheel.body, new b2Vec2(x,y), new b2Vec2(0,0), Joint.HINGE, true, -60);
+			
+			var theta:Number 		= (360 / legCount)*(Math.PI/180);
+			var wheelLoc:b2Vec2 	= new b2Vec2();
+			var ankleLength:Number 	= 32; //29.07;
+			var shinLength:Number 	= 63.66;
+			
+			
+			var footVerts:Array = new Array( 	new b2Vec2(-8.5 * dir, -27.5), // Middle
+												new b2Vec2( 48.5  * dir,	-95.5), // Top
+												new b2Vec2(-7.5 * dir,  95.5));// Bottom
+			var thighX:Number 	= -50 * dir;
+			var footX:Number 	= -71.5 * dir; // TODO: this too!
+			
+//			var thigh2WheelAxis:b2Vec2 	= new b2Vec2( 51 * dir, -6);
+//			var thigh2FootAxis:b2Vec2 	= new b2Vec2(-50 * dir,  6);
+//			
+//			var ankle2ParentAxis:b2Vec2 = new b2Vec2(x+(-46 * dir), y+14);
+//			var shin2ParentAxis:b2Vec2	= new b2Vec2(x+(-3* dir), 	y-38);
+//			var ankle2ThighAxis:b2Vec2	= new b2Vec2(5 * dir, 5);
+
+			
+			for(var i:int=0; i < legCount; i++)
 			{
-				var arm:b2Body = new Body(_myWorld, highLoc.x-60, highLoc.y, 100, 10, Body.RECTANGLE, null, -3, -90, true).body;
-					wheelLoc.x = (wheelDiamter/2 - 10) * Math.cos(theta * m) + 0;
-					wheelLoc.y = (wheelDiamter/2 - 10) * Math.sin(theta * m) + 0;
-				new Joint(_myWorld, highWheel, arm, wheelLoc, armLoc, Joint.HINGE);
-				new Joint(_myWorld, highBox, arm, new b2Vec2(highAxelLoc.x + 50, highAxelLoc.y + 30), new b2Vec2(-40, 0), Joint.ARM, false, 0, 0, 50);
+				var thigh2WheelAxis:b2Vec2 	= new b2Vec2( 51 * dir, -6);
+				var thigh2FootAxis:b2Vec2 	= new b2Vec2(-50 * dir,  6);
+				
+				var ankle2ParentAxis:b2Vec2 = new b2Vec2(x+(-46 * dir), y+14);
+				var shin2ParentAxis:b2Vec2	= new b2Vec2(x+(-3* dir), 	y-38);
+				var ankle2ThighAxis:b2Vec2	= new b2Vec2(5 * dir, 5);
+				
+				var shin2FootAxis:b2Vec2	= b2Vec2(footVerts[1]).Copy(); //b2Vec2(footVerts[2]).Copy(); //new b2Vec2(-28.5 * dir, 95.5);
+				var foot2ThighAxis:b2Vec2 	= b2Vec2(footVerts[0]).Copy();
+				
+				var thigh:Body = new Body(_myWorld, loc.x+thighX, 	loc.y-20, 	100, 	16, 		Body.RECTANGLE, null, 		grp);
+				
+				var foot:Body  = new Body(_myWorld, loc.x+footX, 	loc.y-10,	 57, 	191, 		Body.TRIANGLE, 	footVerts, 	grp);
+				
+					wheelLoc.x = (wheelDiameter/2) * Math.cos(theta * (i+1));
+					wheelLoc.y = (wheelDiameter/2) * Math.sin(theta * (i+1));
+				
+				var wheel2Thigh:Joint 	= new Joint(_myWorld, wheel.body, thigh.body, 	wheelLoc, 			thigh2WheelAxis);
+				var thigh2Foot:Joint 	= new Joint(_myWorld, thigh.body, foot.body, 	thigh2FootAxis, 	foot2ThighAxis);
+				
+//				var ankle:Body = new Body(_myWorld, loc.x-46, 	loc.y, 		10, 	30, 		Body.RECTANGLE, null, grp); //TODO: Switch to distance joint?
+//				var ankle2Parent:Joint 	= new Joint(_myWorld, ankle.body, parent.body, 	new b2Vec2(0, 14), 	new b2Vec2(x+46, y-14));
+//				var ankle2Thigh:Joint 	= new Joint(_myWorld, ankle.body, thigh.body, 	new b2Vec2(0, -15), new b2Vec2(-5,-5));
+				
+				// temp distance joints to speed things up.
+				var ankle:Joint = new Joint(_myWorld, parent.body, thigh.body, ankle2ParentAxis, ankle2ThighAxis, Joint.ARM, false, 0, 0, ankleLength);
+				var shin:Joint = new Joint(_myWorld, parent.body, foot.body, shin2ParentAxis, shin2FootAxis, Joint.ARM, false, 0, 0, shinLength);
 			}
-
-			var gear1:b2Body = new Body(_myWorld, 500, 200, 200, 0, Body.CIRCLE).body;
-			new Joint(_myWorld, _world.GetGroundBody(), gear1, new b2Vec2(-500, -200), new b2Vec2(0,0), Joint.HINGE);
-			
-			var sensoWall:Sensor = Sensor.staticSensor(_myWorld, 910, 550, 100, 100);
-//			var sensoWall:Body = Body.staticBody(_myWorld, 910, 550, 100, 100, Body.CIRCLE, null, 0, 0, 0.3, true);
-//			var sensoShapes:Array = sensoWall.body.GetShapeList();
-
-			for (var sensoShape:b2Shape = sensoWall.body.GetShapeList(); sensoShape; sensoShape = sensoShape.GetNext())
-			{
-			    trace("found sensoShape:", sensoShape, "is sensor?:", sensoShape.IsSensor(), "next sensoShape:", sensoShape.GetNext());
-			    if(sensoShape.IsSensor())
-			    {
-			    	var filterData:b2FilterData = sensoShape.GetFilterData()
-//			    		filterData.
-			    }
-			}
-			
 		}
 		
 		private function addBox(w:int, h:int, loc:b2Vec2, angle:int=0):b2Body
@@ -328,6 +425,16 @@ package
 				}
 			}
 			
+			if(_step == 500)
+			{
+//				_mondoWheelJoint.speed
+//				var speed:Number = b2RevoluteJoint(_mondoWheelJoint.joint).GetMotorSpeed();
+//				b2RevoluteJoint(_mondoWheelJoint.joint).SetMotorSpeed(speed * -1);
+				
+				_step = 0;
+			}
+			
+			_step ++;
 			
 			// for reversing the robot when it hist the end
 //			if((_testRobot.GetPosition().x <= 80 / _physScale || _testRobot.GetPosition().x >= 520 / _physScale) && _robotReversalAllowed)

@@ -37,7 +37,13 @@ package com.paperclipped.physics
 		private var _joint:b2Joint;
 //		private var _jointDef:b2JointDef;
 		private var _scale:Number;
+		private var _speed:Number;
 		private var _world:b2World;
+		
+		
+//		public function get axis():
+		public function get joint():b2Joint		{	return _joint;	}
+		public function get speed():Number		{	return _speed;	}
 		
 		public function Joint(myWorld:World, body1:b2Body, body2:b2Body, body1Loc:b2Vec2, body2Loc:b2Vec2, type:String="hinge", motorize:Boolean=false, speed:Number=0, torque:Number=10000, length:Number=10, angle:Number=0, axis:b2Vec2=null)
  		{
@@ -48,6 +54,10 @@ package com.paperclipped.physics
  			_body2 = body2;
 			_body1Loc = body1Loc;
 			_body2Loc = body2Loc;
+			
+			_body1Loc.Multiply(-1);
+			_body2Loc.Multiply(-1);
+			
 			
 			var jointDef:b2JointDef;
 			switch(type)
@@ -92,6 +102,7 @@ package com.paperclipped.physics
 
 				jointD.enableMotor = motorize;
 				jointD.motorSpeed = speed * (Math.PI / 180);
+				_speed = speed;
 				jointD.maxMotorTorque = torque;
 			return jointD;
 		}

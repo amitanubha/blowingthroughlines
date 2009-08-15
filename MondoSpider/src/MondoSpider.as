@@ -20,6 +20,7 @@ package
 	import com.paperclipped.physics.World;
 	
 	import flash.display.DisplayObject;
+	import flash.display.Shape;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
@@ -218,33 +219,29 @@ package
 //			    }
 //			}
 			
-			var mondoBody:Body = Body.staticBody(_myWorld, 300, 200, 200, 100, Body.RECTANGLE, null, -6);
+//			var mondoBody:Body = Body.staticBody(_myWorld, 300, 200, 200, 100, Body.RECTANGLE, null, -6);
+			var mondoBody:Body = new Body(_myWorld, 300, 200, 200, 100, Body.RECTANGLE, null, -6);
 //			var mondoBody:Body = new Body(_myWorld, 150, 400, 200, 100, Body.RECTANGLE, null, -6, 0, true, 0.3, 0.1, 1);
 			
 			createMondoLeg(mondoBody, 2, -50, 20, "left");
-//			createMondoLeg(mondoBody, 2,  150, 0, "left");
-//			createMondoLeg(mondoBody, 2, -50, 0, "right");
-			
-			//createMondoLeg(mondoBody, 2, -50, 0, "right");
+			createMondoLeg(mondoBody, 2, 50, 20, "right");
 			
 			//add training wheel!
 //			var mondoWheel:Body = new Body(_myWorld, 250, 500, 40, 0, Body.CIRCLE, null, -6, 0, true);
 //			new Joint(_myWorld, mondoBody.body, mondoWheel.body, new b2Vec2(100, 85), new b2Vec2(0,0));
 
-			makeTriangle(1);
+//			makeTriangle(1);
+//			makeTriangle(-1);
 		}
 		
-		private function makeTriangle(dir:int):void
-		{
-			
-		}
+
 		
 		private function createMondoLeg(parent:Body, legCount:int=1, x:int=0, y:int=0, direction:String="left"):void
 		{
 			var dir:int = (direction == "left") ? 1 : -1;
 			trace("creating mondo leg");
 			
-			var loc:b2Vec2 = parent.body.GetPosition();
+			var loc:b2Vec2 = parent.body.GetPosition().Copy(); //!!! Really????
 			loc.Multiply(_myWorld.scale);
 			loc.x += x;
 			loc.y += y;
@@ -262,9 +259,16 @@ package
 			var shinLength:Number 	= 63.66;
 			
 			
-			var footVerts:Array = new Array( 	new b2Vec2(-8.5 * dir, -27.5), // Middle
-												new b2Vec2( 48.5  * dir,	-95.5), // Top
-												new b2Vec2(-7.5 * dir,  95.5));// Bottom
+			var footVerts:Array = new Array( 	
+												new b2Vec2( 48.5  * dir, -95.5), // Top
+												new b2Vec2(-8.5 * dir,   -27.5), // Middle
+												new b2Vec2(-7.5 * dir,    95.5)  // Bottom
+												);
+													
+			if(dir == 1) footVerts = footVerts.reverse();
+//			var foot2ThighVert:int = (dir == 1)? 1 : 
+			var shin2FootVert:int = (dir == 1) ? 2 : 0;
+						
 			var thighX:Number 	= -50 * dir;
 			var footX:Number 	= -71.5 * dir; // TODO: this too!
 			
@@ -285,8 +289,8 @@ package
 				var shin2ParentAxis:b2Vec2	= new b2Vec2(x+(-3* dir), 	y-38);
 				var ankle2ThighAxis:b2Vec2	= new b2Vec2(5 * dir, 5);
 				
-				var shin2FootAxis:b2Vec2	= b2Vec2(footVerts[1]).Copy(); //b2Vec2(footVerts[2]).Copy(); //new b2Vec2(-28.5 * dir, 95.5);
-				var foot2ThighAxis:b2Vec2 	= b2Vec2(footVerts[0]).Copy();
+				var foot2ThighAxis:b2Vec2 	= b2Vec2(footVerts[1]).Copy();
+				var shin2FootAxis:b2Vec2	= b2Vec2(footVerts[shin2FootVert]).Copy(); //b2Vec2(footVerts[2]).Copy(); //new b2Vec2(-28.5 * dir, 95.5);
 				
 				var thigh:Body = new Body(_myWorld, loc.x+thighX, 	loc.y-20, 	100, 	16, 		Body.RECTANGLE, null, 		grp);
 				
@@ -398,6 +402,29 @@ package
 			var left:Wall = new Wall(_myWorld, Wall.LEFT);
 			var right:Wall = new Wall(_myWorld, Wall.RIGHT);
 			
+		}
+		
+		private function makeTriangle(dir:int, x:int=600, y:int=300):void
+		{
+			var ner:Shape = new Shape();
+			ner.graphics.beginFill(0xFFFFFF);
+			ner.graphics.drawRect(x,y,1,1);
+			ner.graphics.endFill();
+			this.addChild(ner);
+			
+			
+			var verts:Array = new Array( 	
+											new b2Vec2( 48.5  * dir, -95.5), // Top
+											new b2Vec2(-8.5 * dir,   -27.5), // Middle
+											new b2Vec2(-7.5 * dir,    95.5)  // Bottom
+											);
+											
+			if(dir == 1) verts = verts.reverse();
+											
+			var xLoc:Number = x-(71 * dir);
+			var t:Body = new Body(_myWorld, xLoc, y, 0, 0, Body.TRIANGLE, verts, -4);
+			
+			new Joint(_myWorld, _myWorld.world.GetGroundBody(), t.body, new b2Vec2(x,y), new b2Vec2(0,0), Joint.ARM, false, 0, 0, 71);
 		}
 		
 		public function update(evt:Event):void{

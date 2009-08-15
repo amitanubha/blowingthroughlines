@@ -27,7 +27,7 @@ package com.paperclipped.physics
 			switch(side)
 			{
 				case Wall.LEFT:// Left
-					wallBd.position.Set(-(offset+100 / world.scale), (world.height+100) / world.scale / 2);
+					wallBd.position.Set(-(offset-50 / world.scale), (world.height+100) / world.scale / 2);
 					wallSd.SetAsBox(100 / world.scale, (world.height+100) / world.scale/2);
 					_body = world.world.CreateBody(wallBd);
 					_body.CreateShape(wallSd);

@@ -26,6 +26,7 @@ package com.paperclipped.physics
 		private var _scale:Number;
 		private var _world:b2World;
 		private var _graphic:DisplayObject;
+		private var _group:int;
 		private var _sensors:Array;
 //		private var _angle:Number; // haven't had a reason to store this stuff yet.
 //		private var _friction:Number;
@@ -46,6 +47,7 @@ package com.paperclipped.physics
 		 * @see 	http://www.box2d.org/wiki/index.php?title=Linking_graphics_to_bodies_in_Box2D_AS3#A_different_approach
 		 */		
 		public function get graphic():DisplayObject 	{ return _graphic;	}
+		public function get group():int				 	{ return _group;	}
 		public function get sensors():Array				{ return _sensors;	}
 //		public function get radius()
 //		public function get width()
@@ -169,6 +171,7 @@ package com.paperclipped.physics
 			if(categoryBits !==0) 	shapeDef.filter.categoryBits 	= categoryBits;
 			if(maskBits !==0) 		shapeDef.filter.maskBits 		= maskBits;
 			if(group !== 0) 		shapeDef.filter.groupIndex 		= group;
+			_group = group;
 			
 			shapeDef.density 		= density;
 			shapeDef.friction 		= friction;

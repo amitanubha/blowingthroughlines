@@ -52,8 +52,8 @@ package com.paperclipped.physics
  			
  			_body1 = body1;
  			_body2 = body2;
-			_body1Loc = body1Loc;
-			_body2Loc = body2Loc;
+			_body1Loc = body1Loc.Copy();
+			_body2Loc = body2Loc.Copy();
 			
 			_body1Loc.Multiply(-1);
 			_body2Loc.Multiply(-1);

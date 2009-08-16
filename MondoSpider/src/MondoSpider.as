@@ -59,7 +59,8 @@ package
 		private var _armSpeed:Number = -2;
 		private var _robotReversalAllowed:Boolean = true;
 		
-		private var _mondoWheelJoint:Joint; 
+		private var _mondoWheelJoint:Joint;
+		private var _spiderMotors:Array = new Array();
 		private var _step:uint = 0;
 		
 		public function MondoSpider()
@@ -220,7 +221,7 @@ package
 //			}
 			
 //			var mondoBody:Body = Body.staticBody(_myWorld, 300, 200, 200, 100, Body.RECTANGLE, null, -6);
-			var mondoBody:Body = new Body(_myWorld, 300, 200, 200, 100, Body.RECTANGLE, null, -6);
+			var mondoBody:Body = new Body(_myWorld, 300, 400, 200, 100, Body.RECTANGLE, null, -6);
 //			var mondoBody:Body = new Body(_myWorld, 150, 400, 200, 100, Body.RECTANGLE, null, -6, 0, true, 0.3, 0.1, 1);
 			
 			createMondoLeg(mondoBody, 2, -50, 20, "left");
@@ -250,8 +251,8 @@ package
 			
 			var wheelDiameter:int = 52;
 			var wheel:Body = new Body(_myWorld, loc.x, 		loc.y, 		wheelDiameter,0, 	Body.CIRCLE, 	null, grp);
-			var parent2Wheel:Joint = new Joint(_myWorld, parent.body, wheel.body, new b2Vec2(x,y), new b2Vec2(0,0), Joint.HINGE, true, -60);
-//			_mondoWheelJoint = new Joint(_myWorld, parent.body, wheel.body, new b2Vec2(x,y), new b2Vec2(0,0), Joint.HINGE, true, -60);
+//			var parent2Wheel:Joint = new Joint(_myWorld, parent.body, wheel.body, new b2Vec2(x,y), new b2Vec2(0,0), Joint.HINGE, true, -60);
+//			_spiderMotors.push(new Joint(_myWorld, parent.body, wheel.body, new b2Vec2(x,y), new b2Vec2(0,0), Joint.HINGE, true, -90));
 			
 			var theta:Number 		= (360 / legCount)*(Math.PI/180);
 			var wheelLoc:b2Vec2 	= new b2Vec2();
@@ -454,11 +455,15 @@ package
 			
 			if(_step == 500)
 			{
-//				_mondoWheelJoint.speed
-//				var speed:Number = b2RevoluteJoint(_mondoWheelJoint.joint).GetMotorSpeed();
-//				b2RevoluteJoint(_mondoWheelJoint.joint).SetMotorSpeed(speed * -1);
-				
+				for( var k:int=0; k < _spiderMotors.length; k++)
+				{
+					var joint:b2RevoluteJoint = b2RevoluteJoint(_spiderMotors[k].joint);
+					
+					var speed:Number = joint.GetMotorSpeed();
+					joint.SetMotorSpeed(speed * -1);
+				}
 				_step = 0;
+				trace("reversing motors!");
 			}
 			
 			_step ++;

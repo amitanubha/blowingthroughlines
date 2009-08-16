@@ -18,6 +18,7 @@ package
 	import com.paperclipped.physics.Joint;
 	import com.paperclipped.physics.Wall;
 	import com.paperclipped.physics.World;
+	import com.paperclipped.physics.robotics.Robot;
 	
 	import flash.display.DisplayObject;
 	import flash.display.Shape;
@@ -220,12 +221,7 @@ package
 //			    }
 //			}
 			
-//			var mondoBody:Body = Body.staticBody(_myWorld, 300, 200, 200, 100, Body.RECTANGLE, null, -6);
-			var mondoBody:Body = new Body(_myWorld, 300, 400, 200, 100, Body.RECTANGLE, null, -6);
-//			var mondoBody:Body = new Body(_myWorld, 150, 400, 200, 100, Body.RECTANGLE, null, -6, 0, true, 0.3, 0.1, 1);
-			
-			createMondoLeg(mondoBody, 2, -50, 20, "left");
-			createMondoLeg(mondoBody, 2, 50, 20, "right");
+
 			
 			//add training wheel!
 //			var mondoWheel:Body = new Body(_myWorld, 250, 500, 40, 0, Body.CIRCLE, null, -6, 0, true);
@@ -233,85 +229,87 @@ package
 
 //			makeTriangle(1);
 //			makeTriangle(-1);
+
+			var robot:Robot = new Robot(_myWorld, 200, 400, -6);
 		}
 		
 
 		
-		private function createMondoLeg(parent:Body, legCount:int=1, x:int=0, y:int=0, direction:String="left"):void
-		{
-			var dir:int = (direction == "left") ? 1 : -1;
-			trace("creating mondo leg");
-			
-			var loc:b2Vec2 = parent.body.GetPosition().Copy(); //!!! Really????
-			loc.Multiply(_myWorld.scale);
-			loc.x += x;
-			loc.y += y;
-			
-			var grp:int = parent.group;
-			
-			var wheelDiameter:int = 52;
-			var wheel:Body = new Body(_myWorld, loc.x, 		loc.y, 		wheelDiameter,0, 	Body.CIRCLE, 	null, grp);
-//			var parent2Wheel:Joint = new Joint(_myWorld, parent.body, wheel.body, new b2Vec2(x,y), new b2Vec2(0,0), Joint.HINGE, true, -60);
-//			_spiderMotors.push(new Joint(_myWorld, parent.body, wheel.body, new b2Vec2(x,y), new b2Vec2(0,0), Joint.HINGE, true, -90));
-			
-			var theta:Number 		= (360 / legCount)*(Math.PI/180);
-			var wheelLoc:b2Vec2 	= new b2Vec2();
-			var ankleLength:Number 	= 32; //29.07;
-			var shinLength:Number 	= 63.66;
-			
-			
-			var footVerts:Array = new Array( 	
-												new b2Vec2( 48.5  * dir, -95.5), // Top
-												new b2Vec2(-8.5 * dir,   -27.5), // Middle
-												new b2Vec2(-7.5 * dir,    95.5)  // Bottom
-												);
-													
-			if(dir == 1) footVerts = footVerts.reverse();
-//			var foot2ThighVert:int = (dir == 1)? 1 : 
-			var shin2FootVert:int = (dir == 1) ? 2 : 0;
-						
-			var thighX:Number 	= -50 * dir;
-			var footX:Number 	= -71.5 * dir; // TODO: this too!
-			
-//			var thigh2WheelAxis:b2Vec2 	= new b2Vec2( 51 * dir, -6);
-//			var thigh2FootAxis:b2Vec2 	= new b2Vec2(-50 * dir,  6);
+//		private function createMondoLeg(parent:Body, legCount:int=1, x:int=0, y:int=0, direction:String="left"):void
+//		{
+//			var dir:int = (direction == "left") ? 1 : -1;
+//			trace("creating mondo leg");
 //			
-//			var ankle2ParentAxis:b2Vec2 = new b2Vec2(x+(-46 * dir), y+14);
-//			var shin2ParentAxis:b2Vec2	= new b2Vec2(x+(-3* dir), 	y-38);
-//			var ankle2ThighAxis:b2Vec2	= new b2Vec2(5 * dir, 5);
-
-			
-			for(var i:int=0; i < legCount; i++)
-			{
-				var thigh2WheelAxis:b2Vec2 	= new b2Vec2( 51 * dir, -6);
-				var thigh2FootAxis:b2Vec2 	= new b2Vec2(-50 * dir,  6);
-				
-				var ankle2ParentAxis:b2Vec2 = new b2Vec2(x+(-46 * dir), y+14);
-				var shin2ParentAxis:b2Vec2	= new b2Vec2(x+(-3* dir), 	y-38);
-				var ankle2ThighAxis:b2Vec2	= new b2Vec2(5 * dir, 5);
-				
-				var foot2ThighAxis:b2Vec2 	= b2Vec2(footVerts[1]).Copy();
-				var shin2FootAxis:b2Vec2	= b2Vec2(footVerts[shin2FootVert]).Copy(); //b2Vec2(footVerts[2]).Copy(); //new b2Vec2(-28.5 * dir, 95.5);
-				
-				var thigh:Body = new Body(_myWorld, loc.x+thighX, 	loc.y-20, 	100, 	16, 		Body.RECTANGLE, null, 		grp);
-				
-				var foot:Body  = new Body(_myWorld, loc.x+footX, 	loc.y-10,	 57, 	191, 		Body.TRIANGLE, 	footVerts, 	grp);
-				
-					wheelLoc.x = (wheelDiameter/2) * Math.cos(theta * (i+1));
-					wheelLoc.y = (wheelDiameter/2) * Math.sin(theta * (i+1));
-				
-				var wheel2Thigh:Joint 	= new Joint(_myWorld, wheel.body, thigh.body, 	wheelLoc, 			thigh2WheelAxis);
-				var thigh2Foot:Joint 	= new Joint(_myWorld, thigh.body, foot.body, 	thigh2FootAxis, 	foot2ThighAxis);
-				
-//				var ankle:Body = new Body(_myWorld, loc.x-46, 	loc.y, 		10, 	30, 		Body.RECTANGLE, null, grp); //TODO: Switch to distance joint?
-//				var ankle2Parent:Joint 	= new Joint(_myWorld, ankle.body, parent.body, 	new b2Vec2(0, 14), 	new b2Vec2(x+46, y-14));
-//				var ankle2Thigh:Joint 	= new Joint(_myWorld, ankle.body, thigh.body, 	new b2Vec2(0, -15), new b2Vec2(-5,-5));
-				
-				// temp distance joints to speed things up.
-				var ankle:Joint = new Joint(_myWorld, parent.body, thigh.body, ankle2ParentAxis, ankle2ThighAxis, Joint.ARM, false, 0, 0, ankleLength);
-				var shin:Joint = new Joint(_myWorld, parent.body, foot.body, shin2ParentAxis, shin2FootAxis, Joint.ARM, false, 0, 0, shinLength);
-			}
-		}
+//			var loc:b2Vec2 = parent.body.GetPosition().Copy(); //!!! Really????
+//			loc.Multiply(_myWorld.scale);
+//			loc.x += x;
+//			loc.y += y;
+//			
+//			var grp:int = parent.group;
+//			
+//			var wheelDiameter:int = 52;
+//			var wheel:Body = new Body(_myWorld, loc.x, 		loc.y, 		wheelDiameter,0, 	Body.CIRCLE, 	null, grp);
+////			var parent2Wheel:Joint = new Joint(_myWorld, parent.body, wheel.body, new b2Vec2(x,y), new b2Vec2(0,0), Joint.HINGE, true, -60);
+////			_spiderMotors.push(new Joint(_myWorld, parent.body, wheel.body, new b2Vec2(x,y), new b2Vec2(0,0), Joint.HINGE, true, -90));
+//			
+//			var theta:Number 		= (360 / legCount)*(Math.PI/180);
+//			var wheelLoc:b2Vec2 	= new b2Vec2();
+//			var ankleLength:Number 	= 32; //29.07;
+//			var shinLength:Number 	= 63.66;
+//			
+//			
+//			var footVerts:Array = new Array( 	
+//												new b2Vec2( 48.5  * dir, -95.5), // Top
+//												new b2Vec2(-8.5 * dir,   -27.5), // Middle
+//												new b2Vec2(-7.5 * dir,    95.5)  // Bottom
+//												);
+//													
+//			if(dir == 1) footVerts = footVerts.reverse();
+////			var foot2ThighVert:int = (dir == 1)? 1 : 
+//			var shin2FootVert:int = (dir == 1) ? 2 : 0;
+//						
+//			var thighX:Number 	= -50 * dir;
+//			var footX:Number 	= -71.5 * dir; // TODO: this too!
+//			
+////			var thigh2WheelAxis:b2Vec2 	= new b2Vec2( 51 * dir, -6);
+////			var thigh2FootAxis:b2Vec2 	= new b2Vec2(-50 * dir,  6);
+////			
+////			var ankle2ParentAxis:b2Vec2 = new b2Vec2(x+(-46 * dir), y+14);
+////			var shin2ParentAxis:b2Vec2	= new b2Vec2(x+(-3* dir), 	y-38);
+////			var ankle2ThighAxis:b2Vec2	= new b2Vec2(5 * dir, 5);
+//
+//			
+//			for(var i:int=0; i < legCount; i++)
+//			{
+//				var thigh2WheelAxis:b2Vec2 	= new b2Vec2( 51 * dir, -6);
+//				var thigh2FootAxis:b2Vec2 	= new b2Vec2(-50 * dir,  6);
+//				
+//				var ankle2ParentAxis:b2Vec2 = new b2Vec2(x+(-46 * dir), y+14);
+//				var shin2ParentAxis:b2Vec2	= new b2Vec2(x+(-3* dir), 	y-38);
+//				var ankle2ThighAxis:b2Vec2	= new b2Vec2(5 * dir, 5);
+//				
+//				var foot2ThighAxis:b2Vec2 	= b2Vec2(footVerts[1]).Copy();
+//				var shin2FootAxis:b2Vec2	= b2Vec2(footVerts[shin2FootVert]).Copy(); //b2Vec2(footVerts[2]).Copy(); //new b2Vec2(-28.5 * dir, 95.5);
+//				
+//				var thigh:Body = new Body(_myWorld, loc.x+thighX, 	loc.y-20, 	100, 	16, 		Body.RECTANGLE, null, 		grp);
+//				
+//				var foot:Body  = new Body(_myWorld, loc.x+footX, 	loc.y-10,	 57, 	191, 		Body.TRIANGLE, 	footVerts, 	grp);
+//				
+//					wheelLoc.x = (wheelDiameter/2) * Math.cos(theta * (i+1));
+//					wheelLoc.y = (wheelDiameter/2) * Math.sin(theta * (i+1));
+//				
+//				var wheel2Thigh:Joint 	= new Joint(_myWorld, wheel.body, thigh.body, 	wheelLoc, 			thigh2WheelAxis);
+//				var thigh2Foot:Joint 	= new Joint(_myWorld, thigh.body, foot.body, 	thigh2FootAxis, 	foot2ThighAxis);
+//				
+////				var ankle:Body = new Body(_myWorld, loc.x-46, 	loc.y, 		10, 	30, 		Body.RECTANGLE, null, grp); //TODO: Switch to distance joint?
+////				var ankle2Parent:Joint 	= new Joint(_myWorld, ankle.body, parent.body, 	new b2Vec2(0, 14), 	new b2Vec2(x+46, y-14));
+////				var ankle2Thigh:Joint 	= new Joint(_myWorld, ankle.body, thigh.body, 	new b2Vec2(0, -15), new b2Vec2(-5,-5));
+//				
+//				// temp distance joints to speed things up.
+//				var ankle:Joint = new Joint(_myWorld, parent.body, thigh.body, ankle2ParentAxis, ankle2ThighAxis, Joint.ARM, false, 0, 0, ankleLength);
+//				var shin:Joint = new Joint(_myWorld, parent.body, foot.body, shin2ParentAxis, shin2FootAxis, Joint.ARM, false, 0, 0, shinLength);
+//			}
+//		}
 		
 		private function addBox(w:int, h:int, loc:b2Vec2, angle:int=0):b2Body
 		{
@@ -453,20 +451,21 @@ package
 				}
 			}
 			
-			if(_step == 500)
-			{
-				for( var k:int=0; k < _spiderMotors.length; k++)
-				{
-					var joint:b2RevoluteJoint = b2RevoluteJoint(_spiderMotors[k].joint);
-					
-					var speed:Number = joint.GetMotorSpeed();
-					joint.SetMotorSpeed(speed * -1);
-				}
-				_step = 0;
-				trace("reversing motors!");
-			}
-			
-			_step ++;
+			// for reversing the 2 wheeled mondo spider
+//			if(_step == 500)
+//			{
+//				for( var k:int=0; k < _spiderMotors.length; k++)
+//				{
+//					var joint:b2RevoluteJoint = b2RevoluteJoint(_spiderMotors[k].joint);
+//					
+//					var speed:Number = joint.GetMotorSpeed();
+//					joint.SetMotorSpeed(speed * -1);
+//				}
+//				_step = 0;
+//				trace("reversing motors!");
+//			}
+//			
+//			_step ++;
 			
 			// for reversing the robot when it hist the end
 //			if((_testRobot.GetPosition().x <= 80 / _physScale || _testRobot.GetPosition().x >= 520 / _physScale) && _robotReversalAllowed)

@@ -64,6 +64,7 @@ package com.paperclipped.physics
 			{
 				_graphic = val;
 				_graphic.addEventListener(Event.ENTER_FRAME, updateGraphic);
+				trace("Added graphic", graphic);
 			}else
 			{
 				if(_graphic)

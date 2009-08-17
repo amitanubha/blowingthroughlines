@@ -55,17 +55,17 @@ package com.paperclipped.physics.robotics
 			
 			
 			// Setting the Klann params // with old values...
-			_ankleAxis		= new b2Vec2(-46,14); //new b2Vec2(-93, 16); // -46,14
+			_ankleAxis		= new b2Vec2(-50,20); //new b2Vec2(-93, 16); // -50,20
 			_ankleLength 	= 32; //36; // 32
-			_footTopAxis 	= new b2Vec2(47,-68); //new b2Vec2(54.5, -66); // 48.5,-95.5
-			_footMidAxis 	= new b2Vec2(-10,0); //new b2Vec2(-10, 0); // -8.5,-27.5
-			_footBtmAxis 	= new b2Vec2(-10,123); //new b2Vec2(-10, 114); // -7.5, 95.5
+			_footTopAxis 	= new b2Vec2(47,-68); //new b2Vec2(54.5, -66); // 47,-68
+			_footMidAxis 	= new b2Vec2(-10,0); //new b2Vec2(-10, 0); // -10,0
+			_footBtmAxis 	= new b2Vec2(-10,123); //new b2Vec2(-10, 114); // -10,123
 			_shinLength 	= 63.66; //76.58; // 63.66
 			_shinAxis 		= new b2Vec2(-3,-38)//new b2Vec2(-31, -36); // -3, -38
-			_thighLength 	= 100; //154; // 100
+			_thighLength 	= 110; //154; // 110
 			_thighHeight 	= 12; //20; // 12
 			_thighCenter 	= 5; //14; // 5
-			_wheelRadius 	= 26; //31; // 26
+			_wheelRadius 	= 24; //31; // 24
 			_speed			= -90;
 			
 			init();
@@ -73,13 +73,13 @@ package com.paperclipped.physics.robotics
 		
 		private function init():void
 		{
-			var mondoBody:Body = Body.staticBody(_myWorld, 300, 200, 200, 100, Body.RECTANGLE, null, -6);
-//			var mondoBody:Body = new Body(_myWorld, 100, 400, 100, 60, Body.RECTANGLE, null, _group);
+//			var mondoBody:Body = Body.staticBody(_myWorld, 300, 200, 200, 100, Body.RECTANGLE, null, -6);
+			var mondoBody:Body = new Body(_myWorld, 150, 400, 100, 60, Body.RECTANGLE, null, _group);
 			
-			_wheel = createMotor(mondoBody, 0, 14, _speed);
+			_wheel = createMotor(mondoBody, 0, 12, _speed);
 
-			createMondoLeg(mondoBody, 2, 0, 14, "left");
-			createMondoLeg(mondoBody, 2, 0, 14, "right");
+			createMondoLeg(mondoBody, 2, 0, 12, "left");
+			createMondoLeg(mondoBody, 2, 0, 12, "right");
 			
 			this.addEventListener(Event.ENTER_FRAME, update);
 		}
@@ -106,10 +106,6 @@ package com.paperclipped.physics.robotics
 			loc.x += x;
 			loc.y += y;
 			
-			var theta:Number 		= (360 / legCount)*(Math.PI/180);
-			var wheel2ThighAxis:b2Vec2 	= new b2Vec2();
-			
-			
 			var footVerts:Array = new Array( 	
 												new b2Vec2(_footTopAxis.x * dir, _footTopAxis.y), // Top
 												new b2Vec2(_footMidAxis.x * dir, _footMidAxis.y), // Middle
@@ -118,26 +114,32 @@ package com.paperclipped.physics.robotics
 													
 			if(dir == 1) footVerts = footVerts.reverse();
 //			var foot2ThighVert:int = (dir == 1)? 1 : 
-			var shin2FootVert:int = (dir == 1) ? 2 : 0;
+			var shin2FootVert:int = 1 + dir; //(dir == 1) ? 2 : 0;
 						
 			var thighX:Number 	= -50 * dir + loc.x; // TODO: this should be located by the x, and y 
+			var thighY:Number	= loc.y-50;
 			var footX:Number 	= -71.5 * dir + loc.x; // TODO: this too!
+			var footY:Number	= loc.y-20; // FIXME: bletcherous hack
 			
 			var thigh2WheelAxis:b2Vec2 	= new b2Vec2((_thighLength/2)  * dir, 	-_thighHeight/2);
 			var thigh2FootAxis:b2Vec2 	= new b2Vec2((_thighLength/-2) * dir,  	_thighHeight/2);
 			var ankle2ThighAxis:b2Vec2	= new b2Vec2(_thighCenter * dir, 		_thighHeight/2);
 			
-			var ankle2ParentAxis:b2Vec2 = new b2Vec2(x+(_ankleAxis.x * dir), y+_ankleAxis.y);
-			var shin2ParentAxis:b2Vec2	= new b2Vec2(x+(_shinAxis.x* dir), 	y+_shinAxis.y);
+			var ankle2ParentAxis:b2Vec2 = new b2Vec2(x+(_ankleAxis.x * dir), 	y+_ankleAxis.y);
+			var shin2ParentAxis:b2Vec2	= new b2Vec2(x+(_shinAxis.x  * dir), 	y+_shinAxis.y);
 			
 			var foot2ThighAxis:b2Vec2 	= b2Vec2(footVerts[1]).Copy();
 			var shin2FootAxis:b2Vec2	= b2Vec2(footVerts[shin2FootVert]).Copy(); //b2Vec2(footVerts[2]).Copy(); //new b2Vec2(-28.5 * dir, 95.5);
 
+			var theta:Number 		= (360 / legCount)*(Math.PI/180);
+			var wheel2ThighAxis:b2Vec2 	= new b2Vec2();
+			
+			trace("theta is:", theta);
 			
 			for(var i:int=0; i < legCount; i++)
 			{
-				var thigh:Body = new Body(_myWorld, thighX, loc.y, 	_thighLength, 	_thighHeight, 		Body.RECTANGLE, null, _group);
-				var foot:Body  = new Body(_myWorld, footX, 	loc.y,	 	1, 				1, 					Body.TRIANGLE, 	footVerts, _group);
+				var thigh:Body = new Body(_myWorld, thighX, thighY, 	_thighLength, 	_thighHeight, 		Body.RECTANGLE, null,						_group);
+				var foot:Body  = new Body(_myWorld, footX, 	footY,	 	1, 				1, 					Body.TRIANGLE, 	footVerts, _group);
 				
 					wheel2ThighAxis.x = (_wheelRadius) * Math.cos(theta * (i+1));
 					wheel2ThighAxis.y = (_wheelRadius) * Math.sin(theta * (i+1));
@@ -158,7 +160,7 @@ package com.paperclipped.physics.robotics
 		{
 			
 			var dj:b2DistanceJoint = b2DistanceJoint(_shin.joint);
-			trace(dj.GetReactionForce(1).x);
+//			trace(dj.GetReactionForce(1).x);
 			
 			if(_step == 500)
 			{

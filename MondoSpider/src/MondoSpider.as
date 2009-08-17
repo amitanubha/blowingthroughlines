@@ -105,8 +105,8 @@ package
 			var debugSprite:Sprite = new Sprite();
 			this.addChild(debugSprite);
 //			debugSprite = null;
-//			var debugFlags:uint = (b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit | b2DebugDraw.e_centerOfMassBit);
-			var debugFlags:uint = (b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
+			var debugFlags:uint = (b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit | b2DebugDraw.e_centerOfMassBit);
+//			var debugFlags:uint = (b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
 //			var debugFlags:uint = (b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit | b2DebugDraw.e_aabbBit); // AABB is Axis-Aligned Bounding Box
 //			var debugFlags:uint = (b2DebugDraw.e_shapeBit);
 			

@@ -27,7 +27,7 @@ package com.paperclipped.physics.robotics
 		private var _group:int;
 		private var _spiderMotors:Array = new Array();
 		private var _shin:Joint;
-		private var _step:int = 0;
+		private var _step:int = -500;
 		private var _wheel:Body;
 		
 		// Klann Parameters
@@ -62,7 +62,7 @@ package com.paperclipped.physics.robotics
 			_footBtmAxis 	= new b2Vec2(-10,123); //new b2Vec2(-10, 114); // -10,123
 			_shinLength 	= 63.66; //76.58; // 63.66
 			_shinAxis 		= new b2Vec2(-3,-38)//new b2Vec2(-31, -36); // -3, -38
-			_thighLength 	= 110; //154; // 110
+			_thighLength 	= 104; //154; // 110
 			_thighHeight 	= 12; //20; // 12
 			_thighCenter 	= 5; //14; // 5
 			_wheelRadius 	= 24; //31; // 24
@@ -162,16 +162,16 @@ package com.paperclipped.physics.robotics
 			var dj:b2DistanceJoint = b2DistanceJoint(_shin.joint);
 //			trace(dj.GetReactionForce(1).x);
 			
-			if(_step == 500)
+			if(_step == 0)
 			{
 				for( var k:int=0; k < _spiderMotors.length; k++)
 				{
 					var joint:b2RevoluteJoint = b2RevoluteJoint(_spiderMotors[k].joint);
 					
 					var speed:Number = joint.GetMotorSpeed();
-					joint.SetMotorSpeed(speed * -1);
+					joint.SetMotorSpeed(speed * -1.2);
 				}
-				_step = 0;
+				_step = -450 + Math.abs(speed);
 				trace("reversing motors!");
 			}
 			

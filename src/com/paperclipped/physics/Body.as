@@ -1,6 +1,7 @@
 package com.paperclipped.physics
 {
 	import Box2D.Collision.Shapes.b2CircleDef;
+	import Box2D.Collision.Shapes.b2FilterData;
 	import Box2D.Collision.Shapes.b2PolygonDef;
 	import Box2D.Collision.Shapes.b2Shape;
 	import Box2D.Collision.Shapes.b2ShapeDef;
@@ -27,7 +28,8 @@ package com.paperclipped.physics
 		private var _world:b2World;
 		private var _graphic:DisplayObject;
 		private var _group:int;
-		private var _sensors:Array;
+//		private var _sensors:Array;
+		private var _shapes:Array;
 //		private var _angle:Number; // haven't had a reason to store this stuff yet.
 //		private var _friction:Number;
 //		private var _restitution:Number;
@@ -48,7 +50,7 @@ package com.paperclipped.physics
 		 */		
 		public function get graphic():DisplayObject 	{ return _graphic;	}
 		public function get group():int				 	{ return _group;	}
-		public function get sensors():Array				{ return _sensors;	}
+//		public function get sensors():Array				{ return _sensors;	}
 //		public function get radius()
 //		public function get width()
 //		public function get height()
@@ -111,6 +113,7 @@ package com.paperclipped.physics
 		{
 			_bodyDef 	= new b2BodyDef();
 			_scale 		= world.scale;
+			_shapes		= new Array();
 			_world 		= world.world;
 			
 			_bodyDef.position.Set(x / _scale, y / _scale);
@@ -179,7 +182,7 @@ package com.paperclipped.physics
 			shapeDef.isSensor		= isSensor;
 			
 			var b2shape:b2Shape = _body.CreateShape(shapeDef);
-//			_body.SetMassFromShapes();
+			_shapes.push(b2Shape);
 			return b2shape;
 		}
 		
@@ -214,6 +217,24 @@ package com.paperclipped.physics
 			var body:Body = new Body(world, x, y, w, h, shape, vertices, group, angle, false, friction, 0, 0, isSensor, categoryBits, maskBits);
 				body.body.SetStatic();
 			return body;
+		}
+		
+		public function addToGroup(groupID:int):void
+		{
+//			var shape:b2Shape = _body.GetShapeList();
+//		    var newFilter:b2FilterData = new b2FilterData();
+//		    newFilter.groupIndex = groupID;
+//		    shape.SetFilterData(newFilter);
+//		    _world.Refilter(shape);
+			var newFilter:b2FilterData = new b2FilterData();
+			    newFilter.groupIndex = groupID;
+			for (var i:int=0; i < _shapes.length; i++)
+			{
+				var shape:b2Shape = b2Shape(_shapes[i]);
+			    
+			    shape.SetFilterData(newFilter);
+			    _world.Refilter(shape);
+			}
 		}
 		
 		/**
@@ -325,8 +346,9 @@ package com.paperclipped.physics
 		 
 		    // ...and set the whole thing at once via the matrix.
 		    // ie. Update the sprite.
-		    _graphic.transform.matrix = m;
+		    _graphic.transform.matrix = m;		    
 		}
+		
 //-------------------------------------------------------------------------------------------//		
 	}
 }

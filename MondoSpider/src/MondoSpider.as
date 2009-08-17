@@ -14,11 +14,15 @@ package
 	import com.paperclipped.physics.World;
 	import com.paperclipped.physics.robotics.Robot;
 	
+	import flash.display.Bitmap;
+	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
 	import flash.display.Shape;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.geom.ColorTransform;
+	import flash.geom.Rectangle;
 
 	[SWF(width='960', height='600', backgroundColor='#333333', frameRate='30')]
 	public class MondoSpider extends Sprite
@@ -33,7 +37,7 @@ package
 		private var _tester:b2Body;
 		private var _velocityIterations:int = 10;
 		private var _positionIterations:int = 10;
-		private var _timeStep:Number = 1.0/30.0;
+		private var _timeStep:Number = 1.0/30.0; // need to figure this out!
 		private var _physScale:Number = 30;
 		// world mouse position
 		static public var _mouseXWorldPhys:Number;
@@ -58,6 +62,10 @@ package
 		private var _spiderMotors:Array = new Array();
 		private var _step:uint = 0;
 		
+		// to test feet movements
+		private var _bg:Bitmap;
+		private var _robot:Robot;
+		
 		public function MondoSpider()
 		{
  			this.addEventListener(Event.ADDED_TO_STAGE, init); // since we're using the schloader
@@ -81,7 +89,7 @@ package
 			_world = _myWorld.world;
 			
 			// For debugging the walk
-			addGuides(80, 90);
+			addGuides(70, 80);
 			
 			
 //			Inspector.getInstance().init(stage); //NEAT! but not too useful here.
@@ -101,7 +109,16 @@ package
 			
 			
 			// the REAL fun stuff
-			var robot:Robot = new Robot(_myWorld, 200, 400, -6);
+			_robot = new Robot(_myWorld, 250, 400, -6);
+			_robot = new Robot(_myWorld, 480, 130, -6, true);
+			// for the graphics to work!
+			this.addChild(_robot);
+			
+			var bgData:BitmapData = new BitmapData(this.stage.stageWidth, this.stage.stageHeight, true, 0);
+//			bgData.draw(_design);
+			_bg = new Bitmap(bgData);
+			_bg.bitmapData = bgData;
+			this.addChildAt(_bg, 0);
 		}
 		
 		private function addGuides(one:int, two:int):void
@@ -150,7 +167,13 @@ package
 				}
 			}
 			
-			
+			// for testering the feet movements
+			var bmpData:BitmapData = _bg.bitmapData;
+			bmpData.colorTransform(new Rectangle(0,0,_bg.width, _bg.height), new ColorTransform(1,1,1,.99));
+//			bmpData.colorTransform(new Rectangle(0,0,_bg.width, _bg.height), new ColorTransform(1,1,1,.8));
+//			bmpData.colorTransform(new Rectangle(0,0,_bg.width, _bg.height), new ColorTransform(Math.random(), Math.random(), Math.random()));
+			bmpData.draw(_robot);
+			_bg.bitmapData = bmpData;
 		}
 		
 		public function updateMouseWorld():void

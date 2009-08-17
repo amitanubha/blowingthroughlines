@@ -9,6 +9,8 @@ package com.paperclipped.physics.robotics
 	import com.paperclipped.physics.Joint;
 	import com.paperclipped.physics.World;
 	
+	import flash.display.Bitmap;
+	import flash.display.Shape;
 	import flash.display.Sprite;
 	import flash.events.Event;
 
@@ -27,7 +29,7 @@ package com.paperclipped.physics.robotics
 		private var _group:int;
 		private var _spiderMotors:Array = new Array();
 		private var _shin:Joint;
-		private var _step:int = -500;
+		private var _step:int = 0;
 		private var _wheel:Body;
 		
 		// Klann Parameters
@@ -45,41 +47,65 @@ package com.paperclipped.physics.robotics
 		
 		private var _speed:int;
 		
+		// debugging
+		private var _feetLines:Bitmap;
 		
 		public function get group():int 	{ return _group;	}
 		
-		public function Robot(world:World, x:int, y:int, group:int = -1)
+		public function Robot(world:World, x:int, y:int, group:int = -1, fixed:Boolean=false)
 		{
 			_group = (group > 0)? -group:group;
 			_myWorld = world;
 			
-			
 			// Setting the Klann params // with old values...
-			_ankleAxis		= new b2Vec2(-50,20); //new b2Vec2(-93, 16); // -50,20
-			_ankleLength 	= 32; //36; // 32
-			_footTopAxis 	= new b2Vec2(47,-68); //new b2Vec2(54.5, -66); // 47,-68
-			_footMidAxis 	= new b2Vec2(-10,0); //new b2Vec2(-10, 0); // -10,0
-			_footBtmAxis 	= new b2Vec2(-10,123); //new b2Vec2(-10, 114); // -10,123
-			_shinLength 	= 63.66; //76.58; // 63.66
-			_shinAxis 		= new b2Vec2(-3,-38)//new b2Vec2(-31, -36); // -3, -38
-			_thighLength 	= 104; //154; // 110
-			_thighHeight 	= 12; //20; // 12
-			_thighCenter 	= 5; //14; // 5
-			_wheelRadius 	= 24; //31; // 24
+//			_ankleAxis		= new b2Vec2(-60,50); //new b2Vec2(-93, 16); // -50,20
+//			_ankleLength 	= 60; //36; // 32
+//			_footTopAxis 	= new b2Vec2(54.5,-66); //new b2Vec2(54.5, -66); // 47,-68
+//			_footMidAxis 	= new b2Vec2(-10,0); //new b2Vec2(-10, 0); // -10,0
+//			_footBtmAxis 	= new b2Vec2(-10,114); //new b2Vec2(-10, 114); // -10,123
+//			_shinLength 	= 76.58; //76.58; // 63.66
+//			_shinAxis 		= new b2Vec2(-31,-36)//new b2Vec2(-31, -36); // -3, -38
+//			_thighLength 	= 153.5; //154; // 110
+//			_thighHeight 	= 20; //20; // 12
+//			_thighCenter 	= 14; //14; // 5
+//			_wheelRadius 	= 31; //31; // 24
+//			_speed			= -90;
+			_ankleAxis		= new b2Vec2(-50,20);
+			_ankleLength 	= 36;
+			_footTopAxis 	= new b2Vec2(47,-68);
+			_footMidAxis 	= new b2Vec2(-10,0);
+			_footBtmAxis 	= new b2Vec2(-10,123);
+			_shinLength 	= 63.66;
+			_shinAxis 		= new b2Vec2(-3,-38);
+			_thighLength 	= 110
+			_thighHeight 	= 12
+			_thighCenter 	= 5;
+			_wheelRadius 	= 24
 			_speed			= -90;
+//			_ankleAxis		= new b2Vec2(-65,30); //new b2Vec2(-93, 16); // -50,20
+//			_ankleLength 	= 40; //36; // 32
+//			_footTopAxis 	= new b2Vec2(60,-68); //new b2Vec2(54.5, -66); // 47,-68
+//			_footMidAxis 	= new b2Vec2(-10,0); //new b2Vec2(-10, 0); // -10,0
+//			_footBtmAxis 	= new b2Vec2(-10,120); //new b2Vec2(-10, 114); // -10,123
+//			_shinLength 	= 92; //76.58; // 63.66
+//			_shinAxis 		= new b2Vec2(-18,-38)//new b2Vec2(-31, -36); // -3, -38
+//			_thighLength 	= 150; //154; // 110
+//			_thighHeight 	= 12; //20; // 12
+//			_thighCenter 	= 15; //14; // 5
+//			_wheelRadius 	= 24; //31; // 24
+//			_speed			= -90;
 			
-			init();
+			init(x,y,fixed);
 		}
 		
-		private function init():void
+		private function init(x:int, y:int, fixed:Boolean):void
 		{
-//			var mondoBody:Body = Body.staticBody(_myWorld, 300, 200, 200, 100, Body.RECTANGLE, null, -6);
-			var mondoBody:Body = new Body(_myWorld, 150, 400, 100, 60, Body.RECTANGLE, null, _group);
+			var mondoBody:Body = (!fixed) ? new Body(_myWorld, x, y, 100, 60, Body.RECTANGLE, null, _group) : Body.staticBody(_myWorld, x, y, 200, 100, Body.RECTANGLE, null, -6);
 			
-			_wheel = createMotor(mondoBody, 0, 12, _speed);
+			_wheel = createMotor(mondoBody, 0, 10, _speed);
 
-			createMondoLeg(mondoBody, 2, 0, 12, "left");
-			createMondoLeg(mondoBody, 2, 0, 12, "right");
+			createMondoLeg(mondoBody, 2, 0, 10, "left");
+			createMondoLeg(mondoBody, 2, 0, 10, "right");
 			
 			this.addEventListener(Event.ENTER_FRAME, update);
 		}
@@ -92,7 +118,7 @@ package com.paperclipped.physics.robotics
 			loc.y += y;
 			
 			var wheel:Body = new Body(_myWorld, loc.x, loc.y, _wheelRadius * 2, 0, Body.CIRCLE, null, _group);
-			_spiderMotors.push(new Joint(_myWorld, parent.body, wheel.body, new b2Vec2(x,y), new b2Vec2(0,0), Joint.HINGE, true, speed));
+			_spiderMotors.push(new Joint(_myWorld, parent.body, wheel.body, new b2Vec2(x,y), new b2Vec2(0,0), Joint.HINGE, true, speed, 10000));
 			return wheel;
 		}
 		
@@ -117,9 +143,9 @@ package com.paperclipped.physics.robotics
 			var shin2FootVert:int = 1 + dir; //(dir == 1) ? 2 : 0;
 						
 			var thighX:Number 	= -50 * dir + loc.x; // TODO: this should be located by the x, and y 
-			var thighY:Number	= loc.y-50;
+			var thighY:Number	= loc.y-80;
 			var footX:Number 	= -71.5 * dir + loc.x; // TODO: this too!
-			var footY:Number	= loc.y-20; // FIXME: bletcherous hack
+			var footY:Number	= loc.y-80; // FIXME: bletcherous hack
 			
 			var thigh2WheelAxis:b2Vec2 	= new b2Vec2((_thighLength/2)  * dir, 	-_thighHeight/2);
 			var thigh2FootAxis:b2Vec2 	= new b2Vec2((_thighLength/-2) * dir,  	_thighHeight/2);
@@ -138,8 +164,8 @@ package com.paperclipped.physics.robotics
 			
 			for(var i:int=0; i < legCount; i++)
 			{
-				var thigh:Body = new Body(_myWorld, thighX, thighY, 	_thighLength, 	_thighHeight, 		Body.RECTANGLE, null,						_group);
-				var foot:Body  = new Body(_myWorld, footX, 	footY,	 	1, 				1, 					Body.TRIANGLE, 	footVerts, _group);
+				var thigh:Body = new Body(_myWorld, thighX, thighY, 	_thighLength, 	_thighHeight, 		Body.RECTANGLE, null,						_group);			
+				var foot:Body  = new Body(_myWorld, footX, 	footY,	 	1, 				1, 					Body.TRIANGLE, 	footVerts, _group, 0, true, 1, 0.1, 1.0, false, 0, 0, footDebugger(footVerts[Math.abs(shin2FootVert - 2)]));
 				
 					wheel2ThighAxis.x = (_wheelRadius) * Math.cos(theta * (i+1));
 					wheel2ThighAxis.y = (_wheelRadius) * Math.sin(theta * (i+1));
@@ -153,6 +179,16 @@ package com.paperclipped.physics.robotics
 				else var shin:Joint = new Joint(_myWorld, parent.body, foot.body, 	shin2ParentAxis, 	shin2FootAxis, 		Joint.ARM, false, 0, 0, _shinLength);
 			}
 		}
+		
+		private function footDebugger(loc:b2Vec2):Shape
+		{
+			var shape:Shape = new Shape();
+				shape.graphics.beginFill(0xbada55);
+				shape.graphics.drawCircle(loc.x+1, loc.y+1, 1);
+				shape.graphics.endFill();
+			this.addChild(shape);
+			return shape;
+		}
 		// showThumb(image);
 		// showFull(image);
 		
@@ -162,16 +198,17 @@ package com.paperclipped.physics.robotics
 			var dj:b2DistanceJoint = b2DistanceJoint(_shin.joint);
 //			trace(dj.GetReactionForce(1).x);
 			
-			if(_step == 0)
+			if(_step == 400)
 			{
 				for( var k:int=0; k < _spiderMotors.length; k++)
 				{
 					var joint:b2RevoluteJoint = b2RevoluteJoint(_spiderMotors[k].joint);
 					
 					var speed:Number = joint.GetMotorSpeed();
-					joint.SetMotorSpeed(speed * -1.2);
+					joint.SetMotorSpeed(speed * -1);
 				}
-				_step = -450 + Math.abs(speed);
+//				_step = -Math.abs(speed);
+				_step = 0;
 				trace("reversing motors!");
 			}
 			

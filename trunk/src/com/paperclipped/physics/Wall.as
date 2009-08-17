@@ -15,7 +15,7 @@ package com.paperclipped.physics
 		
 		public function get body():b2Body	{ return _body;	}
 		
-		public function Wall(world:World, side:String, offset:Number=5, friction:Number=0.3)
+		public function Wall(world:World, side:String, offset:Number=5, friction:Number=0.6)
 		{
 			// create walls
 			var wallSd:b2PolygonDef = new b2PolygonDef();
@@ -43,7 +43,7 @@ package com.paperclipped.physics
 				break;
 				
 				case Wall.TOP:// Top
-					wallBd.position.Set(world.width / world.scale / 2, -(offset+100 / world.scale));
+					wallBd.position.Set(world.width / world.scale / 2, -(offset-50 / world.scale));
 					wallSd.SetAsBox((world.width + 100) / world.scale / 2, 100 / world.scale);
 					_body = world.world.CreateBody(wallBd);
 					_body.CreateShape(wallSd);

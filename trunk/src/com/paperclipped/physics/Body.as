@@ -110,7 +110,7 @@ package com.paperclipped.physics
 		 * @see #staticBody()
 		 * @see #complexBody()
 		 */		
-		public function Body(world:World, x:int, y:int, w:Number=20, h:Number=20, shape:String="circle", vertices:Array=null, group:int=0, angle:Number=0, isBullet:Boolean=false, friction:Number=0.3, restitution:Number=0.1, density:Number=1.0, isSensor:Boolean=false, categoryBits:Number=0x0000, maskBits:Number=0x0000, displayGraphic:DisplayObject=null)
+		public function Body(world:World, x:int, y:int, w:Number=20, h:Number=20, shape:String="circle", vertices:Array=null, group:int=0, angle:Number=0, isBullet:Boolean=false, friction:Number=0.3, restitution:Number=0.1, density:Number=1, isSensor:Boolean=false, categoryBits:Number=0x0000, maskBits:Number=0x0000, displayGraphic:DisplayObject=null)
 		{
 			_bodyDef 	= new b2BodyDef();
 			_scale 		= world.scale;
@@ -188,6 +188,38 @@ package com.paperclipped.physics
 		}
 		
 		/**
+		 * Untested.
+		 * 
+		 * @param groupID
+		 */		
+		public function addToGroup(groupID:int):void
+		{
+//			var shape:b2Shape = _body.GetShapeList();
+//		    var newFilter:b2FilterData = new b2FilterData();
+//		    newFilter.groupIndex = groupID;
+//		    shape.SetFilterData(newFilter);
+//		    _world.Refilter(shape);
+			var newFilter:b2FilterData = new b2FilterData();
+			    newFilter.groupIndex = groupID;
+			for (var i:int=0; i < _shapes.length; i++)
+			{
+				var shape:b2Shape = b2Shape(_shapes[i]);
+			    
+			    shape.SetFilterData(newFilter);
+			    _world.Refilter(shape);
+			}
+		}
+		
+		public function destroy():DisplayObject
+		{
+			_world.DestroyBody(_body);
+			if(_graphic)
+				if(graphic.parent)
+					_graphic.parent.removeChild(_graphic);
+			return _graphic;
+		}
+		
+		/**
 		 * After adding shapes this needs to be called, apparently it's expensive hense it's removal from
 		 * the addShape function.
 		 * 
@@ -218,24 +250,6 @@ package com.paperclipped.physics
 			var body:Body = new Body(world, x, y, w, h, shape, vertices, group, angle, false, friction, 0, 0, isSensor, categoryBits, maskBits);
 				body.body.SetStatic();
 			return body;
-		}
-		
-		public function addToGroup(groupID:int):void
-		{
-//			var shape:b2Shape = _body.GetShapeList();
-//		    var newFilter:b2FilterData = new b2FilterData();
-//		    newFilter.groupIndex = groupID;
-//		    shape.SetFilterData(newFilter);
-//		    _world.Refilter(shape);
-			var newFilter:b2FilterData = new b2FilterData();
-			    newFilter.groupIndex = groupID;
-			for (var i:int=0; i < _shapes.length; i++)
-			{
-				var shape:b2Shape = b2Shape(_shapes[i]);
-			    
-			    shape.SetFilterData(newFilter);
-			    _world.Refilter(shape);
-			}
 		}
 		
 		/**

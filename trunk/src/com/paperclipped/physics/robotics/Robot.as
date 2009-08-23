@@ -65,15 +65,15 @@ package com.paperclipped.physics.robotics
 			_ankleAxis		= new b2Vec2(-70,50); //new b2Vec2(-93, 16); // -50,20
 			_ankleLength 	= 60; //36; // 32 // shorter is more concave, longer is closer to what i want
 			_footTopAxis 	= new b2Vec2(54.5,-66); //new b2Vec2(54.5, -66); // 47,-68
-			_footMidAxis 	= new b2Vec2(-10,10); //new b2Vec2(-10, 0); // -10,0
+			_footMidAxis 	= new b2Vec2(-10,0); //new b2Vec2(-10, 0); // -10,0
 			_footBtmAxis 	= new b2Vec2(-10,90); //new b2Vec2(-10, 114); // -10,123
 			_shinLength 	= 60; //76.58; // 63.66
-			_shinAxis 		= new b2Vec2(-60,-36)//new b2Vec2(-31, -36); // -3, -38
+			_shinAxis 		= new b2Vec2(-51,-36)//new b2Vec2(-31, -36); // -3, -38
 			_thighLength 	= 153.5; //154; // 110
 			_thighHeight 	= 20; //20; // 12
 			_thighCenter 	= -10; //14; // 5
-			_wheelAxis		= new b2Vec2(0, 0);
-			_wheelRadius 	= 40; //31; // 24
+			_wheelAxis		= new b2Vec2(0, -20);
+			_wheelRadius 	= 31; //31; // 24
 			
 			_speed			= -90;
 			_scale			= 1;

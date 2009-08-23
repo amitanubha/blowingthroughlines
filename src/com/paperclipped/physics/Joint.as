@@ -24,11 +24,14 @@ package com.paperclipped.physics
 	{
 		public static const GEAR:String = "gear";		// GearJoint (not really any docs on this one yet...
 		public static const HINGE:String = "hinge";		// RevoluteJoint
+		public static const REVOLUTE:String = "hinge";		// RevoluteJoint
 		public static const FIXED:String = "fixed";		// RevoluteJoint with 0 degrees of rotation applied
 		public static const ROD:String = "rod";			// DistanceJoint
 		public static const ARM:String = "rod";
+		public static const DISTANCE:String = "rod";
 		public static const PULLY:String = "pully";		// PullyJoint
 		public static const SLIDE:String = "slide";		// PrismaticJoint
+		public static const PRISMATIC:String = "slide";		// PrismaticJoint
 		
 		private var _body1:b2Body;
 		private var _body2:b2Body;

@@ -92,8 +92,8 @@ package
 //			var debugFlags:uint = (b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit | b2DebugDraw.e_aabbBit); // AABB is Axis-Aligned Bounding Box
 //			var debugFlags:uint = (b2DebugDraw.e_shapeBit);
 			
-//			_myWorld = new World(960, 600, debugSprite, debugFlags, new b2Vec2(0,20.0), _physScale);
-			_myWorld = new World(960, 600, debugSprite, debugFlags, new b2Vec2(0,20.0), _physScale, 1000, true, true);
+			_myWorld = new World(960, 600, debugSprite, debugFlags, new b2Vec2(0,20.0), _physScale);
+//			_myWorld = new World(960, 600, debugSprite, debugFlags, new b2Vec2(0,20.0), _physScale, 1000, true, true);
 			_world = _myWorld.world;
 			
 			// For debugging the walk
@@ -166,6 +166,7 @@ package
 		private function addWalls():void
 		{
 			var top:Wall = new Wall(_myWorld, Wall.TOP);
+//			var bottom:Wall = new Wall(_myWorld, Wall.BOTTOM);
 			var bottom:Wall = new Wall(_myWorld, Wall.BOTTOM, 5, 0);
 			var left:Wall = new Wall(_myWorld, Wall.LEFT);
 			var right:Wall = new Wall(_myWorld, Wall.RIGHT);
@@ -198,7 +199,7 @@ package
 			
 			// for testering the feet movements
 			var bmpData:BitmapData = _bg.bitmapData;
-			bmpData.colorTransform(new Rectangle(0,0,_bg.width, _bg.height), new ColorTransform(1,1,1,1));
+			bmpData.colorTransform(new Rectangle(0,0,_bg.width, _bg.height), new ColorTransform(1,1,1,.99));
 //			bmpData.colorTransform(new Rectangle(0,0,_bg.width, _bg.height), new ColorTransform(1,1,1,.8));
 //			bmpData.colorTransform(new Rectangle(0,0,_bg.width, _bg.height), new ColorTransform(Math.random(), Math.random(), Math.random()));
 			bmpData.draw(_robot);

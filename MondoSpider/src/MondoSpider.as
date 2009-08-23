@@ -9,6 +9,7 @@ package
 	import Box2D.Dynamics.b2DebugDraw;
 	import Box2D.Dynamics.b2World;
 	
+	import com.paperclipped.physics.Body;
 	import com.paperclipped.physics.Joint;
 	import com.paperclipped.physics.Wall;
 	import com.paperclipped.physics.World;
@@ -23,6 +24,7 @@ package
 	import flash.events.MouseEvent;
 	import flash.geom.ColorTransform;
 	import flash.geom.Rectangle;
+	import flash.text.TextField;
 
 	[SWF(width='960', height='600', backgroundColor='#333333', frameRate='30')]
 	public class MondoSpider extends Sprite
@@ -35,8 +37,8 @@ package
 		private var _myWorld:World;
 		private var _mouseJoint:b2MouseJoint
 		private var _tester:b2Body;
-		private var _velocityIterations:int = 10;
-		private var _positionIterations:int = 10;
+		private var _velocityIterations:int = 30;
+		private var _positionIterations:int = 30;
 		private var _timeStep:Number = 1.0/30.0; // need to figure this out!
 		private var _physScale:Number = 30;
 		// world mouse position
@@ -49,6 +51,8 @@ package
 		
 		private var _mouseDown:Boolean = false;
 		private var _mousePVec:b2Vec2 = new b2Vec2();
+		
+
 		
 		// to test locations
 		private var _testerSprite:Sprite;
@@ -65,6 +69,10 @@ package
 		// to test feet movements
 		private var _bg:Bitmap;
 		private var _robot:Robot;
+		private var _robot2:Robot;
+		
+		// for the debug text
+		private var _debugText:TextField;
 		
 		public function MondoSpider()
 		{
@@ -79,8 +87,8 @@ package
 			var debugSprite:Sprite = new Sprite();
 			this.addChild(debugSprite);
 //			debugSprite = null;
-			var debugFlags:uint = (b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit | b2DebugDraw.e_centerOfMassBit);
-//			var debugFlags:uint = (b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
+//			var debugFlags:uint = (b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit | b2DebugDraw.e_centerOfMassBit);
+			var debugFlags:uint = (b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
 //			var debugFlags:uint = (b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit | b2DebugDraw.e_aabbBit); // AABB is Axis-Aligned Bounding Box
 //			var debugFlags:uint = (b2DebugDraw.e_shapeBit);
 			
@@ -109,16 +117,37 @@ package
 			
 			
 			// the REAL fun stuff
-			_robot = new Robot(_myWorld, 250, 400, -6);
+			_robot2 = new Robot(_myWorld, 250, 550, -6);
 			_robot = new Robot(_myWorld, 480, 130, -6, true);
 			// for the graphics to work!
 			this.addChild(_robot);
+			this.addChild(_robot2);
 			
 			var bgData:BitmapData = new BitmapData(this.stage.stageWidth, this.stage.stageHeight, true, 0);
 //			bgData.draw(_design);
 			_bg = new Bitmap(bgData);
 			_bg.bitmapData = bgData;
 			this.addChildAt(_bg, 0);
+			
+			doublePen();
+		}
+		
+		
+		private function doublePen():void
+		{
+			var pen1:Body = new Body(_myWorld, 600, 100, 60, 10, Body.RECTANGLE, null, -6, 0, true, 0, 1, 1);
+			new Joint(_myWorld, _myWorld.world.GetGroundBody(), pen1.body, new b2Vec2(700, 300), new b2Vec2(-30, 0), Joint.ARM, false, 0, 0, 90); 
+			
+			
+//			var pen2:Body = new Body(_myWorld, 660, 300, 40, 10, Body.RECTANGLE, null, -6, -90, true, 0, 1, 1);
+			
+//			new Joint(_myWorld, pen1.body, _myWorld.world.GetGroundBody(), new b2Vec2(-30, 0), new b2Vec2(570, 300));
+//			new Joint(_myWorld, pen1.body, pen2.body, new b2Vec2(30, 0), new b2Vec2(-20, 0));
+			
+		}
+		private function addDebugText():void
+		{
+			
 		}
 		
 		private function addGuides(one:int, two:int):void
@@ -137,7 +166,7 @@ package
 		private function addWalls():void
 		{
 			var top:Wall = new Wall(_myWorld, Wall.TOP);
-			var bottom:Wall = new Wall(_myWorld, Wall.BOTTOM);
+			var bottom:Wall = new Wall(_myWorld, Wall.BOTTOM, 5, 0);
 			var left:Wall = new Wall(_myWorld, Wall.LEFT);
 			var right:Wall = new Wall(_myWorld, Wall.RIGHT);
 			
@@ -169,10 +198,11 @@ package
 			
 			// for testering the feet movements
 			var bmpData:BitmapData = _bg.bitmapData;
-			bmpData.colorTransform(new Rectangle(0,0,_bg.width, _bg.height), new ColorTransform(1,1,1,.99));
+			bmpData.colorTransform(new Rectangle(0,0,_bg.width, _bg.height), new ColorTransform(1,1,1,1));
 //			bmpData.colorTransform(new Rectangle(0,0,_bg.width, _bg.height), new ColorTransform(1,1,1,.8));
 //			bmpData.colorTransform(new Rectangle(0,0,_bg.width, _bg.height), new ColorTransform(Math.random(), Math.random(), Math.random()));
 			bmpData.draw(_robot);
+			bmpData.draw(_robot2);
 			_bg.bitmapData = bmpData;
 		}
 		

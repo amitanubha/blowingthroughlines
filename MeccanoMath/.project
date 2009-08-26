@@ -14,4 +14,16 @@
 	<natures>
 		<nature>com.adobe.flexbuilder.project.actionscriptnature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>[source path] src_paperclipped</name>
+			<type>2</type>
+			<location>/work/blowingthroughlines_svn/MondoSpider/src_paperclipped</location>
+		</link>
+		<link>
+			<name>[source path] src_box2dflash</name>
+			<type>2</type>
+			<location>/work/blowingthroughlines_svn/MondoSpider/src_box2dflash</location>
+		</link>
+	</linkedResources>
 </projectDescription>

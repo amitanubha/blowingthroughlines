@@ -7,6 +7,7 @@ package com.paperclipped.physics
 	import Box2D.Dynamics.Joints.b2JointDef;
 	import Box2D.Dynamics.Joints.b2LineJointDef;
 	import Box2D.Dynamics.Joints.b2PulleyJointDef;
+	import Box2D.Dynamics.Joints.b2RevoluteJoint;
 	import Box2D.Dynamics.Joints.b2RevoluteJointDef;
 	import Box2D.Dynamics.b2Body;
 	import Box2D.Dynamics.b2World;
@@ -47,6 +48,12 @@ package com.paperclipped.physics
 //		public function get axis():
 		public function get joint():b2Joint		{	return _joint;	}
 		public function get speed():Number		{	return _speed;	}
+		
+		public function set speed(val:Number):void
+		{
+			_speed = val * (Math.PI / 180);
+			b2RevoluteJoint(_joint).SetMotorSpeed(_speed);
+		}
 		
 		public function Joint(myWorld:World, body1:b2Body, body2:b2Body, body1Loc:b2Vec2, body2Loc:b2Vec2, type:String="hinge", motorize:Boolean=false, speed:Number=0, torque:Number=10000, length:Number=10, angle:Number=0, axis:b2Vec2=null)
  		{

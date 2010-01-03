@@ -1,4 +1,4 @@
-package
+package com.paperclipped.geom
 {
 	import flash.display.Shape;
 	import flash.geom.Point;

@@ -129,7 +129,7 @@ package
 			_bg.bitmapData = bgData;
 			this.addChildAt(_bg, 0);
 			
-			doublePen();
+//			doublePen();
 		}
 		
 		
@@ -166,8 +166,8 @@ package
 		private function addWalls():void
 		{
 			var top:Wall = new Wall(_myWorld, Wall.TOP);
-//			var bottom:Wall = new Wall(_myWorld, Wall.BOTTOM);
-			var bottom:Wall = new Wall(_myWorld, Wall.BOTTOM, 5, 0);
+			var bottom:Wall = new Wall(_myWorld, Wall.BOTTOM);
+//			var bottom:Wall = new Wall(_myWorld, Wall.BOTTOM, 5, 0);
 			var left:Wall = new Wall(_myWorld, Wall.LEFT);
 			var right:Wall = new Wall(_myWorld, Wall.RIGHT);
 			

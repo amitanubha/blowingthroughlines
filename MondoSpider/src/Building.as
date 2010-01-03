@@ -16,16 +16,14 @@ package
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
-	import flash.display.Shape;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.ColorTransform;
 	import flash.geom.Rectangle;
-	import flash.utils.setInterval;
 
 	[SWF(width='960', height='600', backgroundColor='#333333', frameRate='90')]
-	public class Balls extends Sprite
+	public class Building extends Sprite
 	{
 		private var _world:b2World;
 		private var _myWorld:World;
@@ -60,13 +58,7 @@ package
 		
 		private var _design:Sprite;
 		
-		[Embed(source='../fonts/Priva/PrivaOnePro.otf',
-			   fontFamily='_PrivaOne',
-			   unicodeRange='U+0020-U+002F,U+0030-U+0039,U+003A-U+0040,U+0041-U+005A,U+005B-U+0060,U+0061-U+007A,U+007B-U+007E')
-		]
-		public static var _PrivaOnePro:Class;
-		
-		public function Balls()
+		public function Building()
 		{
  			this.addEventListener(Event.ADDED_TO_STAGE, init); // since we're using the schloader
 		}
@@ -83,8 +75,6 @@ package
 			addWalls();
 		
 			this.addEventListener(Event.ENTER_FRAME, update);
-//			flash.utils.setInterval(update, 10);
-			
 
 			var mouseClicker:Sprite = new Sprite();
 			mouseClicker.mouseEnabled = true;
@@ -100,26 +90,20 @@ package
 			
 			var increment:int = Math.random()*0xffffff;
 			
-			for(var k:int=0; k < 5; k++)
-			{
-				var diameter:Number = Math.random()*100;
-				diameter+=5;
-				
-				var nerDesign:Shape = new Shape();
-				nerDesign.graphics.beginFill(increment, 0.3);
-				nerDesign.graphics.lineStyle(1, increment);
-				nerDesign.graphics.drawCircle(diameter / 2, diameter / 2, diameter / 2);
-				nerDesign.graphics.endFill();
-				nerDesign.graphics.moveTo(0, diameter / 2);
-				nerDesign.graphics.lineTo(diameter, diameter / 2);
-				_design.addChildAt(nerDesign, 0);
-				
-				_nercle = new Body(_myWorld, (k%20)*diameter+20, diameter, diameter, 0, Body.CIRCLE, null, 0, 0, true, 0.3, 1.02, 1); //isBullet // tooooo slow!
-				_nercle.graphic = nerDesign;
-//				var nercle:b2Body = new Body(_myWorld, (k%20)*20, (k%20)*10, 30, 20, Body.CIRCLE, null, 0, 0, false, 0.3, 0.8).body; // isNotBullet
-
-				increment += increment;
-			}
+			var block:Body 	= new Body(_myWorld, 420, 565, 20, 80, Body.RECTANGLE);
+			block 			= new Body(_myWorld, 540, 565, 20, 80, Body.RECTANGLE);
+			block 			= new Body(_myWorld, 420, 485, 20, 80, Body.RECTANGLE);
+			block 			= new Body(_myWorld, 540, 485, 20, 80, Body.RECTANGLE);
+			block 			= new Body(_myWorld, 480, 435, 140, 20, Body.RECTANGLE);
+			
+			block 			= new Body(_myWorld, 420, 385, 20, 80, Body.RECTANGLE);
+			block 			= new Body(_myWorld, 540, 385, 20, 80, Body.RECTANGLE);
+			block 			= new Body(_myWorld, 420, 305, 20, 80, Body.RECTANGLE);
+			block 			= new Body(_myWorld, 540, 305, 20, 80, Body.RECTANGLE);
+			block 			= new Body(_myWorld, 480, 255, 140, 20, Body.RECTANGLE);
+			
+			
+			
 			
 			var bgData:BitmapData = new BitmapData(this.stage.stageWidth, this.stage.stageHeight, true, 0xFFFFFF);
 //			bgData.draw(_design);
@@ -130,13 +114,13 @@ package
 		
 		private function addWalls():void
 		{
-			var top:Wall = new Wall(_myWorld, Wall.TOP, 0);
-			var bottom:Wall = new Wall(_myWorld, Wall.BOTTOM, 0);
-			var left:Wall = new Wall(_myWorld, Wall.LEFT, 0);
-			var right:Wall = new Wall(_myWorld, Wall.RIGHT, 0);
+			var top:Wall = new Wall(_myWorld, Wall.TOP);
+			var bottom:Wall = new Wall(_myWorld, Wall.BOTTOM);
+			var left:Wall = new Wall(_myWorld, Wall.LEFT);
+			var right:Wall = new Wall(_myWorld, Wall.RIGHT);
 		}
 		
-		public function update(evt:Event=null):void{
+		public function update(evt:Event):void{
 			
 			// Update mouse joint
 			updateMouseWorld()

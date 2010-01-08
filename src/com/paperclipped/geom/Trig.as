@@ -32,9 +32,10 @@ package com.paperclipped.geom
 			return points;
 		}
 		
-		public static class getAngle(point1:Point, point2:Point)
+		public static function getAngle(point1:Point, point2:Point):Number
 		{
 			var p:Point = new Point(0,0);
+			return 0;
 //			p.
 		}
 	}

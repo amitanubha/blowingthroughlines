@@ -9,12 +9,12 @@
 
 package com.oaxoa.components {
 
-	import flash.text.*;
 	import flash.display.Sprite;
-	import flash.utils.Timer;
-	import flash.events.TimerEvent;
 	import flash.events.Event;
+	import flash.events.TimerEvent;
 	import flash.filters.DropShadowFilter;
+	import flash.text.*;
+	import flash.utils.Timer;
 
 	public class FrameRater extends Sprite {
 
@@ -28,7 +28,10 @@ package com.oaxoa.components {
 		private var _graphCounter:uint;
 		private var _showGraph:Boolean;
 		private var _graphColor:uint;
-
+		private var _fps:Number;
+		
+		public function get fps():Number { return _fps; }
+		
 		public function FrameRater(textColor:uint=0x000000, drawShadow:Boolean=false, showGraph:Boolean=true, graphColor:uint=0xff0000) {
 
 			_showGraph=showGraph;
@@ -58,12 +61,12 @@ package com.oaxoa.components {
 			addEventListener(Event.ENTER_FRAME, onFrame);
 		}
 		private function onTimer(event:TimerEvent):void {
-			var val:Number=computeTime();
-			_text.text=Math.floor(val).toString()+" fps";
+			_fps=computeTime();
+			_text.text=Math.floor(_fps).toString()+" fps";
 			_text.setTextFormat(_tf);
 			_text.autoSize="left";
 			if (_showGraph) {
-				updateGraph(val);
+				updateGraph(_fps);
 			}
 		}
 		private function onFrame(event:Event):void {

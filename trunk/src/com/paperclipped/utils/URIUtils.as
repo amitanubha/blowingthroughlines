@@ -2,13 +2,12 @@ package com.paperclipped.utils
 {
 	import flash.system.Capabilities;
 	
+	/**
+	 * A set of utilities that to neat things to URLs and URIs.
+	 * @author Collin Reisodrf
+	 */	
 	public class URIUtils
 	{
-		public function URIUtils()
-		{
-			trace("WARNING: URIUtils is a static class, there is no point instanciating it.");
-		}
-		
 		/**
 		 * Allows automagic correction of paths, if the SWF is in a weird folder, or if
 		 * you want to play the swf outside of an hmtl container. It makes the assumtion

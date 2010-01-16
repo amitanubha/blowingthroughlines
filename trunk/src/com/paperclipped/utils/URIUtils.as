@@ -11,7 +11,8 @@ package com.paperclipped.utils
 		
 		/**
 		 * Allows automagic correction of paths, if the SWF is in a weird folder, or if
-		 * you want to play the swf outside of an hmtl container.
+		 * you want to play the swf outside of an hmtl container. It makes the assumtion
+		 * that your flash file is normally kept in a sub folder below the container html. 
 		 * 
 		 * @param 	serverPath	The path to the current location of the swf
 		 * @return 				New URI prefix.

@@ -163,10 +163,7 @@ package com.paperclipped.utils
 		
 		public static function minMax(value:Number, min:Number, max:Number):Number
 		{
-			value = (value < min)? min : value;
-			value = (value > max)? max : value;
-			
-			return value;
+			return (value < min)? min : (value > max)? max : value;
 		}
 		
 		public static function getDistance(min:Number, max:Number):Number

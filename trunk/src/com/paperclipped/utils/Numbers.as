@@ -161,6 +161,18 @@ package com.paperclipped.utils
 			return value;
 		}
 		
+		public static function minMax(value:Number, min:Number, max:Number):Number
+		{
+			value = (value < min)? min : value;
+			value = (value > max)? max : value;
+			
+			return value;
+		}
+		
+		public static function getDistance(min:Number, max:Number):Number
+		{
+			return max - min;
+		}
 		
 	}
 }

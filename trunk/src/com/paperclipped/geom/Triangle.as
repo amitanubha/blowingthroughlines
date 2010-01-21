@@ -158,5 +158,18 @@ package com.paperclipped.geom
 			
 			return 90;
 		}
+		
+		public static function calcASA(h:int, angle:Number):Number
+		{
+			// convert to radians
+			var Aa:Number 		= angle * 0.017453293;
+			
+			var Ac:Number 		= Math.PI-(Aa*2);
+			
+			var sideC:Number 	= 100;
+			var q:Number 		= sideC/Math.sin(Ac);
+			var sideA:Number 	= Math.sin(Aa)*q;
+			return sideA * 0.5;
+		}
 	}
 }

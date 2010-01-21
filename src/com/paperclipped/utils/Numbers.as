@@ -170,6 +170,5 @@ package com.paperclipped.utils
 		{
 			return max - min;
 		}
-		
 	}
 }

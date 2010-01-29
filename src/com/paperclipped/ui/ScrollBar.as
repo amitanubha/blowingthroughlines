@@ -4,7 +4,7 @@
  * 
  * Usage:
  * import com.paperclipped.ui.ScrollBar;
- * myScrollBar = new ScrollBar(contentToScroll, rectangleToConfineTo [custom_bar_mc, custom_handle_mc, custom_bar_mask, custom_arrow_mc]);
+ * myScrollBar = new ScrollBar(contentToScroll, rectangleToConfineTo, [custom_bar_mc, custom_handle_mc, custom_bar_mask, custom_arrow_mc]);
  * 
  * bar defaults
  */
@@ -55,7 +55,7 @@ package com.paperclipped.ui
 		public function get bar()		:*				{	return _bar;		}
 		public function get handle()	:*				{	return _handle;		}
 		public function get content()	:DisplayObject	{	return _content;	}
-		public function get handleLoc()	:int			{	return _handleLoc;	}
+		public function get handleLoc()	:int			{	return _handleLoc;	} // return _bar.width * _scrollLoc;
 		public function get direction()	:String			{	return _direction;	}
 		public function get window()	:Rectangle		{	return _window;		}
 		public function get respond()	:Boolean		{	return _respond;	} // tester
@@ -140,7 +140,7 @@ package com.paperclipped.ui
 		}
 		
 		//NOTE: set a mask to override the insivible hit area for the handle
-		public function ScrollBar(cont:DisplayObject, win:Rectangle, br:*=null, hand:*=null, msk:Shape=null, arrowR:*=null, arrowL:*=null, color:uint=0x333333, asw:Boolean = true):void
+		public function ScrollBar(cont:DisplayObject, win:Rectangle, direction:String="h", br:*=null, hand:*=null, msk:Shape=null, arrowR:*=null, arrowL:*=null, color:uint=0x333333, asw:Boolean = true):void
 		{	
 			_content 			= cont;
 			_window 			= win;
@@ -159,7 +159,7 @@ package com.paperclipped.ui
 			_handle.y			= Math.round(_bar.height/2 - _handleOriginalHeight/2 );
 //			_handle.y			= Math.round(_bar.height/2 - _handle.height/2 );
 			var handleHitArea:Sprite = new Sprite();
-			handleHitArea.graphics.beginFill( 0xffffff, 0 );
+			handleHitArea.graphics.beginFill( 0xcc0000, 0.5 );
 			handleHitArea.graphics.drawRect( 0, -_bar.height/2 + _handleOriginalHeight/2, _handle.width, _bar.height )
 			handleHitArea.graphics.endFill();
 			trace(_handle.y + " <<<<<<______________-");
@@ -199,12 +199,12 @@ package com.paperclipped.ui
 			
 			
 			
+			_handle.mask = _mask;
 			this.addChild(_bar);
 			this.addChild(_handle);
 			this.addChild(_mask);
 			this.addChild(_arrowL);
 			this.addChild(_arrowR);
-			_handle.mask = _mask;
 			
 			_scrollTimer = new Timer(30, 0);
 			_scrollTimer.addEventListener(TimerEvent.TIMER, handleScrollTimer);
@@ -214,6 +214,8 @@ package com.paperclipped.ui
 		
 		private function init():void
 		{
+			trace("aqua boogying");
+			
 			// do the aqua-boogy
 			_handle.buttonMode 		= true;
 			_handle.mouseChildren 	= false;

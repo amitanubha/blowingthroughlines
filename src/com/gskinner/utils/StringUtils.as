@@ -1,4 +1,7 @@
-package com.gskinner.utils {
+package com.gskinner.utils
+{
+	import flash.text.TextField;
+	
 
 	/**
 	* 	String Utilities class by Ryan Matsikas, Feb 10 2006
@@ -651,6 +654,21 @@ package com.gskinner.utils {
 			}
 
 			return trunc;
+		}
+		
+		/**
+		 * This overcomes a quirk when using escaped characters in CDATA tags in XML. For some
+		 * reason they seem to get double escaped. So now you can use them again.
+		 * 
+		 * @param p_string	String from XML that contained CDATA with \t or \n in it.
+		 * @return 			String with working tab and newline characters.
+		 * 
+		 */		
+		public static function unescapeWhitespace(p_string:String):String
+		{
+			var tabs:RegExp = /\\t/g; // could be more cleaned up with $1 and $2s
+			var newlines:RegExp = /\\n/g;
+			return unescape(p_string).replace(tabs, "\t").replace(newlines, "\n");
 		}
 
 		/* **************************************************************** */

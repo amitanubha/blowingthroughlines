@@ -122,9 +122,6 @@ package com.paperclipped.ui
 			_field.mask 		= _mask;
 			_field.antiAliasType= AntiAliasType.ADVANCED;
 						
-//			_field.border		= true;
-//			_field.borderColor	= 0xb00b13;
-			
 			// Create scrollbar
 			_scrollbar 		= (!_scrollbar) ? new SimpleScrollbar(_field, new Rectangle(0, 0, _width, _height)) : _scrollbar;
 			_scrollbar.x 	= _width + spacing;

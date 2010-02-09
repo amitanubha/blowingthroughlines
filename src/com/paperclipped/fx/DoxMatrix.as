@@ -37,8 +37,9 @@ package com.paperclipped.fx
 		
 		private function init():void
 		{
+			
 			this.addChild(_display);
-			_bmpData = new BitmapData(_target.width, _target.height, false, _bgColor);
+//			_bmpData = new BitmapData(_target.width, _target.height, false, _bgColor);
 //			_bmpData.draw(tester);
 			
 //			this.x = tester.x;
@@ -46,8 +47,9 @@ package com.paperclipped.fx
 			
 			if(_glow)
 			{
-				_glow.filters = [new BlurFilter(10, 10, 3), new ColorMatrixFilter(applyColor(2, 2, 2))];
-				this.addChildAt(_glow, 0);
+				_display.alpha = 0.7; // for better glow through effect.
+				_glow.filters = [new BlurFilter(10, 10, 3), new ColorMatrixFilter(applyColor(700, -255))];
+				this.addChildAt(_glow, 0); // used because of lde visiblity effect desired...
 			}	
 			
 			if(_animated)
@@ -66,10 +68,10 @@ package com.paperclipped.fx
 		//	trace("drawn in:", time-flash.utils.getTimer());
 		}
 		
-		private function applyColor(r:Number=0, g:Number=0, b:Number=0, a:Number=1):Array {
+		private function applyColor(contrast:int, brightness:int):Array {
 			var color:ColorMatrix = new ColorMatrix();
-			color.SetContrastMatrix(700);
-			color.SetBrightnessMatrix(-255)
+			color.SetContrastMatrix(contrast);
+			color.SetBrightnessMatrix(brightness)
 			return color.GetFlatArray();
 		}
 		
@@ -91,9 +93,12 @@ package com.paperclipped.fx
 		 */		
 		public function update():void
 		{
-			var col:int = _bmpData.width - _dotDiameter;
-			this.graphics.clear();
+			_bmpData = new BitmapData(_target.width, _target.height, false, _bgColor);
 			_bmpData.draw(_target);
+			
+			_display.graphics.clear();
+			
+			var col:int = _bmpData.width - _dotDiameter;
 			while(col > 0)
 			{
 				var row:int = _bmpData.height - _dotDiameter;
@@ -111,7 +116,9 @@ package com.paperclipped.fx
 			if(_glow)
 			{
 				var glowData:BitmapData = new BitmapData(_display.width, _display.height, true, 0x0);
+				glowData.draw(_display);
 				_glow.bitmapData = glowData;
+				trace("updated glow")
 			}
 		}
 	}

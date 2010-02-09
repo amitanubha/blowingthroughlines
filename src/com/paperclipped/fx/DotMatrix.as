@@ -11,7 +11,7 @@ package com.paperclipped.fx
 	import flash.filters.ColorMatrixFilter;
 	import flash.geom.Point;
 	
-	public class DoxMatrix extends Sprite
+	public class DotMatrix extends Sprite
 	{
 		private var _animated	:Boolean;
 		private var _bgColor	:Number;
@@ -24,7 +24,7 @@ package com.paperclipped.fx
 		
 		//TODO: Add getters and setters for most of this.
 		
-		public function DoxMatrix(target:DisplayObject, dotRadius:Number=2.5, glow:Boolean=true, animated:Boolean=true, bgColor:uint=0x0)
+		public function DotMatrix(target:DisplayObject, dotRadius:Number=2.5, glow:Boolean=true, animated:Boolean=true, bgColor:uint=0x0)
 		{
 			_animated = animated;
 			_display = new Sprite();

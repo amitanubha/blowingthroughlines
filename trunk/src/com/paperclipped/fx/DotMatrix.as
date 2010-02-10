@@ -10,23 +10,26 @@ package com.paperclipped.fx
 	import flash.filters.BlurFilter;
 	import flash.filters.ColorMatrixFilter;
 	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	
 	public class DotMatrix extends Sprite
 	{
-		private var _animated	:Boolean;
-		private var _bgColor	:Number;
-		private var _bmpData	:BitmapData;
-		private var _display	:Sprite;
-		private var _dotRadius	:Number;
-		private var _dotDiameter:Number;
-		private var _glow		:Bitmap;
-		private var _target		:DisplayObject;
+		private var _animated		:Boolean;
+		private var _bgColor		:Number;
+		private var _bmpData		:BitmapData;
+		private var _clippingRect	:Rectangle;
+		private var _display		:Sprite;
+		private var _dotRadius		:Number;
+		private var _dotDiameter	:Number;
+		private var _glow			:Bitmap;
+		private var _target			:DisplayObject;
 		
 		//TODO: Add getters and setters for most of this.
 		
-		public function DotMatrix(target:DisplayObject, dotRadius:Number=2.5, glow:Boolean=true, animated:Boolean=true, bgColor:uint=0x0)
+		public function DotMatrix(target:DisplayObject, dotRadius:Number=2.5, glow:Boolean=true, animated:Boolean=true, bgColor:uint=0x0, clippingRect:Rectangle=null)
 		{
 			_animated = animated;
+			_clippingRect = (clippingRect) ? clippingRect : new Rectangle();
 			_display = new Sprite();
 			_dotRadius = dotRadius;
 			_dotDiameter = _dotRadius * 2;

@@ -42,7 +42,13 @@ package com.paperclipped.ui
 //--------------------------------------- SETTERS -------------------------------------------
 		public function set defaultTextFormat(val:TextFormat):void	{
 			_format = val;
+			if(_field.styleSheet)
+			{
+				var stylesheet:StyleSheet = _field.styleSheet;
+				_field.styleSheet = null;
+			}
 			_field.defaultTextFormat = _format;
+			_field.styleSheet = (stylesheet) ? stylesheet : null;
 //			_field.setTextFormat(_format);
 			_scrollbar.update();
 		}
